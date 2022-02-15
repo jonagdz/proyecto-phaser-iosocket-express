@@ -23,6 +23,53 @@ var config = {
 var game = new Phaser.Game(config)
 var button;
 
+
+class Bullet extends Phaser.Physics.Arcade.Sprite
+{
+    constructor (scene, x, y){
+        super(scene, x, y, 'bullet');
+    }
+
+    fire (x, y)
+    {
+        this.body.reset(x, y);
+        this.setActive(true);
+        this.setVisible(true);
+        this.setVelocityY(-300);
+    }
+
+    preUpdate (time, delta)
+    {
+        super.preUpdate(time, delta);
+        if (this.y <= -32)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
+}
+
+class Bullets extends Phaser.Physics.Arcade.Group {
+    constructor (scene) {
+        super(scene.physics.world, scene);
+        this.createMultiple({
+            frameQuantity: 10,
+            key: 'bullet',
+            active: false,
+            visible: false,
+            classType: Bullet
+        });
+    }
+
+    fireBullet (x, y) {
+        let bullet = this.getFirstDead(false);
+        if (bullet) {
+            bullet.fire(x, y);
+        }
+    }
+}
+
+
 // Funcion preload: Cargo todos los recursos que utilizare en el juego como imagenes y demas
 function preload() {
   this.load.image('Carguero', 'src/assets/Carguero.png');
@@ -31,6 +78,7 @@ function preload() {
   this.load.image('uboot', 'src/assets/uboot7.png');
   this.load.image('mar', 'src/assets/mar.png');
   this.load.image('Blue', 'src/assets/Blue2.png');
+  this.load.image('bullet', 'src/assets/canonB.png');
   this.load.audio('Music', 'src/assets/bensound-deepblue.mp3');
 }
 
@@ -52,6 +100,10 @@ function create() {
       }
     })
   })
+
+  this.bullets = new Bullets(this);
+    
+  //Las funciones de disparo, utilizando la biblioteca de fisicas ARCADE e IMAGE de Phaser
 
   this.socket.on('newPlayer', function (playerInfo) {
     addOtherPlayers(self, playerInfo)
@@ -104,7 +156,6 @@ function addPlayer(self, playerInfo) {
   emitter.startFollow(self.barco) //aqui le indicamos que sigan al objeto barco.
 
 }
-
 // Creo la funcion para agregar a otro jugador que no sea el propio y lo agrego a la lista/arreglo de otherPlayers con los mismos valores añadiendo la rotacion
 function addOtherPlayers(self, playerInfo) {
   const otherPlayer = self.physics.add.image(playerInfo.x, playerInfo.y, 'uboot')
@@ -118,7 +169,7 @@ function addOtherPlayers(self, playerInfo) {
 }
 
 // Funcion update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje graficamente
-function update() {
+function update(time, delta) {
   // Agregamos el movimiento de los barcos con las flechas de direccion y seteamos la velocidad de rotacion de giro del barco
   if (this.barco) {
     if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
@@ -156,6 +207,19 @@ function update() {
       rotation: this.barco.rotation
     }
   }
+//DISPAROOOOO
+
+/*
+  this.input.on('pointermove', function (pointer) {
+    angle = Phaser.Math.Angle.BetweenPoints(this.barco, pointer);
+    this.barco.rotation = angle;
+    Phaser.Geom.Line.SetToAngle(line, cannon.x, cannon.y - 50, angle, 128);
+    gfx.clear().strokeLineShape(line);
+  }, this);
+  */
+  this.input.on('pointerdown', (pointer) => {
+    this.bullets.fireBullet(this.barco.x, this.barco.y);
+  });
 }
 
 // Funcion para intentar guardar datos utilizando el boton guardar en nuevoJuego.html, la llamo desde alli y le paso la posicion actual del jugador para guardarla directo en la BD
