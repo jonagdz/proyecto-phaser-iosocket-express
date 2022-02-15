@@ -2,8 +2,8 @@
 var config = {
   type: Phaser.AUTO,
   parent: 'phaser-example',
-  width: 800,
-  height: 600,
+  width: 1024,
+  height: 768,
   backgroundColor: '#ffffff',
   physics: {
     default: 'arcade',
@@ -30,6 +30,8 @@ function preload() {
   this.load.image('Submarino', 'src/assets/submarino.png');
   this.load.image('uboot', 'src/assets/uboot7.png');
   this.load.image('mar', 'src/assets/mar.png');
+  this.load.image('Blue', 'src/assets/Blue2.png');
+
 }
 
 // Creo todo el contenido del juego del juego en si, imagenes, los cursores, jugadores, barcos, implemento el WebSocket
@@ -87,9 +89,20 @@ function addPlayer(self, playerInfo) {
   self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'uboot')
     .setOrigin(0.5, 0.5) // Seteo posicion de inicio
     .setDisplaySize(50, 50) // Seteo tamaño
+    .setDepth(5) // seteo de la posicion (como las capas de photoshop)
 
   self.barco.setCollideWorldBounds(true) // Seteo colisiones con el fin del mapa
-  self.barco.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador 
+  self.barco.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+  //PARTICULAS
+  const particles = self.add.particles("Blue") //usamos la imagen Blue como particula
+  const emitter = particles.createEmitter({ //utilizamos la funcion emitter de phaser para emitir varias particulas
+    speed: 10, //velocidad con la que se mueven
+    scale: {start: 0.08, end: 0}, //el tamano
+    blendMode: "ADD" //el efecto a aplicar
+  })
+  particles.setPosition(0, -11)
+  emitter.startFollow(self.barco) //aqui le indicamos que sigan al objeto barco.
+
 }
 
 // Creo la funcion para agregar a otro jugador que no sea el propio y lo agrego a la lista/arreglo de otherPlayers con los mismos valores añadiendo la rotacion
@@ -101,6 +114,7 @@ function addOtherPlayers(self, playerInfo) {
     
   otherPlayer.playerId = playerInfo.playerId
   self.otherPlayers.add(otherPlayer)
+
 }
 
 // Funcion update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje graficamente
