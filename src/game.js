@@ -31,7 +31,7 @@ function preload() {
   this.load.image('uboot', 'src/assets/uboot7.png');
   this.load.image('mar', 'src/assets/mar.png');
   this.load.image('Blue', 'src/assets/Blue2.png');
-
+  this.load.audio('Music', 'src/assets/bensound-deepblue.mp3');
 }
 
 // Creo todo el contenido del juego del juego en si, imagenes, los cursores, jugadores, barcos, implemento el WebSocket
@@ -41,7 +41,7 @@ function create() {
   this.otherPlayers = this.physics.add.group()
 
   this.add.image(400, 300, 'mar'); // Cargo la imagen de fondo del mapa
-
+  this.sound.add('Music').play();
   // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador
   this.socket.on('currentPlayers', function (players) {
     Object.keys(players).forEach(function (id) {
