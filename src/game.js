@@ -30,12 +30,12 @@ class Bullet extends Phaser.Physics.Arcade.Sprite
         super(scene, x, y, 'bullet');
     }
 
-    fire (x, y)
-    {
+    fire (x, y) {
         this.body.reset(x, y);
         this.setActive(true);
         this.setVisible(true);
         this.setVelocityY(-300);
+        this.physics.moveToPointer();
     }
 
     preUpdate (time, delta)
@@ -65,6 +65,8 @@ class Bullets extends Phaser.Physics.Arcade.Group {
         let bullet = this.getFirstDead(false);
         if (bullet) {
             bullet.fire(x, y);
+            
+
         }
     }
 }
@@ -98,8 +100,8 @@ function create() {
       } else {
         addOtherPlayers(self, players[id])
       }
-    })
-  })
+    });
+  });
 
   this.bullets = new Bullets(this);
     
@@ -107,11 +109,11 @@ function create() {
 
   this.socket.on('newPlayer', function (playerInfo) {
     addOtherPlayers(self, playerInfo)
-  })
+  });
 
   this.socket.on('SaveData', function(playerInfo){
     guardarDatos(self, playerInfo);
-  })
+  });
 
   // Destruye a un jugador cuando se desconecta del socket
   this.socket.on('playerDisconnected', function (playerId) {
@@ -119,8 +121,8 @@ function create() {
       if (playerId === otherPlayer.playerId) {
         otherPlayer.destroy()
       }
-    })
-  })
+    });
+  });
 
   // Genero el movimiento de los jugadores a través de las flechas direccionales
   this.cursors = this.input.keyboard.createCursorKeys()
@@ -133,7 +135,11 @@ function create() {
         otherPlayer.setPosition(playerInfo.x, playerInfo.y)
       }
     })
-  })
+  });
+
+  this.input.on('pointerdown', (pointer) => {
+    this.bullets.fireBullet(this.barco.x, this.barco.y);
+  });
 }
 
 // Creo funcion para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
@@ -217,9 +223,7 @@ function update(time, delta) {
     gfx.clear().strokeLineShape(line);
   }, this);
   */
-  this.input.on('pointerdown', (pointer) => {
-    this.bullets.fireBullet(this.barco.x, this.barco.y);
-  });
+  
 }
 
 // Funcion para intentar guardar datos utilizando el boton guardar en nuevoJuego.html, la llamo desde alli y le paso la posicion actual del jugador para guardarla directo en la BD
