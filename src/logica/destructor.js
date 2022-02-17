@@ -1,6 +1,6 @@
 import { Bote } from '../logica/bote.js';
 
-export class Destructor extends Bote,Phaser.Physics.Arcade {
+export class Destructor extends Bote {
 
     constructor(nom,vida,velocidad,posX,posY,rotacion,cantMunicion,armas){
         super(nom,vida,velocidad,posX,posY,rotacion);
@@ -10,8 +10,7 @@ export class Destructor extends Bote,Phaser.Physics.Arcade {
         this.armas = armas;
     };
 
-    // Metodos
-    // Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
+    // Metodos: Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
 
     // Getters
     getNom() {

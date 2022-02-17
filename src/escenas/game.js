@@ -1,3 +1,4 @@
+import { Bote } from '../logica/bote.js';
 import { Bullets } from '../logica/bullets.js';
 //import { io } from "/socket.io/socket.io-client";
 //var io = require("socket.io")(server);
@@ -16,8 +17,13 @@ export class game extends Phaser.Scene{
     this.socket = io()
     this.otherPlayers = this.physics.add.group()
     this.bullets = new Bullets(this);
+    //this.barco = new Bote("Destructor",10,200,0.5,0.5,0); 
+
+    // Pruebo la vision
+    //this.barco.Vision;
 
     this.add.image(400, 300, 'mar'); // Cargo la imagen de fondo del mapa
+
     //this.sound.add('Music').play();
 
     // Creo funcion para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
@@ -154,6 +160,12 @@ export class game extends Phaser.Scene{
         y: this.barco.y,
         rotation: this.barco.rotation
       }
+
+      // Pruebo la vision
+      //if (this.vision){
+      //  this.vision.x = this.barco.x
+      //  this.vision.y = this.barco.y
+      //}
     }
   //DISPAROOOOO
 

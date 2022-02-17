@@ -9,8 +9,7 @@ export class Carguero extends Bote () {
         this.cod=cod;
     };
 
-    // Metodos
-    // Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
+    // Metodos: Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
 
     // Getters
     getNom() {

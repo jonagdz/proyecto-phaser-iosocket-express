@@ -1,4 +1,4 @@
-export class Bote {
+export class Bote{
 
     constructor(nom,vida,velocidad,posX,posY,rotacion){
 
@@ -11,8 +11,7 @@ export class Bote {
         this.rotacion = rotacion;
     };
 
-    // Metodos
-    // Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
+    // Metodos: Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
 
     // Getters
     getNom() {
@@ -68,6 +67,15 @@ export class Bote {
     // Colision
 
     // Vision
+    // Dont to make a RenderTexture the size of your entire tilemap if your game scrolls. Adjust the position of the mask image based on how much the camera has scrolled. Keep the RenderTexture to the size of your screen.
+    /*
+    Vision = this.make.image({
+		x: this.posX,
+		y: this.posY,
+		key: 'vision',
+		add: false
+	})
+    */
 
     // Detección
 
