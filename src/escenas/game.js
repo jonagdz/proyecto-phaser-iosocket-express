@@ -10,10 +10,10 @@ export class game extends Phaser.Scene{
   }
   
   // Creo todo el contenido del juego del juego en si, imagenes, los cursores, jugadores, barcos, implemento el WebSocket
-   create(){
-    var self = this
-    this.socket = io()
-    this.otherPlayers = this.physics.add.group()
+  create(){
+    var self = this;
+    this.socket = io();
+    this.otherPlayers = this.physics.add.group();
     //this.barco = new Bote("Destructor",10,200,0.5,0.5,0); 
     var playerBullets = 0;
     playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
@@ -28,25 +28,24 @@ export class game extends Phaser.Scene{
     
 
     //AGREGAMOS LA RETICULA EN UNA POSICION INICIAL
-  this.reticula = this.physics.add.sprite(400, 400, 'crosshair');
-  //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
-  this.input.on('pointerdown', function (pointer, time) {
-     // SACA UNA BALA DEL GRUPO DE BALAS Y LA HACE VISIBLE Y ACTIVA
-     var bullet = playerBullets.get().setActive(true).setVisible(true);
-     if (bullet){
-         bullet.fire(this.barco, this.reticula); //LLAMA AL METODO DISPARAR DE BULLET
-     }
+    this.reticula = this.physics.add.sprite(400, 400, 'crosshair');
+    //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
+    this.input.on('pointerdown', function (pointer, time) {
+      // SACA UNA BALA DEL GRUPO DE BALAS Y LA HACE VISIBLE Y ACTIVA
+      var bullet = playerBullets.get().setActive(true).setVisible(true);
+      if (bullet){
+        bullet.fire(this.barco, this.reticula); //LLAMA AL METODO DISPARAR DE BULLET
+      }
     }, this);
  
-   // TOMA EL MOVIMIENTO DEL CURSOR Y LO TRANSFORMA EN UN INPUT PARA MVOER LA RETICULA ACORDE AL PUNTERO
-  this.input.on('pointermove', function (pointer) {
+    // TOMA EL MOVIMIENTO DEL CURSOR Y LO TRANSFORMA EN UN INPUT PARA MVOER LA RETICULA ACORDE AL PUNTERO
+    this.input.on('pointermove', function (pointer) {
        if (this.input.mouse.locked){
-           this.reticula.x += pointer.movementX;
-           this.reticula.y += pointer.movementY;
-       }
-   }, this);
+          this.reticula.x += pointer.movementX;
+          this.reticula.y += pointer.movementY;
+        }
+    }, this);
  
-
     // Creo funcion para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
     function addPlayer(self, playerInfo) {
       self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'uboot')
@@ -54,8 +53,8 @@ export class game extends Phaser.Scene{
         .setDisplaySize(50, 50) // Seteo tamaño
         .setDepth(5) // seteo de la posicion (como las capas de photoshop)
 
-      self.barco.setCollideWorldBounds(true) // Seteo colisiones con el fin del mapa
-      self.barco.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+      self.barco.setCollideWorldBounds(true); // Seteo colisiones con el fin del mapa
+      self.barco.setDrag(1000); // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
       //PARTICULAS
       const particles = self.add.particles("Blue").setDepth(-1) //usamos la imagen Blue como particula
       const emitter = particles.createEmitter({ //utilizamos la funcion emitter de phaser para emitir varias particulas
@@ -66,6 +65,7 @@ export class game extends Phaser.Scene{
       particles.setPosition(0, -11)
       emitter.startFollow(self.barco) //aqui le indicamos que sigan al objeto barco.
     }
+
     // Creo la funcion para agregar a otro jugador que no sea el propio y lo agrego a la lista/arreglo de otherPlayers con los mismos valores añadiendo la rotacion
     function addOtherPlayers (self, playerInfo){
       const otherPlayer = self.physics.add.image(playerInfo.x, playerInfo.y, 'uboot')
@@ -88,9 +88,8 @@ export class game extends Phaser.Scene{
     }
 
     // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador
-    this.socket.on('currentPlayers', function (players) 
-    {
-      Object.keys(players).forEach(function (id) {
+    this.socket.on('currentPlayers', function (players){
+      Object.keys(players).forEach(function (id){
         if (players[id].playerId === self.socket.id){
           addPlayer(self, players[id]);
         } 

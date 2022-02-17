@@ -48,15 +48,14 @@ io.on('connection', function (socket) {
     x: 30,
     y: 30,
     playerId: socket.id,
-    //color: getRandomColor()
   }
-  socket.emit('currentPlayers', players) // Mando a todos los jugadores incluyendo el emite el mensaje los jugadores actuales
-  socket.broadcast.emit('newPlayer', players[socket.id]) // Mando a todos los jugadores excepto al que emite el mensaje que ingreso un nuevo jugador
+  socket.emit('currentPlayers', players) // Le envío el objeto players al nuevo jugador
+  socket.broadcast.emit('newPlayer', players[socket.id]) // Actualizo a todos los jugadores sobre el nuevo jugador que ingresó
  
   // Si el jugador se desconecta logueo en consola y llamo al io.emit para que comunique a todos los clientes
   socket.on('disconnect', function () {
     console.log('Jugador [' + socket.id + '] desconectado')
-    delete players[socket.id]
+    delete players[socket.id] // Elimino al jugador de nuestro objeto jugadores (players)
     io.emit('playerDisconnected', socket.id)
   })
 
@@ -93,8 +92,3 @@ io.on('connection', function (socket) {
     });
   })
 })
-
-// Funcion para generar un color de manera aleatoria
-function getRandomColor() {
-  return '0x' + Math.floor(Math.random() * 16777215).toString(16)
-}
