@@ -17,6 +17,8 @@ export class game extends Phaser.Scene{
     //this.barco = new Bote("Destructor",10,200,0.5,0.5,0); 
     var playerBullets = 0;
     playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
+    
+
     // Pruebo la vision
     //this.barco.Vision;
 
@@ -28,24 +30,37 @@ export class game extends Phaser.Scene{
     
 
     //AGREGAMOS LA RETICULA EN UNA POSICION INICIAL
-  this.reticula = this.physics.add.sprite(400, 400, 'crosshair');
-  //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
-  this.input.on('pointerdown', function (pointer, time) {
+    this.reticula = this.physics.add.sprite(400, 400, 'crosshair').setCollideWorldBounds(true);
+    //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
+    this.input.on('pointerdown', function (pointer, time) {
      // SACA UNA BALA DEL GRUPO DE BALAS Y LA HACE VISIBLE Y ACTIVA
      var bullet = playerBullets.get().setActive(true).setVisible(true);
      if (bullet){
          bullet.fire(this.barco, this.reticula); //LLAMA AL METODO DISPARAR DE BULLET
-     }
+      }
     }, this);
  
-   // TOMA EL MOVIMIENTO DEL CURSOR Y LO TRANSFORMA EN UN INPUT PARA MVOER LA RETICULA ACORDE AL PUNTERO
-  this.input.on('pointermove', function (pointer) {
-       if (this.input.mouse.locked){
-           this.reticula.x += pointer.movementX;
-           this.reticula.y += pointer.movementY;
-       }
-   }, this);
- 
+    // TOMA EL MOVIMIENTO DEL CURSOR Y LO TRANSFORMA EN UN INPUT PARA MVOER LA RETICULA ACORDE AL PUNTERO
+    this.input.on('pointermove', function (pointer) {
+        if (this.input.mouse.locked){
+            this.reticula.x += pointer.movementX;
+            this.reticula.y += pointer.movementY;
+        }
+        var distX = this.reticula.x-this.barco.x; // X distance between player & reticle
+        var distY = this.reticula.y-this.barco.y; // Y distance between player & reticle
+
+        // Ensures reticle cannot be moved offscreen (player follow)
+        if (distX > 200)
+            this.reticula.x = this.barco.x+200;
+        else if (distX < -200)
+            this.reticula.x = this.barco.x-200;
+
+        if (distY > 200)
+            this.reticula.y = this.barco.y+200;
+        else if (distY < -200)
+            this.reticula.y = this.barco.y-200;
+    }, this);
+  
 
     // Creo funcion para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
     function addPlayer(self, playerInfo) {
@@ -65,6 +80,7 @@ export class game extends Phaser.Scene{
       })
       particles.setPosition(0, -11)
       emitter.startFollow(self.barco) //aqui le indicamos que sigan al objeto barco.
+
     }
     // Creo la funcion para agregar a otro jugador que no sea el propio y lo agrego a la lista/arreglo de otherPlayers con los mismos valores añadiendo la rotacion
     function addOtherPlayers (self, playerInfo){
@@ -173,23 +189,13 @@ export class game extends Phaser.Scene{
         y: this.barco.y,
         rotation: this.barco.rotation
       }
-
+      
       // Pruebo la vision
       //if (this.vision){
       //  this.vision.x = this.barco.x
       //  this.vision.y = this.barco.y
       //}
     }
-  //DISPAROOOOO
-
-  /*
-    this.input.on('pointermove', function (pointer) {
-      angle = Phaser.Math.Angle.BetweenPoints(this.barco, pointer);
-      this.barco.rotation = angle;
-      Phaser.Geom.Line.SetToAngle(line, cannon.x, cannon.y - 50, angle, 128);
-      gfx.clear().strokeLineShape(line);
-    }, this);
-    */
     
   }
 

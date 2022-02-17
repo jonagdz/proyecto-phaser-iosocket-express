@@ -21,5 +21,6 @@ export class bootGame extends Phaser.Scene{
     create()
     {
         this.scene.start("game");
+        this.physics.world.setBounds(0, 0, 1024, 768);
     }
 }
