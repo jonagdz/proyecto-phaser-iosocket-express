@@ -64,9 +64,9 @@ export class game extends Phaser.Scene{
 
     // Creo funcion para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
     function addPlayer(self, playerInfo) {
-      self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'uboot')
+      self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'destroyer')
         .setOrigin(0.5, 0.5) // Seteo posicion de inicio
-        .setDisplaySize(50, 50) // Seteo tamaño
+        .setDisplaySize(200, 75) // Seteo tamaño
         .setDepth(5) // seteo de la posicion (como las capas de photoshop)
 
       self.barco.setCollideWorldBounds(true) // Seteo colisiones con el fin del mapa
@@ -80,13 +80,13 @@ export class game extends Phaser.Scene{
       })
       particles.setPosition(0, -11)
       emitter.startFollow(self.barco) //aqui le indicamos que sigan al objeto barco.
-
     }
+    
     // Creo la funcion para agregar a otro jugador que no sea el propio y lo agrego a la lista/arreglo de otherPlayers con los mismos valores añadiendo la rotacion
     function addOtherPlayers (self, playerInfo){
       const otherPlayer = self.physics.add.image(playerInfo.x, playerInfo.y, 'uboot')
         .setOrigin(0.5, 0.5)
-        .setDisplaySize(50, 50)
+        .setDisplaySize(100, 50)
         .setRotation(playerInfo.rotation)
         
       otherPlayer.playerId = playerInfo.playerId

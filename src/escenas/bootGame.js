@@ -16,11 +16,11 @@ export class bootGame extends Phaser.Scene{
         this.load.image('bullet', 'src/assets/canonA.png');
         this.load.image('crosshair', 'src/assets/Crosshair.png')
         this.load.audio('Music', './src/assets/bensound-deepblue.mp3');
+        this.load.image('destroyer', './src/assets/Destroyer.png');
       }
 
     create()
     {
         this.scene.start("game");
-        this.physics.world.setBounds(0, 0, 1024, 768);
     }
 }

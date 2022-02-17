@@ -69,13 +69,6 @@ io.on('connection', function (socket) {
     socket.broadcast.emit('playerMoved', players[socket.id])
   })
 
-  socket.on('playerShoot', function (movementData) {
-    players[socket.id].x = movementData.x
-    players[socket.id].y = movementData.y
-    players[socket.id].rotation = movementData.rotation
-
-    socket.broadcast.emit('playerMoved', players[socket.id])
-  })
   // Intento usar la libreria de mysql para guardar datos de la partida con los datos basicos de prueba, ya teniendo creada la BD
   socket.on('guardarPartida',function(movementData){
     var MovX = movementData.x
