@@ -21,9 +21,31 @@ export class game extends Phaser.Scene{
 
     // Pruebo la vision
     //this.barco.Vision;
+    
+    this.mar=this.add.image(500, 388, 'mar').setDepth(-2); // Cargo la imagen de fondo del mapa
+    this.mar.setDisplaySize(1024,768);
 
-    this.add.image(400, 300, 'mar').setDepth(-2); // Cargo la imagen de fondo del mapa
+    this.isla = self.physics.add.image(600,2400,'island1').setDepth(5); //Cargo la isla
+    this.isla.setCollideWorldBounds(true);
+    this.isla.setDisplaySize(400, 400);
 
+    this.bomb = self.physics.add.image(300,300,'bomba').setDisplaySize(50, 40).setDepth(5);  //cargo la bomba maritima
+    this.bomb.setCollideWorldBounds(true);
+
+    this.explotion2 = this.add.sprite(200,200,'explot').setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
+    this.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
+      key: 'explot2',
+      frames: [
+          { key: 'explot',frame:"PngItem_4145768_01_29.gif" },
+          { key: 'explot',frame:"PngItem_4145768_01_30.gif" },
+          { key: 'explot',frame:"PngItem_4145768_01_31.gif" },
+          { key: 'explot',frame:"PngItem_4145768_01_32.gif" },
+      ],
+      frameRate: 5,
+      repeat: -1
+    });
+    this.explotion2.play('explot2');
+    
     //this.sound.add('Music').play();
 
     //ESTO GENERA UN EVENTO CUANDO SE HACE CLICK, SE HACE UN REQUEST AL NAVEGADOR PARA QUE LOCKEE EL MOUSE EN LOS LIMITES DEL CANVAS
@@ -66,7 +88,7 @@ export class game extends Phaser.Scene{
     function addPlayer(self, playerInfo) {
       self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'destroyer')
         .setOrigin(0.5, 0.5) // Seteo posicion de inicio
-        .setDisplaySize(200, 75) // Seteo tamaño
+        .setDisplaySize(200, 100) // Seteo tamaño
         .setDepth(5) // seteo de la posicion (como las capas de photoshop)
 
       self.barco.setCollideWorldBounds(true) // Seteo colisiones con el fin del mapa
@@ -80,6 +102,10 @@ export class game extends Phaser.Scene{
       })
       particles.setPosition(0, -11)
       emitter.startFollow(self.barco) //aqui le indicamos que sigan al objeto barco.
+    
+      self.cameras.main.startFollow(self.barco); //se indica que la camara siga al jugador
+      self.physics.add.collider(self.barco, self.isla); //se crea una colision del barco con la isla
+      self.physics.add.collider(self.barco, self.bomb); //se crea una colision del barco con la isla
     }
     
     // Creo la funcion para agregar a otro jugador que no sea el propio y lo agrego a la lista/arreglo de otherPlayers con los mismos valores añadiendo la rotacion
