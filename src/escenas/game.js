@@ -1,30 +1,51 @@
 import { Bote } from '../logica/bote.js';
-import { Bullets } from '../logica/bullets.js';
+import { Bullets } from '../logica/bullet.js';
 //import { io } from "/socket.io/socket.io-client";
 //var io = require("socket.io")(server);
 
 export class game extends Phaser.Scene{
-  
-  constructor()
-  {
+  constructor(){
       super("game");
+      
   }
   
   // Creo todo el contenido del juego del juego en si, imagenes, los cursores, jugadores, barcos, implemento el WebSocket
-   create() 
-   {
+   create(){
     var self = this
     this.socket = io()
     this.otherPlayers = this.physics.add.group()
-    this.bullets = new Bullets(this);
     //this.barco = new Bote("Destructor",10,200,0.5,0.5,0); 
-
+    var playerBullets = 0;
+    playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
     // Pruebo la vision
     //this.barco.Vision;
 
-    this.add.image(400, 300, 'mar'); // Cargo la imagen de fondo del mapa
+    this.add.image(400, 300, 'mar').setDepth(-2); // Cargo la imagen de fondo del mapa
 
     //this.sound.add('Music').play();
+
+    //ESTO GENERA UN EVENTO CUANDO SE HACE CLICK, SE HACE UN REQUEST AL NAVEGADOR PARA QUE LOCKEE EL MOUSE EN LOS LIMITES DEL CANVAS
+    
+
+    //AGREGAMOS LA RETICULA EN UNA POSICION INICIAL
+  this.reticula = this.physics.add.sprite(400, 400, 'crosshair');
+  //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
+  this.input.on('pointerdown', function (pointer, time) {
+     // SACA UNA BALA DEL GRUPO DE BALAS Y LA HACE VISIBLE Y ACTIVA
+     var bullet = playerBullets.get().setActive(true).setVisible(true);
+     if (bullet){
+         bullet.fire(this.barco, this.reticula); //LLAMA AL METODO DISPARAR DE BULLET
+     }
+    }, this);
+ 
+   // TOMA EL MOVIMIENTO DEL CURSOR Y LO TRANSFORMA EN UN INPUT PARA MVOER LA RETICULA ACORDE AL PUNTERO
+  this.input.on('pointermove', function (pointer) {
+       if (this.input.mouse.locked){
+           this.reticula.x += pointer.movementX;
+           this.reticula.y += pointer.movementY;
+       }
+   }, this);
+ 
 
     // Creo funcion para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
     function addPlayer(self, playerInfo) {
@@ -36,7 +57,7 @@ export class game extends Phaser.Scene{
       self.barco.setCollideWorldBounds(true) // Seteo colisiones con el fin del mapa
       self.barco.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
       //PARTICULAS
-      const particles = self.add.particles("Blue") //usamos la imagen Blue como particula
+      const particles = self.add.particles("Blue").setDepth(-1) //usamos la imagen Blue como particula
       const emitter = particles.createEmitter({ //utilizamos la funcion emitter de phaser para emitir varias particulas
         speed: 10, //velocidad con la que se mueven
         scale: {start: 0.08, end: 0}, //el tamano
@@ -44,7 +65,6 @@ export class game extends Phaser.Scene{
       })
       particles.setPosition(0, -11)
       emitter.startFollow(self.barco) //aqui le indicamos que sigan al objeto barco.
-
     }
     // Creo la funcion para agregar a otro jugador que no sea el propio y lo agrego a la lista/arreglo de otherPlayers con los mismos valores añadiendo la rotacion
     function addOtherPlayers (self, playerInfo){
@@ -57,7 +77,7 @@ export class game extends Phaser.Scene{
       self.otherPlayers.add(otherPlayer)
 
       //PARTICULAS PARA LOS OTROS JUGADORES
-      const particles = self.add.particles("Blue") //usamos la imagen Blue como particula
+      const particles = self.add.particles("Blue").setDepth(-1) //usamos la imagen Blue como particula
       const emitter = particles.createEmitter({ //utilizamos la funcion emitter de phaser para emitir varias particulas
         speed: 10, //velocidad con la que se mueven
         scale: {start: 0.08, end: 0}, //el tamano
@@ -70,14 +90,11 @@ export class game extends Phaser.Scene{
     // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador
     this.socket.on('currentPlayers', function (players) 
     {
-      Object.keys(players).forEach(function (id) 
-      {
-        if (players[id].playerId === self.socket.id) 
-        {
+      Object.keys(players).forEach(function (id) {
+        if (players[id].playerId === self.socket.id){
           addPlayer(self, players[id]);
         } 
-        else 
-        {
+        else{
           addOtherPlayers(self, players[id]);
         }
       });
@@ -115,12 +132,7 @@ export class game extends Phaser.Scene{
       })
     });
     // Disparo en input con pointerdown (que significa activa cuando hace click)
-    this.input.on('pointerdown', (pointer) => {
-      this.bullets.fireBullet(this.barco.x, this.barco.y);
-    });
-  }
-
-  
+}
 
   // Funcion update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje graficamente
   update(time, delta) {
@@ -154,7 +166,8 @@ export class game extends Phaser.Scene{
       if (this.barco.oldPosition && (x !== this.barco.oldPosition.x || y !== this.barco.oldPosition.y || r !== this.barco.oldPosition.rotation)) {
         this.socket.emit('playerMovement', { x: this.barco.x, y: this.barco.y, rotation: this.barco.rotation })
       }
-      // Me guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+
+            // Me guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
       this.barco.oldPosition = {
         x: this.barco.x,
         y: this.barco.y,

@@ -1,6 +1,6 @@
 import { bootGame } from './escenas/bootGame.js';
 import { game } from './escenas/game.js';
-import { Bullets } from './logica/bullets.js';
+import { Bullets } from './logica/bullet.js';
 import { Destructor } from './logica/destructor.js';
 
 // Configuracion de Phaser
@@ -27,3 +27,6 @@ var config = {
  // Defino mis variables
  var Game;
  Game = new Phaser.Game(config);
+ Game.canvas.addEventListener('mousedown', function () {
+  Game.input.mouse.requestPointerLock();
+});
