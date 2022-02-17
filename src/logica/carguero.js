@@ -1,15 +1,16 @@
-import { Bote } from '../logica/bote.js';
+import { Bote } from './bote.js';
 
-export class Carguero extends Bote () {
+export class Carguero extends Bote {
     
-    constructor(nom, velocidad,vida,posx,posy,cod){
-        super(nom, velocidad, vida, posx, posy);
+    constructor(nom,velocidad,vida,posx,posy,rotacion,cod){
+        super(nom,velocidad,vida,posx,posy,rotacion);
 
         // Atributos propios
         this.cod=cod;
     };
 
-    // Metodos: Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
+    // Metodos
+    // Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
 
     // Getters
     getNom() {
@@ -32,25 +33,41 @@ export class Carguero extends Bote () {
         return this.posy;
     };
 
+    getRotacion() {
+        return this.rotacion;
+    };
+
+    getCod() {
+        return this.cod;
+    };
+
     // Setters
-    setNom(nom) {
-        this.nom = nom;
+    setNom(nuevoNom) {
+        this.nom = nuevoNom;
     };
     
-    setVelocidad(velocidad) {
-        this.velocidad = velocidad;
+    setVelocidad(nuevaVelocidad) {
+        this.velocidad = nuevaVelocidad;
     };
     
-    setVida(vida) {
-        this.vida = vida;
+    setVida(nuevaVida) {
+        this.vida = nuevaVida;
     };
     
-    setPosX(posx) {
-        this.posx = posx;
+    setPosX(nuevaPosX) {
+        this.posx = nuevaPosX;
     };
     
-    setPosY(posy) {
-        this.posy = posy;
+    setPosY(nuevaPosY) {
+        this.posy = nuevaPosY;
+    };
+
+    setRotacion(nuevaRotacion) {
+        this.rotacion = nuevaRotacion;
+    };
+    
+    setCod(nuevoCod) {
+        this.cod = nuevoCod;
     };
 
     // Metodos propios
