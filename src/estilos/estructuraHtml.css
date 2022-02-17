@@ -1,0 +1,53 @@
+/*Style del Body */
+body {
+    margin: 0;
+    background: #ecf0f1;
+    font-family: "Libre Baskerville", serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 30px;
+    overflow-x:hidden;  
+}
+
+/* Style del Header */
+header {
+    /*background-color: #f1f1f1;*/
+    text-align: center;
+  }
+
+.mainTitle {
+    width: 70%;
+    height: 250px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.container {
+    margin: auto;
+    padding: 10px;
+}
+
+#menu {
+    padding-top: 70px;
+    align-content: center;
+    opacity: 1;
+    -webkit-transition: opacity 0.3s ease-in-out;
+    -moz-transition: opacity 0.3s ease-in-out;
+    -ms-transition: opacity 0.3s ease-in-out;
+    -o-transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.3 ease-in-out;
+}
+
+
+.hexagon-menu {
+    width: 580px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#game {
+   display: none; 
+   margin-top: 30px;
+}

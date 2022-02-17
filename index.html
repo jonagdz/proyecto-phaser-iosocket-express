@@ -1,54 +1,115 @@
 <!DOCTYPE html>
 <html>
-<title>Batalla Por el Atlantico</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <head>
+        <title>Batalla por el Atlantico</title>
+        
+        <meta charset="UTF-8">
+       <!-- <meta name = "viewport" content = "width = device-width, initial-scale = 1.0, maximum-scale = 1.0, minimum-scale = 1.0, user-scalable = 0, minimal-ui" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">-->
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="./src/estilos/menu.css"> 
+        <link rel="stylesheet" href="./src/estilos/estructuraHtml.css">
+        <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>        
+            $(document).ready(function(){
+              $("#iniPart").click(function(){
+                $("#menu").slideUp("slow");
+                $("#game").fadeIn(3000)
+              });
+            });
+        </script>
+        <script type="text/javascript">
+            function isHidden() {
+                var style = window.getComputedStyle(document.getElementById('game'));
+                console.log(style.display === 'none')
+            }
+        </script>
+    </head>
 
-<style>
-
-h1,h2,h3,h4,h5,h6 {font-family: "Oswald"}
-body {font-family: "Open Sans"}
-
-</style>
-
-
-<body class="w3-light-grey">
-  <audio id="mainA" controls loop>
-    <source src="src/assets/bensound-evolution.mp3" type="audio/mp3">
-  </audio>
-
-<div class="w3-content" style="max-width:1360px">
-  <header class="w3-container w3-center w3-padding-25 w3-white">
-    <h1 class="w3-xxxlarge"><b>Batalla Por el Atlántico</b></h1>
-  </header>
-
-  <header class="w3-display-container w3-wide" id="home">
-    <img class="w3-display-topmiddle w3-image" src="src/assets/inicio.png" width="600" height="360">
-    <div class="w3-display-topmiddle w3-padding-large">
-
-    	<form method='POST' action='nuevoJuego.html'>
-    		<h6><button class="w3-button w3-white w3-padding-large w3-large w3-opacity w3-hover-opacity-off">Nuevo juego</button></h6>
-    	</form>
-
-      <form method='POST' action='#'>
-    	 <h6><button class="w3-button w3-white w3-padding-large w3-large w3-opacity w3-hover-opacity-off">Cargar partida</button></h6>
-      </form>
-
-      <form method='POST' action='#'>
-			 <h6><button class="w3-button w3-white w3-padding-large w3-large w3-opacity w3-hover-opacity-off">Creditos</button></h6>
-      </form>
-
-    </div>
-  </header>
-  <script>
-    var myaudio = document.getElementById("mainA").autoplay = true;
-  </script>
-</div>
-</body>
+    <body>
+        <header>
+            <img class="mainTitle" src="./src/assets/title.png" id="imgs" onclick="isHidden()">
+        </header>
+        <div class="container">
+            <div class="menu" id="menu"">
+                <div class="hexagon-menu">
+                    <div class="hexagon-item">
+                        <div class="hex-item">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                        <div class="hex-item">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                        <a  class="hex-content" id="iniPart">
+                            <span class="hex-content-inner">
+                                <span class="icon">
+                                    <i class="fa fa-ship"></i>
+                                </span>
+                                <span class="title">Iniciar Partida</span>
+                            </span>
+                            <svg viewBox="0 0 173.20508075688772 200" height="200" width="174" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M86.60254037844386 0L173.20508075688772 50L173.20508075688772 150L86.60254037844386 200L0 150L0 50Z" fill="#1e2530"></path></svg>
+                        </a>
+                    </div>
+                    <div class="hexagon-item">
+                        <div class="hex-item">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                        <div class="hex-item">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                        <a  class="hex-content">
+                            <span class="hex-content-inner">
+                                <span class="icon">
+                                    <i class="fa fa-folder"></i>
+                                </span>
+                                <span class="title">Cargar Partida</span>
+                            </span>
+                            <svg viewBox="0 0 173.20508075688772 200" height="200" width="174" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M86.60254037844386 0L173.20508075688772 50L173.20508075688772 150L86.60254037844386 200L0 150L0 50Z" fill="#1e2530"></path></svg>
+                        </a>
+                    </div>
+                    <div class="hexagon-item">
+                        <div class="hex-item">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                        <div class="hex-item">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                        <a  class="hex-content">
+                            <span class="hex-content-inner">
+                                <span class="icon">
+                                    <i class="fa fa-users"></i>
+                                </span>
+                                <span class="title">Creditos</span>
+                            </span>
+                            <svg viewBox="0 0 173.20508075688772 200" height="200" width="174" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M86.60254037844386 0L173.20508075688772 50L173.20508075688772 150L86.60254037844386 200L0 150L0 50Z" fill="#1e2530"></path></svg>
+                        </a>    
+                    </div>
+                  </div>
+            </div>
+            <div id="game">
+                <div id = "thegame">
+                    <script src="./src/index.js" type="module"></script>
+                    <script src="./src/escenas/game.js" type="module"></script>
+                </div>
+            </div>
+        </div>
+       
+    </body>
 </html>
 
 

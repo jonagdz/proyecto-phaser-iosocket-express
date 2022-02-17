@@ -29,8 +29,8 @@ app.get('/', function (request, response) {
   response.sendFile(path.join(__dirname, 'index.html'))
 })
 
-app.post('/nuevoJuego.html', function (request, response) {
-  response.sendFile(path.join(__dirname, 'nuevoJuego.html'))
+app.post('/index.html', function (request, response) {
+  response.sendFile(path.join(__dirname, 'index.html'))
 })
 
 // Escucho el puerto 5000 con el servidor
