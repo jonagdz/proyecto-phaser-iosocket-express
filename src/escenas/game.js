@@ -50,6 +50,15 @@ export class game extends Phaser.Scene{
       otherPlayer.playerId = playerInfo.playerId
       self.otherPlayers.add(otherPlayer)
 
+      //PARTICULAS PARA LOS OTROS JUGADORES
+      const particles = self.add.particles("Blue") //usamos la imagen Blue como particula
+      const emitter = particles.createEmitter({ //utilizamos la funcion emitter de phaser para emitir varias particulas
+        speed: 10, //velocidad con la que se mueven
+        scale: {start: 0.08, end: 0}, //el tamano
+        blendMode: "ADD" //el efecto a aplicar
+      })
+      particles.setPosition(0, -11)
+      emitter.startFollow(otherPlayer) //aqui le indicamos que sigan al objeto barco.
     }
 
     // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador
@@ -68,8 +77,6 @@ export class game extends Phaser.Scene{
       });
     });
 
-    
-      
     //Las funciones de disparo, utilizando la biblioteca de fisicas ARCADE e IMAGE de Phaser
 
     this.socket.on('newPlayer', function (playerInfo) {

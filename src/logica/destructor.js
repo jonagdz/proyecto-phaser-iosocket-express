@@ -1,7 +1,9 @@
-export class Destructor extends Bote (){
+import { Bote } from '../logica/bote.js';
+
+export class Destructor extends Bote,Phaser.Physics.Arcade {
 
     constructor(nom,vida,velocidad,posX,posY,rotacion,cantMunicion,armas){
-        super(nom,vida,velocidad,posX,posY,rotacion)
+        super(nom,vida,velocidad,posX,posY,rotacion);
 
         // Atributos propios
         this.cantMunicion = cantMunicion;

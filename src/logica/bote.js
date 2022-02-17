@@ -1,4 +1,4 @@
-export class Bote{
+export class Bote {
 
     constructor(nom,vida,velocidad,posX,posY,rotacion){
 

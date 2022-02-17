@@ -1,4 +1,4 @@
-//import { Bote } from './logica/bote.js';
+import { Bote } from '../logica/bote.js';
 
 export class Carguero extends Bote () {
     
