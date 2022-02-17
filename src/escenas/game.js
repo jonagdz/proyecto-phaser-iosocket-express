@@ -17,6 +17,8 @@ export class game extends Phaser.Scene{
     //this.barco = new Bote("Destructor",10,200,0.5,0.5,0); 
     var playerBullets = 0;
     playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
+    
+
     // Pruebo la vision
     //this.barco.Vision;
 
@@ -28,6 +30,7 @@ export class game extends Phaser.Scene{
     
 
     //AGREGAMOS LA RETICULA EN UNA POSICION INICIAL
+<<<<<<< HEAD
     this.reticula = this.physics.add.sprite(400, 400, 'crosshair');
     //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
     this.input.on('pointerdown', function (pointer, time) {
@@ -35,22 +38,54 @@ export class game extends Phaser.Scene{
       var bullet = playerBullets.get().setActive(true).setVisible(true);
       if (bullet){
         bullet.fire(this.barco, this.reticula); //LLAMA AL METODO DISPARAR DE BULLET
+=======
+    this.reticula = this.physics.add.sprite(400, 400, 'crosshair').setCollideWorldBounds(true);
+    //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
+    this.input.on('pointerdown', function (pointer, time) {
+     // SACA UNA BALA DEL GRUPO DE BALAS Y LA HACE VISIBLE Y ACTIVA
+     var bullet = playerBullets.get().setActive(true).setVisible(true);
+     if (bullet){
+         bullet.fire(this.barco, this.reticula); //LLAMA AL METODO DISPARAR DE BULLET
+>>>>>>> 39c1ce2322db88965179860140a8666b866e4e0a
       }
     }, this);
  
     // TOMA EL MOVIMIENTO DEL CURSOR Y LO TRANSFORMA EN UN INPUT PARA MVOER LA RETICULA ACORDE AL PUNTERO
     this.input.on('pointermove', function (pointer) {
+<<<<<<< HEAD
        if (this.input.mouse.locked){
           this.reticula.x += pointer.movementX;
           this.reticula.y += pointer.movementY;
         }
     }, this);
  
+=======
+        if (this.input.mouse.locked){
+            this.reticula.x += pointer.movementX;
+            this.reticula.y += pointer.movementY;
+        }
+        var distX = this.reticula.x-this.barco.x; // X distance between player & reticle
+        var distY = this.reticula.y-this.barco.y; // Y distance between player & reticle
+
+        // Ensures reticle cannot be moved offscreen (player follow)
+        if (distX > 200)
+            this.reticula.x = this.barco.x+200;
+        else if (distX < -200)
+            this.reticula.x = this.barco.x-200;
+
+        if (distY > 200)
+            this.reticula.y = this.barco.y+200;
+        else if (distY < -200)
+            this.reticula.y = this.barco.y-200;
+    }, this);
+  
+
+>>>>>>> 39c1ce2322db88965179860140a8666b866e4e0a
     // Creo funcion para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
     function addPlayer(self, playerInfo) {
-      self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'uboot')
+      self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'destroyer')
         .setOrigin(0.5, 0.5) // Seteo posicion de inicio
-        .setDisplaySize(50, 50) // Seteo tamaño
+        .setDisplaySize(200, 75) // Seteo tamaño
         .setDepth(5) // seteo de la posicion (como las capas de photoshop)
 
       self.barco.setCollideWorldBounds(true); // Seteo colisiones con el fin del mapa
@@ -65,12 +100,16 @@ export class game extends Phaser.Scene{
       particles.setPosition(0, -11)
       emitter.startFollow(self.barco) //aqui le indicamos que sigan al objeto barco.
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 39c1ce2322db88965179860140a8666b866e4e0a
     // Creo la funcion para agregar a otro jugador que no sea el propio y lo agrego a la lista/arreglo de otherPlayers con los mismos valores añadiendo la rotacion
     function addOtherPlayers (self, playerInfo){
       const otherPlayer = self.physics.add.image(playerInfo.x, playerInfo.y, 'uboot')
         .setOrigin(0.5, 0.5)
-        .setDisplaySize(50, 50)
+        .setDisplaySize(100, 50)
         .setRotation(playerInfo.rotation)
         
       otherPlayer.playerId = playerInfo.playerId
@@ -172,23 +211,13 @@ export class game extends Phaser.Scene{
         y: this.barco.y,
         rotation: this.barco.rotation
       }
-
+      
       // Pruebo la vision
       //if (this.vision){
       //  this.vision.x = this.barco.x
       //  this.vision.y = this.barco.y
       //}
     }
-  //DISPAROOOOO
-
-  /*
-    this.input.on('pointermove', function (pointer) {
-      angle = Phaser.Math.Angle.BetweenPoints(this.barco, pointer);
-      this.barco.rotation = angle;
-      Phaser.Geom.Line.SetToAngle(line, cannon.x, cannon.y - 50, angle, 128);
-      gfx.clear().strokeLineShape(line);
-    }, this);
-    */
     
   }
 
