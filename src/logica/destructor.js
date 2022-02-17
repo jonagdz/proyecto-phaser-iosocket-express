@@ -1,44 +1,45 @@
-import { Bote } from '../logica/bote.js';
+import { Bote } from './bote.js';
 
 export class Destructor extends Bote {
 
-    constructor(nom,vida,velocidad,posX,posY,rotacion,cantMunicion,armas){
-        super(nom,vida,velocidad,posX,posY,rotacion);
+    constructor(nom,velocidad,vida,posx,posy,rotacion,cod,armas){
+        super(nom,velocidad,vida,posx,posy,rotacion);
 
         // Atributos propios
-        this.cantMunicion = cantMunicion;
+        this.cod = cod;
         this.armas = armas;
     };
 
-    // Metodos: Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
+    // Metodos
+    // Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
 
     // Getters
     getNom() {
         return this.nom;
     };
 
-    getVida() {
-        return this.vida;
-    };
-
     getVelocidad() {
         return this.velocidad;
     };
 
+    getVida() {
+        return this.vida;
+    };
+
     getPosX() {
-        return this.posX;
+        return this.posx;
     };
 
     getPosY() {
-        return this.posY;
+        return this.posy;
     };
 
     getRotacion() {
         return this.rotacion;
     };
 
-    getCantMunicion() {
-        return this.cantMunicion;
+    getCod() {
+        return this.cod;
     };
 
     getArmas() {
@@ -50,28 +51,28 @@ export class Destructor extends Bote {
         this.nom = nuevoNom;
     };
 
-    setVida(nuevaVida) {
-        this.vida = nuevaVida;
-    };
-
     setVelocidad(nuevaVelocidad) {
         this.velocidad = nuevaVelocidad;
     };
 
+    setVida(nuevaVida) {
+        this.vida = nuevaVida;
+    };
+
     setPosX(nuevaPosX) {
-        this.posX = nuevaPosX;
+        this.posx = nuevaPosX;
     };
 
     setPosY(nuevaPosY) {
-        this.posY = nuevaPosY;
+        this.posy = nuevaPosY;
     };
 
     setRotacion(nuevaRotacion) {
         this.rotacion = nuevaRotacion;
     };
 
-    setCantMunicion(nuevaCantMunicion) {
-        this.cantMunicion = nuevaCantMunicion;
+    setCod(nuevoCod) {
+        this.cod = nuevoCod;
     };
 
     setArmas(nuevaArmas) {
