@@ -2,6 +2,7 @@ import { bootGame } from './escenas/bootGame.js';
 import { game } from './escenas/game.js';
 import { Bullets } from './logica/bullet.js';
 import { Destructor } from './logica/destructor.js';
+import { Carguero } from './logica/carguero.js';
 
 // Configuracion de Phaser
 var config = {
