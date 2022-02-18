@@ -25,10 +25,20 @@ var config = {
   scene: [bootGame, game]
 }
 
- // Defino mis variables
- var Game;
- Game = new Phaser.Game(config);
-  //Metodo pque escucha cuando se hace un click en la pantalla, lockea el cursor para usarlo como mira
- Game.canvas.addEventListener('mousedown', function () {
-  Game.input.mouse.requestPointerLock();
-});
+window.onload = () =>{
+  // Defino mis variables
+  var Game;
+  var style = window.getComputedStyle(document.getElementById('game'));
+
+
+  if(style.display === 'none')
+  {
+    Game = new Phaser.Game(config);
+    //Metodo pque escucha cuando se hace un click en la pantalla, lockea el cursor para usarlo como mira
+    Game.canvas.addEventListener('mousedown', function () {
+    Game.input.mouse.requestPointerLock();
+    });
+  }
+  
+  
+}
