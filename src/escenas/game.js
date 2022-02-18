@@ -22,17 +22,17 @@ export class game extends Phaser.Scene{
     // Pruebo la vision
     //this.barco.Vision;
     
-    this.mar=this.add.image(500, 388, 'mar').setDepth(-2); // Cargo la imagen de fondo del mapa
-    this.mar.setDisplaySize(1024,768);
+    this.mar=this.add.image(0, 0, 'mar').setDepth(-2).setDisplaySize(6000,4000);; // Cargo la imagen de fondo del mapa
+    this.physics.world.setBounds(0, 0, 3840, 2160);
 
-    this.isla = self.physics.add.image(600,2400,'island1').setDepth(5); //Cargo la isla
-    this.isla.setCollideWorldBounds(true);
+    this.isla = self.physics.add.image(600,400,'island1').setDepth(5); //Cargo la isla
+    this.isla.setImmovable(true);
     this.isla.setDisplaySize(400, 400);
 
-    this.bomb = self.physics.add.image(300,300,'bomba').setDisplaySize(50, 40).setDepth(5);  //cargo la bomba maritima
-    this.bomb.setCollideWorldBounds(true);
+    this.bomb = self.physics.add.image(800,800,'bomba').setDisplaySize(50, 40).setDepth(5);  //cargo la bomba maritima
+    this.bomb.setImmovable(true);
 
-    this.explotion2 = this.add.sprite(200,200,'explot').setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
+    this.explotion2 = this.add.sprite(100,100,'explot').setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
     this.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
       key: 'explot2',
       frames: [
@@ -43,9 +43,11 @@ export class game extends Phaser.Scene{
       ],
       frameRate: 5,
       repeat: -1
+      
     });
     this.explotion2.play('explot2');
-    
+    this.explotion2.setActive(false);   //ponemos en false la activacion y visibilidad, para luego activarlas cuando suceda
+    this.explotion2.setVisible(false);  //el evento destruccion de barco
     //this.sound.add('Music').play();
 
     //ESTO GENERA UN EVENTO CUANDO SE HACE CLICK, SE HACE UN REQUEST AL NAVEGADOR PARA QUE LOCKEE EL MOUSE EN LOS LIMITES DEL CANVAS
@@ -127,6 +129,8 @@ export class game extends Phaser.Scene{
       })
       particles.setPosition(0, -11)
       emitter.startFollow(otherPlayer) //aqui le indicamos que sigan al objeto barco.
+      self.physics.add.collider(self.barco, self.isla); //se crea una colision del barco con la isla
+      self.physics.add.collider(self.barco, self.bomb); //se crea una colision del barco con la isla
     }
 
     // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador

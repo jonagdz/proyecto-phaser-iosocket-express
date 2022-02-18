@@ -11,8 +11,8 @@ var config = {
     //mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     parent: 'thegame',
-    width: 1024,
-    height: 768,
+    width: 1920,
+    height: 1080,
   },
   backgroundColor: '#ffffff',
   physics: {
@@ -28,7 +28,7 @@ var config = {
  // Defino mis variables
  var Game;
  Game = new Phaser.Game(config);
- //Metodo pque escucha cuando se hace un click en la pantalla, lockea el cursor para usarlo como mira
+  //Metodo pque escucha cuando se hace un click en la pantalla, lockea el cursor para usarlo como mira
  Game.canvas.addEventListener('mousedown', function () {
   Game.input.mouse.requestPointerLock();
 });
