@@ -74,18 +74,8 @@ export class game extends Phaser.Scene{
         this.physics.add.collider(bullet, this.isla, function(bullet){
           bullet.setActive(false);
           bullet.setVisible(false);
-        });
+        });    
     }
-     /* this.physics.add.collider(true, this.isla, this.playerBullets, chocan());
-      
-      
-      
-      
-      this.physics.add.collider(enemies, this.worldBounds, function (enemy) {
-        enemy.destroy();
-        gameState.score += 10;
-        playerBullets.setActive(false).setVisible(false);
-    });*/
     }, this);
 
     
@@ -153,9 +143,11 @@ export class game extends Phaser.Scene{
         blendMode: "ADD" //el efecto a aplicar
       })
       particles.setPosition(0, -11)
-      emitter.startFollow(otherPlayer) //aqui le indicamos que sigan al objeto barco.
-      self.physics.add.collider(self.barco, self.isla); //se crea una colision del barco con la isla
-      self.physics.add.collider(self.barco, self.bomb); //se crea una colision del barco con la isla
+      emitter.startFollow(self.barco) //aqui le indicamos que sigan al objeto barco.
+      //NO HABILITAR ESTO QUE SE JODE TODO
+      //self.cameras.main.startFollow(self.barco); //se indica que la camara siga al jugador
+      //self.physics.add.collider(self.barco, self.isla); //se crea una colision del barco con la isla
+      //self.physics.add.collider(self.barco, self.bomb); //se crea una colision del barco con la isla
     }
 
     // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador
