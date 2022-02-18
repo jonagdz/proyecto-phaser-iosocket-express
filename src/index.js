@@ -18,7 +18,7 @@ var config = {
   physics: {
     default: 'arcade',
     arcade: {
-      debug: true, // En true para ver las hitbox reales de los objetos y el vector a donde apunta la direccion junto con la fuerza (tamaño de la flecha de direccion)
+      debug: false, // En true para ver las hitbox reales de los objetos y el vector a donde apunta la direccion junto con la fuerza (tamaño de la flecha de direccion)
       gravity: { y: 0 }
     }
   },

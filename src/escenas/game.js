@@ -58,12 +58,38 @@ export class game extends Phaser.Scene{
     //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
     this.input.on('pointerdown', function (pointer, time) {
      // SACA UNA BALA DEL GRUPO DE BALAS Y LA HACE VISIBLE Y ACTIVA
-     var bullet = playerBullets.get().setActive(true).setVisible(true);
-     if (bullet){
-         bullet.fire(this.barco, this.reticula); //LLAMA AL METODO DISPARAR DE BULLET
-      }
+    var bullet = playerBullets.get().setActive(true).setVisible(true);
+    if (bullet){
+        bullet.fire(this.barco, this.reticula); //LLAMA AL METODO DISPARAR DE BULLET
+        bullet.setCollideWorldBounds(true);
+        bullet.body.onWorldBounds = true;
+        bullet.body.world.on('worldbounds', function(body) {
+          // Checks if it's the sprite that you'listening for
+          if (body.gameObject === this ) {
+            // Make the enemy sprite unactived & make it disappear
+            this.setActive(false);
+            this.setVisible(false);
+          }
+        }, bullet);
+        this.physics.add.collider(bullet, this.isla, function(bullet){
+          bullet.setActive(false);
+          bullet.setVisible(false);
+        });
+    }
+     /* this.physics.add.collider(true, this.isla, this.playerBullets, chocan());
+      
+      
+      
+      
+      this.physics.add.collider(enemies, this.worldBounds, function (enemy) {
+        enemy.destroy();
+        gameState.score += 10;
+        playerBullets.setActive(false).setVisible(false);
+    });*/
     }, this);
- 
+
+    
+
     // TOMA EL MOVIMIENTO DEL CURSOR Y LO TRANSFORMA EN UN INPUT PARA MVOER LA RETICULA ACORDE AL PUNTERO
     this.input.on('pointermove', function (pointer) {
         if (this.input.mouse.locked){
@@ -85,7 +111,6 @@ export class game extends Phaser.Scene{
             this.reticula.y = this.barco.y-200;
     }, this);
   
-
     // Creo funcion para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
     function addPlayer(self, playerInfo) {
       self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'destroyer')
@@ -179,6 +204,7 @@ export class game extends Phaser.Scene{
     });
     // Disparo en input con pointerdown (que significa activa cuando hace click)
 }
+
 
   // Funcion update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje graficamente
   update(time, delta) {
