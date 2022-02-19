@@ -22,7 +22,7 @@ export class game extends Phaser.Scene{
     // Cargo la imagen de fondo del mapa
     // this.mar = this.add.image(0, 0, 'mar').setDepth(-2).setDisplaySize(6000,4000);
     this.mar = this.add.image(0, 0, 'mar').setOrigin(0).setScrollFactor(1); 
-   
+
     // Construyo la máscara de visión
     const centroW = this.sys.game.config.width / 2;
     const centroH = this.sys.game.config.height / 2;
@@ -40,6 +40,10 @@ export class game extends Phaser.Scene{
     this.cameras.main.setBounds(0, 0, backgroundW, backgroundH);
     this.physics.world.setBounds(0, 0, backgroundW, backgroundH);
 
+    this.input.keyboard.on('keydown_A',() => {
+      console.log('Puse pausa')
+    });
+
     var self = this
     // Declaro Socket
     this.socket = io()
@@ -48,18 +52,27 @@ export class game extends Phaser.Scene{
     this.otherPlayer;
     
     // Islas
-    this.isla = self.physics.add.image(1024,500,'island1').setDepth(5);
+    this.isla = self.physics.add.image(1550,790,'island1').setDepth(5);
     this.isla.setImmovable(true);
     this.isla.setDisplaySize(400, 400);
 
-    // Bomba marítima
-    this.bomb = self.physics.add.image(800,800,'bomba').setDisplaySize(50, 40).setDepth(5);  
-    this.bomb.setImmovable(true);
+    // Costas
+    this.costa1 = self.physics.add.image(435,1082,'costa1').setDepth(5);;
+    this.costa1.setImmovable(true);
+    //this.costa1.setDisplaySize(951, 2156);
 
-    
+    this.costa2 = self.physics.add.image(4115,1082,'costa2').setDepth(5);;
+    this.costa2.setImmovable(true);
+    //this.costa1.setDisplaySize(3681, 0);
+
+    // Bomba marítima
+    this.bomb = self.physics.add.image(1430,1200,'bomba').setDisplaySize(50, 40).setDepth(5);  
+    this.bomb.setImmovable(true);
     
     //this.sound.add('Music').play();
-    
+    // Para que se escuche fuera del navegador
+    //this.sound.pauseOnBlur = false;
+
     // Introduzco cursores
     this.cursors = this.input.keyboard.createCursorKeys()
 

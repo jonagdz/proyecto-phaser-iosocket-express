@@ -22,6 +22,8 @@ export class bootGame extends Phaser.Scene{
         this.load.atlas("explot",'./src/assets/explosion.png','./src/assets/explosion.json');
         this.load.image('bomba', './src/assets/bomba1.png');
         this.load.image('mask', './src/assets/mask.png');
+        this.load.image('costa1', './src/assets/costa1.png');
+        this.load.image('costa2', './src/assets/costa2.png');
       }
 
     create()
