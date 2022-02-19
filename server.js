@@ -1,4 +1,4 @@
-// Importamos los modulos que utilizaremos: Express, SocketIO, path, etc.
+// Importamos los modulos que utilizaremos: express, http, path, socket.io y mysql
 const express = require('express')
 const http = require('http')
 const path = require('path')
@@ -24,7 +24,7 @@ app.set('port', 5000)
 app.use('/src', express.static(__dirname + '/src'))
 
 // Establecemos las rutas
-// usamos path para con _dirname para que tome automaticamente la carpeta raiz del servidor sin escribir la ruta absoluta 
+// Usamos path para con _dirname para que tome automaticamente la carpeta raiz del servidor sin escribir la ruta absoluta 
 app.get('/', function (request, response) {
   response.sendFile(path.join(__dirname, 'index.html'))
 })
@@ -51,8 +51,10 @@ io.on('connection', function (socket) {
     hit: false,
     //color: getRandomColor()
   }
-  socket.emit('currentPlayers', players) // Mando a todos los jugadores incluyendo el emite el mensaje los jugadores actuales
-  socket.broadcast.emit('newPlayer', players[socket.id]) // Mando a todos los jugadores excepto al que emite el mensaje que ingreso un nuevo jugador
+  // Mando a todos los jugadores incluyendo el emite el mensaje los jugadores actuales
+  socket.emit('currentPlayers', players)
+  // Mando a todos los jugadores excepto al que emite el mensaje que ingreso un nuevo jugador
+  socket.broadcast.emit('newPlayer', players[socket.id])
  
   // Si el jugador se desconecta logueo en consola y llamo al io.emit para que comunique a todos los clientes
   socket.on('disconnect', function () {
