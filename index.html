@@ -21,17 +21,11 @@
               });
             });
         </script>
-        <script type="text/javascript">
-            function isHidden() {
-                var style = window.getComputedStyle(document.getElementById('game'));
-                console.log(style.display === 'none')
-            }
-        </script>
     </head>
 
     <body>
         <header>
-            <img class="mainTitle" src="./src/assets/title.png" id="imgs" onclick="isHidden()">
+            <img class="mainTitle" src="./src/assets/title.png" id="imgs">
         </header>
         <div class="container">
             <div class="menu" id="menu"">
@@ -104,7 +98,6 @@
             <div id="game">
                 <div id = "thegame">
                     <script src="./src/index.js" type="module"></script>
-                    <script src="./src/escenas/game.js" type="module"></script>
                 </div>
             </div>
         </div>
