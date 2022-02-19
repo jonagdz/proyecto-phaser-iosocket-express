@@ -236,10 +236,37 @@ export class game extends Phaser.Scene{
       }
     }
 
+    // GENERAR CARGUEROS
+    // Creo funcion para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
+    function addCargueros(carguerosArre) {
+      console.log("Entro a addCargueros")
+      carguerosArre.forEach(addCarguerosSub);
+    }
+
+    function addCarguerosSub(cargueroItem) {
+      console.log("Entro a addCarguerosSub")
+      cargueroItem = self.physics.add.image(cargueroItem.x, cargueroItem.y, 'destroyer')
+        .setOrigin(0.5, 0.5) // Seteo posicion de inicio
+        .setDisplaySize(200, 75) // Seteo tamaño
+        .setDepth(5) // seteo de la posicion (como las capas de photoshop)
+
+      //self.barco.setCollideWorldBounds(true); // Seteo colisiones con el fin del mapa
+      //self.barco.setDrag(1000); // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+    }
+
     // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador
-    this.socket.on('currentPlayers', function (players) 
-    {
-      Object.keys(players).forEach(function (id) {
+    this.socket.on('generarCarqueros', function (players){
+      Object.keys(players).forEach(function (id){
+        addPlayer(self, players[id]);
+      });
+      //carguerosArre.forEach(carguero => console.log(carguero));
+      //addCargueros(carguerosArre);
+      //carguerosArre.forEach(function addCargueros(carguero)){};
+    });
+
+    // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador
+    this.socket.on('currentPlayers', function (players){
+      Object.keys(players).forEach(function (id){
         if (players[id].playerId === self.socket.id){
           addPlayer(self, players[id]);
         } 
@@ -251,10 +278,6 @@ export class game extends Phaser.Scene{
     
     this.socket.on('newPlayer', function (playerInfo) {
       addOtherPlayers(self, playerInfo)
-    });
-
-    this.socket.on('SaveData', function(playerInfo){
-      guardarDatos(self, playerInfo);
     });
 
     // Destruye a un jugador cuando se desconecta del socket
@@ -331,10 +354,5 @@ export class game extends Phaser.Scene{
       }
     }
   }
-
-  // Funcion para intentar guardar datos utilizando el boton guardar en nuevoJuego.html, la llamo desde alli y le paso la posicion actual del jugador para guardarla directo en la BD
-  guardarDatos(self, playerInfo){
-    this.socket.emit('guardarPartida', { x: this.barco.x, y: this.barco.y, rotation: this.barco.rotation })
-    alert ("eje x: "+playerInfo.x);
-  }
 }
+

@@ -39,27 +39,43 @@ server.listen(5000, function () {
 })
 
 var players = {}
+var cargueros = {}
 
 io.on('connection', function (socket) {
   console.log('Jugador [' + socket.id + '] conectado')
 
   players[socket.id] = {
     rotation: 0,
-    x: 30,
-    y: 30,
+    x: Math.floor((Math.random()*(500 -100))+100),
+    y: Math.floor((Math.random()*(500 -100))+100),
     playerId: socket.id,
     hit: false,
     //color: getRandomColor()
   }
-  // Mando a todos los jugadores incluyendo el emite el mensaje los jugadores actuales
-  socket.emit('currentPlayers', players)
-  // Mando a todos los jugadores excepto al que emite el mensaje que ingreso un nuevo jugador
-  socket.broadcast.emit('newPlayer', players[socket.id])
+
+  /*
+  //var carguerosArre = [];
+  // Intento crear los cargueros
+  for (i=0; i<6; i++){
+    // cargueros
+    cargueros[socket.id] = {
+      rotation: 0,
+      x: Math.floor((Math.random()*(500 -100))+100),
+      y: Math.floor((Math.random()*(500 -100))+100),
+      CargueroId: socket.id+1+i,
+    }
+    //carguerosArre.push(cargueros);
+    socket.emit('generarCarqueros', cargueros) // Le envío el objeto players al nuevo jugador
+  }
+  */
+  
+  socket.emit('currentPlayers', players) // Le envío el objeto players al nuevo jugador
+  socket.broadcast.emit('newPlayer', players[socket.id]) // Actualizo a todos los jugadores sobre el nuevo jugador que ingresó
  
   // Si el jugador se desconecta logueo en consola y llamo al io.emit para que comunique a todos los clientes
   socket.on('disconnect', function () {
     console.log('Jugador [' + socket.id + '] desconectado')
-    delete players[socket.id]
+    delete players[socket.id] // Elimino al jugador de nuestro objeto jugadores (players)
     io.emit('playerDisconnected', socket.id)
   })
 
@@ -94,8 +110,3 @@ io.on('connection', function (socket) {
     });
   })
 })
-
-// Funcion para generar un color de manera aleatoria
-function getRandomColor() {
-  return '0x' + Math.floor(Math.random() * 16777215).toString(16)
-}
