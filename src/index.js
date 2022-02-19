@@ -14,11 +14,12 @@ var config = {
     width: 1920,
     height: 1080,
   },
-  backgroundColor: '#ffffff',
+  backgroundColor: '#000000',
+  pixelArt: false,
   physics: {
     default: 'arcade',
     arcade: {
-      debug: false, // En true para ver las hitbox reales de los objetos y el vector a donde apunta la direccion junto con la fuerza (tamaño de la flecha de direccion)
+      debug: true, // En true para ver las hitbox reales de los objetos y el vector a donde apunta la direccion junto con la fuerza (tamaño de la flecha de direccion)
       gravity: { y: 0 }
     }
   },
@@ -29,8 +30,6 @@ window.onload = () =>{
   // Defino mis variables
   var Game;
   var style = window.getComputedStyle(document.getElementById('game'));
-
-
   if(style.display === 'none')
   {
     Game = new Phaser.Game(config);
@@ -39,6 +38,4 @@ window.onload = () =>{
     Game.input.mouse.requestPointerLock();
     });
   }
-  
-  
 }
