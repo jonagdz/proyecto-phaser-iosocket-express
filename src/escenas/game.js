@@ -8,7 +8,7 @@ export class game extends Phaser.Scene{
       super("game");
       
   }
-  
+
   // Creo todo el contenido del juego del juego en si, imagenes, los cursores, jugadores, barcos, implemento el WebSocket
   create(){
     var self = this;
@@ -17,7 +17,6 @@ export class game extends Phaser.Scene{
     //this.barco = new Bote("Destructor",10,200,0.5,0.5,0); 
     var playerBullets = 0;
     playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
-    
 
     // Pruebo la vision
     //this.barco.Vision;
@@ -30,15 +29,6 @@ export class game extends Phaser.Scene{
     
 
     //AGREGAMOS LA RETICULA EN UNA POSICION INICIAL
-<<<<<<< HEAD
-    this.reticula = this.physics.add.sprite(400, 400, 'crosshair');
-    //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
-    this.input.on('pointerdown', function (pointer, time) {
-      // SACA UNA BALA DEL GRUPO DE BALAS Y LA HACE VISIBLE Y ACTIVA
-      var bullet = playerBullets.get().setActive(true).setVisible(true);
-      if (bullet){
-        bullet.fire(this.barco, this.reticula); //LLAMA AL METODO DISPARAR DE BULLET
-=======
     this.reticula = this.physics.add.sprite(400, 400, 'crosshair').setCollideWorldBounds(true);
     //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
     this.input.on('pointerdown', function (pointer, time) {
@@ -46,20 +36,11 @@ export class game extends Phaser.Scene{
      var bullet = playerBullets.get().setActive(true).setVisible(true);
      if (bullet){
          bullet.fire(this.barco, this.reticula); //LLAMA AL METODO DISPARAR DE BULLET
->>>>>>> 39c1ce2322db88965179860140a8666b866e4e0a
       }
     }, this);
  
     // TOMA EL MOVIMIENTO DEL CURSOR Y LO TRANSFORMA EN UN INPUT PARA MVOER LA RETICULA ACORDE AL PUNTERO
     this.input.on('pointermove', function (pointer) {
-<<<<<<< HEAD
-       if (this.input.mouse.locked){
-          this.reticula.x += pointer.movementX;
-          this.reticula.y += pointer.movementY;
-        }
-    }, this);
- 
-=======
         if (this.input.mouse.locked){
             this.reticula.x += pointer.movementX;
             this.reticula.y += pointer.movementY;
@@ -80,9 +61,12 @@ export class game extends Phaser.Scene{
     }, this);
   
 
->>>>>>> 39c1ce2322db88965179860140a8666b866e4e0a
     // Creo funcion para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
     function addPlayer(self, playerInfo) {
+      console.log("Entro a AddPlayer")
+      //playerInfo.x = auxiliar.generarEnteroAleatorio(100,500);
+      //playerInfo.y = auxiliar.generarEnteroAleatorio(100,500);
+
       self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'destroyer')
         .setOrigin(0.5, 0.5) // Seteo posicion de inicio
         .setDisplaySize(200, 75) // Seteo tamaño
@@ -100,13 +84,12 @@ export class game extends Phaser.Scene{
       particles.setPosition(0, -11)
       emitter.startFollow(self.barco) //aqui le indicamos que sigan al objeto barco.
     }
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 39c1ce2322db88965179860140a8666b866e4e0a
     // Creo la funcion para agregar a otro jugador que no sea el propio y lo agrego a la lista/arreglo de otherPlayers con los mismos valores añadiendo la rotacion
     function addOtherPlayers (self, playerInfo){
+      console.log("Entro a AddOtherPlayers")
+      //playerInfo.x = auxiliar.generarEnteroAleatorio(100,500);
+      //playerInfo.y = auxiliar.generarEnteroAleatorio(100,500);
       const otherPlayer = self.physics.add.image(playerInfo.x, playerInfo.y, 'uboot')
         .setOrigin(0.5, 0.5)
         .setDisplaySize(100, 50)
@@ -116,15 +99,43 @@ export class game extends Phaser.Scene{
       self.otherPlayers.add(otherPlayer)
 
       //PARTICULAS PARA LOS OTROS JUGADORES
-      const particles = self.add.particles("Blue").setDepth(-1) //usamos la imagen Blue como particula
-      const emitter = particles.createEmitter({ //utilizamos la funcion emitter de phaser para emitir varias particulas
+      const otherParticles = self.add.particles("Blue").setDepth(-1) //usamos la imagen Blue como particula
+      const emitter = otherParticles.createEmitter({ //utilizamos la funcion emitter de phaser para emitir varias particulas
         speed: 10, //velocidad con la que se mueven
         scale: {start: 0.08, end: 0}, //el tamano
         blendMode: "ADD" //el efecto a aplicar
       })
-      particles.setPosition(0, -11)
+      otherParticles.setPosition(0, -11)
       emitter.startFollow(otherPlayer) //aqui le indicamos que sigan al objeto barco.
     }
+
+    // GENERAR CARGUEROS
+    // Creo funcion para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
+    function addCargueros(carguerosArre) {
+      console.log("Entro a addCargueros")
+      carguerosArre.forEach(addCarguerosSub);
+    }
+
+    function addCarguerosSub(cargueroItem) {
+      console.log("Entro a addCarguerosSub")
+      cargueroItem = self.physics.add.image(cargueroItem.x, cargueroItem.y, 'destroyer')
+        .setOrigin(0.5, 0.5) // Seteo posicion de inicio
+        .setDisplaySize(200, 75) // Seteo tamaño
+        .setDepth(5) // seteo de la posicion (como las capas de photoshop)
+
+      //self.barco.setCollideWorldBounds(true); // Seteo colisiones con el fin del mapa
+      //self.barco.setDrag(1000); // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+    }
+
+    // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador
+    this.socket.on('generarCarqueros', function (players){
+      Object.keys(players).forEach(function (id){
+        addPlayer(self, players[id]);
+      });
+      //carguerosArre.forEach(carguero => console.log(carguero));
+      //addCargueros(carguerosArre);
+      //carguerosArre.forEach(function addCargueros(carguero)){};
+    });
 
     // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador
     this.socket.on('currentPlayers', function (players){
@@ -144,15 +155,11 @@ export class game extends Phaser.Scene{
       addOtherPlayers(self, playerInfo)
     });
 
-    this.socket.on('SaveData', function(playerInfo){
-      guardarDatos(self, playerInfo);
-    });
-
     // Destruye a un jugador cuando se desconecta del socket
     this.socket.on('playerDisconnected', function (playerId) {
       self.otherPlayers.getChildren().forEach(function (otherPlayer) {
         if (playerId === otherPlayer.playerId) {
-          otherPlayer.destroy()
+          otherPlayer.destroy();
         }
       });
     });
@@ -170,7 +177,7 @@ export class game extends Phaser.Scene{
       })
     });
     // Disparo en input con pointerdown (que significa activa cuando hace click)
-}
+  }
 
   // Funcion update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje graficamente
   update(time, delta) {
@@ -205,7 +212,7 @@ export class game extends Phaser.Scene{
         this.socket.emit('playerMovement', { x: this.barco.x, y: this.barco.y, rotation: this.barco.rotation })
       }
 
-            // Me guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+      // Me guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
       this.barco.oldPosition = {
         x: this.barco.x,
         y: this.barco.y,
@@ -220,10 +227,5 @@ export class game extends Phaser.Scene{
     }
     
   }
-
-  // Funcion para intentar guardar datos utilizando el boton guardar en nuevoJuego.html, la llamo desde alli y le paso la posicion actual del jugador para guardarla directo en la BD
-  guardarDatos(self, playerInfo){
-    this.socket.emit('guardarPartida', { x: this.barco.x, y: this.barco.y, rotation: this.barco.rotation })
-    alert ("eje x: "+playerInfo.x);
-  }
 }
+

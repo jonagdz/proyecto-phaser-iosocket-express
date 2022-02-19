@@ -39,16 +39,34 @@ server.listen(5000, function () {
 })
 
 var players = {}
+var cargueros = {}
 
 io.on('connection', function (socket) {
   console.log('Jugador [' + socket.id + '] conectado')
 
   players[socket.id] = {
     rotation: 0,
-    x: 30,
-    y: 30,
+    x: Math.floor((Math.random()*(500 -100))+100),
+    y: Math.floor((Math.random()*(500 -100))+100),
     playerId: socket.id,
   }
+
+  /*
+  //var carguerosArre = [];
+  // Intento crear los cargueros
+  for (i=0; i<6; i++){
+    // cargueros
+    cargueros[socket.id] = {
+      rotation: 0,
+      x: Math.floor((Math.random()*(500 -100))+100),
+      y: Math.floor((Math.random()*(500 -100))+100),
+      CargueroId: socket.id+1+i,
+    }
+    //carguerosArre.push(cargueros);
+    socket.emit('generarCarqueros', cargueros) // Le envío el objeto players al nuevo jugador
+  }
+  */
+  
   socket.emit('currentPlayers', players) // Le envío el objeto players al nuevo jugador
   socket.broadcast.emit('newPlayer', players[socket.id]) // Actualizo a todos los jugadores sobre el nuevo jugador que ingresó
  
