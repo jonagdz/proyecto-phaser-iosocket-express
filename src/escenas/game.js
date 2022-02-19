@@ -15,6 +15,10 @@ export class game extends Phaser.Scene{
     let jugador1Equipo = "EQUIPO_CARGUERO";
     let jugador2Equipo = "EQUIPO_SUBMARINO";
 
+    // Grupo para los cargueros
+    const carguerosArre = [];
+    //this.grupoCargueros = this.physics.add.static
+
     // Cargo la imagen de fondo del mapa
     // this.mar = this.add.image(0, 0, 'mar').setDepth(-2).setDisplaySize(6000,4000);
     this.mar = this.add.image(0, 0, 'mar').setOrigin(0).setScrollFactor(1); 
@@ -137,7 +141,9 @@ export class game extends Phaser.Scene{
     // Creo función para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
     function addPlayer(self, playerInfo) {
       console.log("JE1: "+jugador1Equipo);
-      if(jugador1Equipo === "EQUIPO_CARGUERO"){
+      console.log('x:'+playerInfo.x +' y:'+ playerInfo.y + ' destructor');
+
+      if(jugador1Equipo === "EQUIPO_CARGUERO"){ 
         self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'destroyer')
         .setOrigin(0.5, 0.5) // Posición de inicio
         .setDisplaySize(200, 100) // Tamaño
@@ -145,7 +151,7 @@ export class game extends Phaser.Scene{
 
         self.barco.setCollideWorldBounds(true) // Colisiones con el fin del mapa
         self.barco.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
-        
+
         // Particulas
         const particles = self.add.particles("Blue").setDepth(-1) // Imagen Blue como particula
         const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
@@ -198,7 +204,7 @@ export class game extends Phaser.Scene{
     // Creo la funcion para agregar a otro jugador que no sea el propio y lo agrego a la lista/arreglo de otherPlayers con los mismos valores añadiendo la rotación
     function addOtherPlayers (self, playerInfo){
       if(jugador2Equipo === "EQUIPO_CARGUERO"){
-        self.otherPlayer = self.physics.add.image(playerInfo.x, playerInfo.y, 'destroyer')
+        self.otherPlayer = self.physics.add.image(playerInfo.x, playerInfo.y, 'uboot')
           .setOrigin(0.5, 0.5)
           .setDisplaySize(100, 50)
           .setRotation(playerInfo.rotation)
@@ -237,31 +243,14 @@ export class game extends Phaser.Scene{
     }
 
     // GENERAR CARGUEROS
-    // Creo funcion para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
-    function addCargueros(carguerosArre) {
-      console.log("Entro a addCargueros")
-      carguerosArre.forEach(addCarguerosSub);
-    }
-
-    function addCarguerosSub(cargueroItem) {
-      console.log("Entro a addCarguerosSub")
-      cargueroItem = self.physics.add.image(cargueroItem.x, cargueroItem.y, 'destroyer')
+    this.socket.on('generarCarqueros', function (cargueros){
+      cargueros.forEach(carguero => console.log('x:'+carguero.x +' y:'+ carguero.y + ' carguero'));
+      cargueros.forEach(function(carguero){
+        self.carguero = self.physics.add.image(carguero.x, carguero.y, 'uboot')
         .setOrigin(0.5, 0.5) // Seteo posicion de inicio
         .setDisplaySize(200, 75) // Seteo tamaño
         .setDepth(5) // seteo de la posicion (como las capas de photoshop)
-
-      //self.barco.setCollideWorldBounds(true); // Seteo colisiones con el fin del mapa
-      //self.barco.setDrag(1000); // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
-    }
-
-    // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador
-    this.socket.on('generarCarqueros', function (players){
-      Object.keys(players).forEach(function (id){
-        addPlayer(self, players[id]);
-      });
-      //carguerosArre.forEach(carguero => console.log(carguero));
-      //addCargueros(carguerosArre);
-      //carguerosArre.forEach(function addCargueros(carguero)){};
+      })
     });
 
     // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador
