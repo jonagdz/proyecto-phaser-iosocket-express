@@ -18,12 +18,12 @@ export class game extends Phaser.Scene{
     this.playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
     this.otherPlayer;
 
-
+    
     // Pruebo la vision
     //this.barco.Vision;
     
-    this.mar=this.add.image(0, 0, 'mar').setDepth(-2).setDisplaySize(6000,4000);; // Cargo la imagen de fondo del mapa
-    this.physics.world.setBounds(0, 0, 3840, 2160);
+    this.mar=this.add.image(500, 500, 'mar').setDepth(-2).setDisplaySize(6000,4000);; // Cargo la imagen de fondo del mapa
+    this.physics.world.setBounds(0, 0, 1920, 1080);
 
     this.isla = self.physics.add.image(600,400,'island1').setDepth(5); //Cargo la isla
     this.isla.setImmovable(true);
@@ -32,22 +32,8 @@ export class game extends Phaser.Scene{
     this.bomb = self.physics.add.image(800,800,'bomba').setDisplaySize(50, 40).setDepth(5);  //cargo la bomba maritima
     this.bomb.setImmovable(true);
 
-    this.explotion2 = this.add.sprite(100,100,'explot').setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
-    this.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
-      key: 'explot2',
-      frames: [
-          { key: 'explot',frame:"PngItem_4145768_01_29.gif" },
-          { key: 'explot',frame:"PngItem_4145768_01_30.gif" },
-          { key: 'explot',frame:"PngItem_4145768_01_31.gif" },
-          { key: 'explot',frame:"PngItem_4145768_01_32.gif" },
-      ],
-      frameRate: 5,
-      repeat: -1
-      
-    });
-    this.explotion2.play('explot2');
-    this.explotion2.setActive(false);   //ponemos en false la activacion y visibilidad, para luego activarlas cuando suceda
-    this.explotion2.setVisible(false);  //el evento destruccion de barco
+    
+    
     //this.sound.add('Music').play();
     
     //AGREGAMOS LA RETICULA EN UNA POSICION INICIAL
@@ -81,12 +67,50 @@ export class game extends Phaser.Scene{
         
         
     }, this);
-    
+
+    var Vida = 8;
     function handleHit(data){
-      console.log("impacto");
+      hitted(self.otherPlayer.x, self.otherPlayer.y);
+      if(Vida > 0){
+        Vida = Vida - 1;
+        console.log("impacto", Vida);
+      }
+      if(Vida === 0){
+        destroyed(self.otherPlayer, self.otherPlayer.x, self.otherPlayer.y);
+      }
       self.socket.emit('playerHit', {id: self.otherPlayer.playerId});
     }
     
+    function SeeHit(player, x, y){
+      hitted(x, y);
+      if(Vida > 0){
+        Vida = Vida - 1;
+        console.log("impacto", Vida);
+      }
+      if(Vida === 0){
+        destroyed(player, x, y);
+      }
+    }
+
+    function destroyed(player, x, y){
+        self.explotion3 = self.add.sprite(x,y,'explot').setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
+        self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
+        key: 'explot3',
+        frames: [
+            { key: 'explot',frame:"PngItem_4145768_01_29.gif" },
+            { key: 'explot',frame:"PngItem_4145768_01_30.gif" },
+            { key: 'explot',frame:"PngItem_4145768_01_31.gif" },
+            { key: 'explot',frame:"PngItem_4145768_01_32.gif" },
+            
+        ],
+        frameRate: 5,
+        repeat:-1,
+        hideOnComplete: true,
+        
+        });
+        self.explotion3.play('explot3');
+        player.destroy();
+    }
 
     // TOMA EL MOVIMIENTO DEL CURSOR Y LO TRANSFORMA EN UN INPUT PARA MVOER LA RETICULA ACORDE AL PUNTERO
     this.input.on('pointermove', function (pointer) {
@@ -115,7 +139,6 @@ export class game extends Phaser.Scene{
         .setOrigin(0.5, 0.5) // Seteo posicion de inicio
         .setDisplaySize(200, 100) // Seteo tamaño
         .setDepth(5) // seteo de la posicion (como las capas de photoshop)
-
       self.barco.setCollideWorldBounds(true) // Seteo colisiones con el fin del mapa
       self.barco.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
       //PARTICULAS
@@ -158,6 +181,23 @@ export class game extends Phaser.Scene{
 
     }
 
+    function hitted(x, y){
+      self.explotion2 = self.add.sprite(x,y,'explot').setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
+      self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
+      key: 'explot2',
+      frames: [
+          { key: 'explot',frame:"PngItem_4145768_01_29.gif" },
+          { key: 'explot',frame:"PngItem_4145768_01_30.gif" },
+          { key: 'explot',frame:"PngItem_4145768_01_31.gif" },
+          { key: 'explot',frame:"PngItem_4145768_01_32.gif" },
+          
+      ],
+      hideOnComplete: true,
+      
+      });
+      self.explotion2.play('explot2')
+
+    }
     // Cada vez que se instancie un socket desde un cliente chequea si es él mismo para añadir a ese propio jugador, o si se llama a la funcion para agregar un nuevo jugador
     this.socket.on('currentPlayers', function (players) 
     {
@@ -212,11 +252,12 @@ export class game extends Phaser.Scene{
       console.log('ingreso a hitted', id, "my ID es:", self.socket.id);
       if(self.socket.id === id.id){
           console.log('Tocado');
+          hitted(self.barco.x, self.barco.y);
+          SeeHit(self.barco, self.barco.x, self.barco.y);
       }
     });
 
-}
-
+  }
 
   // Funcion update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje graficamente
   update(time, delta) {

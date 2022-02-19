@@ -8,6 +8,7 @@ export class Destructor extends Bote {
         // Atributos propios
         this.cod = cod;
         this.armas = armas;
+        this.vida = 8;
     };
 
     // Metodos
