@@ -48,6 +48,7 @@ io.on('connection', function (socket) {
     x: 30,
     y: 30,
     playerId: socket.id,
+    hit: false,
     //color: getRandomColor()
   }
   socket.emit('currentPlayers', players) // Mando a todos los jugadores incluyendo el emite el mensaje los jugadores actuales
@@ -67,6 +68,11 @@ io.on('connection', function (socket) {
     players[socket.id].rotation = movementData.rotation
 
     socket.broadcast.emit('playerMoved', players[socket.id])
+  })
+
+  socket.on('playerHit', function(data){
+    players[socket.id].hit = true
+    socket.broadcast.emit('playerHitted', data)
   })
 
   // Intento usar la libreria de mysql para guardar datos de la partida con los datos basicos de prueba, ya teniendo creada la BD
