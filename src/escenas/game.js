@@ -68,6 +68,9 @@ export class game extends Phaser.Scene{
     // Bomba marítima
     this.bomb = self.physics.add.image(1430,1200,'bomba').setDisplaySize(50, 40).setDepth(5);  
     this.bomb.setImmovable(true);
+
+    this.carguero = self.physics.add.image(1300,1200,'carguero').setDisplaySize(200, 100).setDepth(5);  
+ 
     
     //this.sound.add('Music').play();
     // Para que se escuche fuera del navegador
