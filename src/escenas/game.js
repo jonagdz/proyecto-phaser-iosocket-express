@@ -57,7 +57,7 @@ export class game extends Phaser.Scene{
     this.isla.setDisplaySize(400, 400);
 
     // Costas
-    this.costa1 = self.physics.add.image(435,1082,'costa1').setDepth(5);;
+    this.costa1 = self.physics.add.image(345,1082,'costa1').setDepth(5);;
     this.costa1.setImmovable(true);
     //this.costa1.setDisplaySize(951, 2156);
 
