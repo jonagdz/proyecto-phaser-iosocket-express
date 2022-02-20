@@ -63,9 +63,9 @@ export class game extends Phaser.Scene{
     this.isla4.setDisplaySize(400, 400);
 
     // Costas
-    this.costa1 = self.physics.add.image(345,1082,'costa1').setDepth(5);;
+    this.costa1 = self.physics.add.image(345,1078,'costa1').setDepth(5);;
     this.costa1.setImmovable(true);
-    this.costa2 = self.physics.add.image(4115,1082,'costa2').setDepth(5);;
+    this.costa2 = self.physics.add.image(6066,1078,'costa2').setDepth(5);;
     this.costa2.setImmovable(true);
 
     /*// Bomba marítima
