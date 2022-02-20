@@ -40,9 +40,9 @@ export class game extends Phaser.Scene{
     this.cameras.main.setBounds(0, 0, backgroundW, backgroundH);
     this.physics.world.setBounds(0, 0, backgroundW, backgroundH);
 
-    this.input.keyboard.on('keydown_A',() => {
+    /*this.input.keyboard('keydown_A',() => {
       console.log('Puse pausa')
-    });
+    });*/
 
     var self = this
     // Declaro Socket
@@ -64,28 +64,37 @@ export class game extends Phaser.Scene{
     this.costa2 = self.physics.add.image(4115,1082,'costa2').setDepth(5);;
     this.costa2.setImmovable(true);
     //this.costa1.setDisplaySize(3681, 0);
-
-    // Bomba marítima
-    this.bomb = self.physics.add.image(1430,1200,'bomba').setDisplaySize(50, 40).setDepth(5);  
-    this.bomb.setImmovable(true);
     
     //this.sound.add('Music').play();
     // Para que se escuche fuera del navegador
     //this.sound.pauseOnBlur = false;
+    //VARIABLE VIDA PARA LAS NAVES
+    var Vida;
 
     // Introduzco cursores
-    this.cursors = this.input.keyboard.createCursorKeys()
+    this.cursors = this.input.keyboard.createCursorKeys();
 
     //AGREGAMOS LA RETICULA EN UNA POSICION INICIAL
     this.reticula = this.physics.add.sprite(400, 400, 'crosshair').setCollideWorldBounds(true);
+    //AQUI CAMBIAMOS LA VARIABLE DE ARMAMENTO
+    var Fierro = 0;    
+    this.input.keyboard.on('keydown-' + 'W', function (event){
+      if (Fierro === 0){
+        Fierro = 1;
+      }else{
+        Fierro = 0;
+      }
+    });
     //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
     this.input.on('pointerdown', function (pointer, time) {
       // SACA UNA BALA DEL GRUPO DE BALAS Y LA HACE VISIBLE Y ACTIVA
       var bullet = this.playerBullets.get().setActive(true).setVisible(true);
-      corchazo(bullet);
+      corchazo(bullet, Fierro);
     }, this);
-
-    function corchazo(bullet){
+    
+    
+    function corchazo(bullet, Fierro){
+      console.log(Fierro);
       if (bullet){
           bullet.fire(self.barco, self.reticula); //LLAMA AL METODO DISPARAR DE BULLET
           bullet.setCollideWorldBounds(true);
@@ -106,44 +115,59 @@ export class game extends Phaser.Scene{
           self.physics.add.collider(bullet, self.reticula, function(bullet){
             bullet.destroy();
           });
-
-          //COLISION CON LAS MINAS
-          self.physics.add.collider(bullet, self.bomb, function(bullet){
-            bullet.destroy();
-          });
           //MANEJO DE COLISION ENTRE LA BALA Y OTROS JUGADORES
           self.physics.add.collider(bullet, self.otherPlayer, function(bullet){
             bullet.destroy();
-            handleHit(self.otherPlayer);
+            var bala = true;
+            handleHit(self.otherPlayer, bala);
           });
       }
     }
 
-    var Vida = 8;
-    function handleHit(data){
-      hitted(self.otherPlayer.x, self.otherPlayer.y);
-      if(Vida > 0){
-        Vida = Vida - 1;
-        console.log("impacto", Vida);
+    function handleHit(data, balazo){
+      if(balazo){
+        hitted(self.otherPlayer.x, self.otherPlayer.y);
+        EvaluacionDano(Fierro, self.otherPlayer, self.otherPlayer.x, self.otherPlayer.y);
+        self.socket.emit('playerHit', {id: self.otherPlayer.playerId});
+        //this.cameras.main.shake(500);
       }
-      if(Vida === 0){
-        destroyed(self.otherPlayer, self.otherPlayer.x, self.otherPlayer.y);
-      }
-      self.socket.emit('playerHit', {id: self.otherPlayer.playerId});
-      //this.cameras.main.shake(500);
     }
-    
+    Vida = 8;
+    //FUNCION QUE EVALUA EL DANO
+    function EvaluacionDano(Fierro, player, x, y){
+      //Life(self.Vida);
+      //SI EL ARMA ES EL CANON
+      
+      if(Fierro == 0){
+        if(Vida > 0){
+          Vida = Vida - 1;
+          console.log("impacto", Vida);
+        }
+        if(Vida === 0){
+          destroyed(player, x, y);
+        }
+      }else if (Fierro == 1){
+        if(Vida > 0){
+          Vida = Vida - 3;
+          console.log("impacto", Vida);
+        }
+        if(Vida <= 0){
+          destroyed(player, x, y);
+        }
+      }
+    }
+    //EN ESTA FUNCION CARGAMOS LOS PUNTOS DE VIDA PARA EL CARGUERO, SUBMARINO y DESTRUCTOR
+    /*function Life(Vida){
+      //UNA VEZ DIFERENCIADOS LOS TIPOS DE NAVIOS, PREGUNTAMOS CON UN IF O UN SWITCH, DEPENDIENDO DE QUE SEA, LOS PUNTOS DE VIDA
+      //QUE LE CORRESPONDEN, POR AHORA USAREMOS ALGO GENERICO
+      Vida = 8;
+    }*/
+    //FUNCION QUE MUESTRA AL JUGADOR QUE DANO AL OTRO
     function SeeHit(player, x, y){
       hitted(x, y);
-      if(Vida > 0){
-        Vida = Vida - 1;
-        console.log("impacto", Vida);
-      }
-      if(Vida === 0){
-        destroyed(player, x, y);
-      }
+      EvaluacionDano(Fierro, player, x, y);
     }
-
+    //FUNCION QUE MUESTRA LA DESTRUCCION DE UN JUGADOR
     function destroyed(player, x, y){
         self.explotion3 = self.add.sprite(x,y,'explot').setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
         self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
@@ -153,7 +177,6 @@ export class game extends Phaser.Scene{
             { key: 'explot',frame:"PngItem_4145768_01_30.gif" },
             { key: 'explot',frame:"PngItem_4145768_01_31.gif" },
             { key: 'explot',frame:"PngItem_4145768_01_32.gif" },
-            
         ],
         frameRate: 5,
         repeat:-1,
@@ -170,19 +193,31 @@ export class game extends Phaser.Scene{
             this.reticula.x += pointer.movementX;
             this.reticula.y += pointer.movementY;
         }
-        var distX = this.reticula.x-this.barco.x; // X distance between player & reticle
-        var distY = this.reticula.y-this.barco.y; // Y distance between player & reticle
-
-        // Ensures reticle cannot be moved offscreen (player follow)
-        if (distX > 200)
-            this.reticula.x = this.barco.x+200;
-        else if (distX < -200)
-            this.reticula.x = this.barco.x-200;
-
-        if (distY > 200)
-            this.reticula.y = this.barco.y+200;
-        else if (distY < -200)
-            this.reticula.y = this.barco.y-200;
+        var distX = this.reticula.x-this.barco.x; // dist X es la distancia X entre el jugador y la mira
+        var distY = this.reticula.y-this.barco.y; // dist X es la distancia X entre el jugador y la mira
+        //AQUI PREGUNTAMOS QUE TIPO DE ARMA ES, 0 es PARA CANON, 1 PARA CARGAS DE PROFUNDIDAD
+        //VAMOS A EXTENDER ESTO UNA VEZ TENGAMOS IMPLEMENTADA LA DIFERENCIACION ENTRE NAVIOS, CON LAS ARMAS DEL SUBMARINO
+        if(Fierro == 0){
+          // Esto asegura los limites de la mira, el entorno de movimiento 
+          // La mira cambia de rango si se apreta un boton
+          if (distX > 200)
+              this.reticula.x = this.barco.x+200;
+          else if (distX < -200)
+              this.reticula.x = this.barco.x-200;
+          if (distY > 200)
+              this.reticula.y = this.barco.y+200;
+          else if (distY < -200)
+              this.reticula.y = this.barco.y-200;
+        }else{
+          if (distX > 50)
+              this.reticula.x = this.barco.x+50;
+          else if (distX < -50)
+              this.reticula.x = this.barco.x-50;
+          if (distY > 50)
+              this.reticula.y = this.barco.y+50;
+          else if (distY < -50)
+              this.reticula.y = this.barco.y-50;
+        }
     }, this);
   
     // Creo función para agregar al jugador, por defecto seteo que inician todos arriba a la izquierda y les asigno la imagen del submarino uboot
@@ -214,9 +249,14 @@ export class game extends Phaser.Scene{
         // Zoom de la cámara
         self.cameras.main.setZoom(1.5);
         // Se crea una colision del barco con la isla
-        self.physics.add.collider(self.barco, self.isla); 
+        self.physics.add.collider(self.barco, self.isla, function(){
+          self.barco.setBounce(2, 2);
+          //handleHit(self.barco, false, true);
+        });
         // Se crea una colision del barco con la bomba
-        self.physics.add.collider(self.barco, self.bomb);
+        /*self.physics.add.collider(self.barco, self.bomb, function(){
+          destroyed(self.barco, self.barco.x, self.barco.y);
+        });*/
 
       }else{
         self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'uboot')
@@ -242,9 +282,14 @@ export class game extends Phaser.Scene{
         // Zoom de la cámara
         self.cameras.main.setZoom(1.5);
         // Se crea una colision del barco con la isla
-        self.physics.add.collider(self.barco, self.isla); 
+        self.physics.add.collider(self.barco, self.isla, function(){
+            self.barco.setBounce(10, 10);
+            //handleHit(self.barco, false, true);
+          });
         // Se crea una colision del barco con la bomba
-        self.physics.add.collider(self.barco, self.bomb);
+       /* self.physics.add.collider(self.barco, self.bomb, function(){
+          destroyed(self.barco, self.barco.x, self.barco.y);
+        })*/
       }
     }
     
@@ -287,8 +332,6 @@ export class game extends Phaser.Scene{
         particles.setPosition(0, -11)
         emitter.startFollow(self.barco) // Le indicamos que sigan al objeto barco.
       }
-
-
     }
 
     function hitted(x, y){
@@ -324,9 +367,6 @@ export class game extends Phaser.Scene{
       Object.keys(players).forEach(function (id){
         if (players[id].playerId === self.socket.id){
           addPlayer(self, players[id]);
-          //COMIENZO DE DISPAROS PARA MAIN PLAYER
-
-          
         } 
         else{
           addOtherPlayers(self, players[id]);
@@ -354,7 +394,6 @@ export class game extends Phaser.Scene{
     this.socket.on('playerMoved', function (playerInfo) {
       //self.otherPlayers.getChildren().forEach(function (otherPlayer) {
         if(self.otherPlayer != undefined){  
-
           if (playerInfo.playerId === self.otherPlayer.playerId) {
             self.otherPlayer.setRotation(playerInfo.rotation)
             self.otherPlayer.setPosition(playerInfo.x, playerInfo.y)
