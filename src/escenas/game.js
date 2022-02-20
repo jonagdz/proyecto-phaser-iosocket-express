@@ -25,7 +25,6 @@ export class game extends Phaser.Scene{
     this.playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
 
     // Cargo la imagen de fondo del mapa
-    // this.mar = this.add.image(0, 0, 'mar').setDepth(-2).setDisplaySize(6000,4000);
     this.mar = this.add.image(0, 0, 'mar').setOrigin(0).setScrollFactor(1); 
     const backgroundW = this.mar.width;
     const backgroundH = this.mar.height;
@@ -47,14 +46,6 @@ export class game extends Phaser.Scene{
     this.cameras.main.setBounds(0, 0, backgroundW, backgroundH);
     this.physics.world.setBounds(0, 0, backgroundW, backgroundH);
 
-    /*this.input.keyboard('keydown_A',() => {
-      console.log('Puse pausa')
-    });*/
-
-    var self = this
-    // Declaro Socket
-    this.socket = io()
-    
     //this.otherPlayer;
     
     // Islas
@@ -72,19 +63,11 @@ export class game extends Phaser.Scene{
     this.isla4.setDisplaySize(400, 400);
 
     // Costas
-    this.costa1 = self.physics.add.image(345,1078,'costa1').setDepth(5);;
+    this.costa1 = self.physics.add.image(345,1082,'costa1').setDepth(5);;
     this.costa1.setImmovable(true);
-    this.costa2 = self.physics.add.image(6066,1078,'costa2').setDepth(5);;
+    this.costa2 = self.physics.add.image(4115,1082,'costa2').setDepth(5);;
     this.costa2.setImmovable(true);
-    //this.costa1.setDisplaySize(3681, 0);
-    
-    //this.sound.add('Music').play();
-    // Para que se escuche fuera del navegador
-    //this.sound.pauseOnBlur = false;
-    //VARIABLE VIDA PARA LAS NAVES
-    var Vida;
 
-    // Introduzco cursores
     /*// Bomba marítima
     this.bomb = self.physics.add.image(1430,1200,'bomba').setDisplaySize(50, 40).setDepth(5);  
     this.bomb.setImmovable(true); 
@@ -108,7 +91,7 @@ export class game extends Phaser.Scene{
     this.reticula = this.physics.add.sprite(400, 400, 'crosshair').setCollideWorldBounds(true);
     //AQUI CAMBIAMOS LA VARIABLE DE ARMAMENTO
     var Fierro = 0;    
-    this.input.keyboard.on('keydown-' + 'W', function (event){
+    this.input.keyboard.on('keydown-' + 'Z', function (event){
       if (Fierro === 0){
         Fierro = 1;
       }else{
@@ -163,7 +146,7 @@ export class game extends Phaser.Scene{
           });
       }
     }
-
+    var Vida = 8;
     function handleHit(data, balazo){
       if(balazo){
         hitted(self.otherPlayer.x, self.otherPlayer.y);
@@ -172,7 +155,7 @@ export class game extends Phaser.Scene{
         //this.cameras.main.shake(500);
       }
     }
-    Vida = 8;
+    
     //FUNCION QUE EVALUA EL DANO
     function EvaluacionDano(Fierro, player, x, y){
       //Life(self.Vida);
@@ -229,16 +212,17 @@ export class game extends Phaser.Scene{
 
     // TOMA EL MOVIMIENTO DEL CURSOR Y LO TRANSFORMA EN UN INPUT PARA MVOER LA RETICULA ACORDE AL PUNTERO
     this.input.on('pointermove', function (pointer) {
-        if (this.input.mouse.locked){
-            this.reticula.x += pointer.movementX;
-            this.reticula.y += pointer.movementY;
+      if (this.input.mouse.locked){
+        this.reticula.x += pointer.movementX;
+        this.reticula.y += pointer.movementY;
         }
-        var distX = this.reticula.x-this.barco.x; // dist X es la distancia X entre el jugador y la mira
-        var distY = this.reticula.y-this.barco.y; // dist X es la distancia X entre el jugador y la mira
+        var distX = this.reticula.x-this.barco.x; // X distance between player & reticle
+        var distY = this.reticula.y-this.barco.y; // Y distance between player & reticle
+
         //AQUI PREGUNTAMOS QUE TIPO DE ARMA ES, 0 es PARA CANON, 1 PARA CARGAS DE PROFUNDIDAD
         //VAMOS A EXTENDER ESTO UNA VEZ TENGAMOS IMPLEMENTADA LA DIFERENCIACION ENTRE NAVIOS, CON LAS ARMAS DEL SUBMARINO
         if(Fierro == 0){
-          // Esto asegura los limites de la mira, el entorno de movimiento 
+          //Esto asegura los limites de la mira, el entorno de movimiento 
           // La mira cambia de rango si se apreta un boton
           if (distX > 200)
               this.reticula.x = this.barco.x+200;
@@ -248,7 +232,7 @@ export class game extends Phaser.Scene{
               this.reticula.y = this.barco.y+200;
           else if (distY < -200)
               this.reticula.y = this.barco.y-200;
-        }else{
+       }else{
           if (distX > 50)
               this.reticula.x = this.barco.x+50;
           else if (distX < -50)
