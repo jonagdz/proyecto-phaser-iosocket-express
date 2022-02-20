@@ -40,7 +40,12 @@ server.listen(5000, function () {
 
 // Variables: {} se declaran como un objeto, [] se declaran como un array.
 var players = {}
-var carguero = {}
+var carguero1 = {}
+var carguero2 = {}
+var carguero3 = {}
+var carguero4 = {}
+var carguero5 = {}
+var carguero6 = {}
 var carguerosArre = [];
 // Se declara esta variable para que solo se genere un unico set de cargueros y controlar la cantidad de jugadores
 var unique = 1; 
@@ -48,10 +53,10 @@ var unique = 1;
 var socketIdJugador1; 
 var socketIdJugador2;
 // Defino los limites de las dimensiones del mapa para el posicionamiento inicial de los barcos
-let frameW = 1920;
-let frameH = 1080;
-let margenCostaX = 60;
-let margenCostaY = 200;
+let frameW = 4576;
+let frameH = 2156;
+let margenCostaX = 810;
+let margenCostaY = 400;
 
 io.on('connection', function (socket) {
   console.log('Jugador [' + socket.id + '] conectado')
@@ -61,22 +66,72 @@ io.on('connection', function (socket) {
     console.log('GENERO POSICION DESTRUCTOR')
     players[socket.id] = {
       rotation: 0,
-      x: Math.floor((Math.random()*((frameW*0.2)- margenCostaX))+margenCostaX), // El margen x para generarse los cargueros sera desde la costa (60) hasta el 5% del total del mapa (0.2)
-      y: Math.floor((Math.random()*((frameH-200)- margenCostaY))+margenCostaY), // El margen y para generarse los cargueros sera el (total - 200) de la parte de arriba y de abajo del mapa
+      x: Math.floor((Math.random()*((frameW*0.25)- margenCostaX))+margenCostaX), // El margen x para generarse los cargueros sera desde la costa (810) hasta el 35% del total del mapa (0.35)
+      y: Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY), // El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa
       playerId: socket.id,
       hit: false,
     }
 
+    // Genero el primer carguero de manera aleatoria, y luego agrego al convoy con los otros 5 cargueros alrededor
+    carguero1 = {
+      rotation: 0,
+      x: Math.floor((Math.random()*((frameW*0.25)- margenCostaX))+margenCostaX), // El margen x para generarse los cargueros sera desde la costa (810) hasta el 35% del total del mapa (0.35)
+      y: Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY), // El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa
+      CargueroId: socket.id+1,
+    }
+    carguerosArre[0]=carguero1;
+    // Carguero 2 PRONTO POSICION ABAJO A LA DERECHA
+    carguero2 = {
+      rotation: 0,
+      x: carguero1.x+600,
+      y: carguero1.y+240,
+      CargueroId: socket.id+2,
+    }
+    carguerosArre[1]=carguero2;
+    // Carguero 3 PRONTO POSICION ABAJO
+    carguero3 = {
+      rotation: 0,
+      x: carguero1.x+50, 
+      y: carguero1.y+370, 
+      CargueroId: socket.id+3,
+    }
+    carguerosArre[2]=carguero3;
+    // Carguero 4
+    carguero4 = {
+      rotation: 0,
+      x: carguero1.x-270, 
+      y: carguero1.y+150, 
+      CargueroId: socket.id+4,
+    }
+    carguerosArre[3]=carguero4;
+    // Carguero 5 - PRONTO POSICION ARRIBA A LA DERECHA
+    carguero5 = {
+      rotation: 0,
+      x: carguero1.x+300, // El margen x para generarse los cargueros sera desde la costa (810) hasta el 35% del total del mapa (0.35)
+      y: carguero1.y-150, // El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa
+      CargueroId: socket.id+5,
+    }
+    carguerosArre[4]=carguero5;
+    // Carguero 6
+    carguero6 = {
+      rotation: 0,
+      x: carguero1.x+180, // El margen x para generarse los cargueros sera desde la costa (810) hasta el 35% del total del mapa (0.35)
+      y: carguero1.y+150, // El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa
+      CargueroId: socket.id+6,
+    }
+    carguerosArre[5]=carguero6;
+    /*
     // Creo a los cargueros aca para que el destructor pueda ver su posicion real al inicio del juego
-    for (i=0; i<6; i++){
+    for (i=1; i<6; i++){
       carguero = {
         rotation: 0,
-        x: Math.floor((Math.random()*((frameW*0.2)- margenCostaX))+margenCostaX), // El margen x para generarse los cargueros sera desde la costa (60) hasta el 20% del total del mapa (0.2)
-        y: Math.floor((Math.random()*((frameH-200)- margenCostaY))+margenCostaY), // El margen y para generarse los cargueros sera el (total - 200) de la parte de arriba y de abajo del mapa
+        x: Math.floor((Math.random()*((carguero.x)- margenCostaX))+margenCostaX), // El margen x para generarse los cargueros sera desde la costa (810) hasta el 35% del total del mapa (0.35)
+        y: Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY), // El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa
         CargueroId: socket.id+i,
       }
       carguerosArre[i]=carguero;
     }
+    */
 
     socket.emit('generarCarqueros', carguerosArre)
     unique = 0;
@@ -98,8 +153,10 @@ io.on('connection', function (socket) {
       playerId: socket.id,
       hit: false,
     }
+    unique = 2;
   }else{
     // NO PUEDE ENTRAR OTRO JUGADOR EXTRA, SE ALCANZO EL LIMITE DE JUGADORES
+    console.log('Limite de jugadores conectados simultaneamente alcanzados')
   }
 
   socket.emit('currentPlayers', players) // Le envío el objeto players al nuevo jugador
@@ -136,7 +193,7 @@ io.on('connection', function (socket) {
       if (err) throw  err;
       console.log("Guardo en la BD");
       var sql = "INSERT INTO partida (IdPlayer, EjeX, EjeY, Rotacion)VALUES('"+players[socket.id]+"','"+MovX+"','"+MovY+"','"+rotat+"')";
-      con.query(sql, function(err, result)  {
+      con.query(sql, function(err, result){
           if(err) throw err;
           console.log("Insert realizado correctamente.");
       });
