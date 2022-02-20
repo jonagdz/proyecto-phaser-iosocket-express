@@ -24,6 +24,7 @@ export class bootGame extends Phaser.Scene{
         this.load.image('mask', './src/assets/mask.png');
         this.load.image('costa1', './src/assets/costa1.png');
         this.load.image('costa2', './src/assets/costa2.png');
+        this.load.image('carguero', './src/assets/liberty.png');
       }
 
     create()

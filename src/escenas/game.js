@@ -1,5 +1,6 @@
 import { Bote } from '../logica/bote.js';
 import { Bullets } from '../logica/bullet.js';
+import { Carguero } from '../logica/carguero.js';
 //import { io } from "/socket.io/socket.io-client";
 //var io = require("socket.io")(server);
 
@@ -7,27 +8,32 @@ export class game extends Phaser.Scene{
   constructor(){
     super("game");
   }
-  
+
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
   create(){
+    var self = this
+    // Declaro Socket
+    this.socket = io()
 
     // Jugadores y equipos - DE PRUEBA
     let jugador1Equipo = "EQUIPO_CARGUERO";
     let jugador2Equipo = "EQUIPO_SUBMARINO";
 
-    // Grupo para los cargueros
+    // Grupo para los cargueros y balas
     const carguerosArre = [];
-    //this.grupoCargueros = this.physics.add.static
+    this.grupoCargueros = this.physics.add.group({ classType: Carguero, runChildUpdate: true });
+    this.playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
 
     // Cargo la imagen de fondo del mapa
     // this.mar = this.add.image(0, 0, 'mar').setDepth(-2).setDisplaySize(6000,4000);
     this.mar = this.add.image(0, 0, 'mar').setOrigin(0).setScrollFactor(1); 
-
-    // Construyo la máscara de visión
-    const centroW = this.sys.game.config.width / 2;
-    const centroH = this.sys.game.config.height / 2;
     const backgroundW = this.mar.width;
     const backgroundH = this.mar.height;
+
+    // Obtengo el centro del canvas para la mascara
+    const centroW = this.sys.game.config.width / 2;
+    const centroH = this.sys.game.config.height / 2;
+    // Construyo la máscara de visión
     const maskImage = this.make.image({
       x: centroW,
       y: centroH,
@@ -35,6 +41,7 @@ export class game extends Phaser.Scene{
       add: false
     });
     const mask = maskImage.createBitmapMask();
+
     // Ajusto cámaras
     this.cameras.main.setMask(mask);
     this.cameras.main.setBounds(0, 0, backgroundW, backgroundH);
@@ -48,20 +55,26 @@ export class game extends Phaser.Scene{
     // Declaro Socket
     this.socket = io()
     
-    this.playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
-    this.otherPlayer;
+    //this.otherPlayer;
     
     // Islas
-    this.isla = self.physics.add.image(1550,790,'island1').setDepth(5);
-    this.isla.setImmovable(true);
-    this.isla.setDisplaySize(400, 400);
+    this.isla1 = self.physics.add.image(2100,900,'island1').setDepth(5);
+    this.isla1.setImmovable(true);
+    this.isla1.setDisplaySize(400, 400);
+    this.isla2 = self.physics.add.image(2460,1600,'island1').setDepth(5);
+    this.isla2.setImmovable(true);
+    this.isla2.setDisplaySize(400, 400);
+    this.isla3 = self.physics.add.image(3200,600,'island1').setDepth(5);
+    this.isla3.setImmovable(true);
+    this.isla3.setDisplaySize(400, 400);
+    this.isla4 = self.physics.add.image(3400,1800,'island1').setDepth(5);
+    this.isla4.setImmovable(true);
+    this.isla4.setDisplaySize(400, 400);
 
     // Costas
-    this.costa1 = self.physics.add.image(435,1082,'costa1').setDepth(5);;
+    this.costa1 = self.physics.add.image(345,1078,'costa1').setDepth(5);;
     this.costa1.setImmovable(true);
-    //this.costa1.setDisplaySize(951, 2156);
-
-    this.costa2 = self.physics.add.image(4115,1082,'costa2').setDepth(5);;
+    this.costa2 = self.physics.add.image(6066,1078,'costa2').setDepth(5);;
     this.costa2.setImmovable(true);
     //this.costa1.setDisplaySize(3681, 0);
     
@@ -72,7 +85,24 @@ export class game extends Phaser.Scene{
     var Vida;
 
     // Introduzco cursores
-    this.cursors = this.input.keyboard.createCursorKeys();
+    /*// Bomba marítima
+    this.bomb = self.physics.add.image(1430,1200,'bomba').setDisplaySize(50, 40).setDepth(5);  
+    this.bomb.setImmovable(true); 
+*/
+    // Musica
+    //var sound = this.sound.add('Music');
+    //sound.play();
+    //this.sound.pauseOnBlur = false;  // Para que se escuche fuera del navegador
+
+    // Introduzco cursores y teclas utilizables
+    this.cursors = this.input.keyboard.createCursorKeys()
+    this.KeyCamera  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
+    this.KeyMute  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+    this.KeyUnmute  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U);
+    this.up  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    this.left  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.down  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    this.right  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
     //AGREGAMOS LA RETICULA EN UNA POSICION INICIAL
     this.reticula = this.physics.add.sprite(400, 400, 'crosshair').setCollideWorldBounds(true);
@@ -107,11 +137,21 @@ export class game extends Phaser.Scene{
             }
           }, bullet);
           
-          //COLISION CON LA ISLA
-          self.physics.add.collider(bullet, self.isla, function(bullet){
+          //Colision con las islas
+          self.physics.add.collider(bullet, self.isla1, function(bullet){
             bullet.destroy();
           });
-          //COlision con la mira
+          self.physics.add.collider(bullet, self.isla2, function(bullet){
+            bullet.destroy();
+          });
+          self.physics.add.collider(bullet, self.isla3, function(bullet){
+            bullet.destroy();
+          });
+          self.physics.add.collider(bullet, self.isla4, function(bullet){
+            bullet.destroy();
+          });
+
+          //Colision con la mira
           self.physics.add.collider(bullet, self.reticula, function(bullet){
             bullet.destroy();
           });
@@ -247,19 +287,23 @@ export class game extends Phaser.Scene{
         // Se indica que la camara siga al componente barco
         self.cameras.main.startFollow(self.barco,true, 0.09, 0.09); 
         // Zoom de la cámara
-        self.cameras.main.setZoom(1.5);
-        // Se crea una colision del barco con la isla
-        self.physics.add.collider(self.barco, self.isla, function(){
-          self.barco.setBounce(2, 2);
-          //handleHit(self.barco, false, true);
-        });
+        self.cameras.main.setZoom(0.9);
+        // Se crea una colision del barco con las islas
+        self.physics.add.collider(self.barco, self.isla1); 
+        self.physics.add.collider(self.barco, self.isla2); 
+        self.physics.add.collider(self.barco, self.isla3); 
+        self.physics.add.collider(self.barco, self.isla4); 
         // Se crea una colision del barco con la bomba
-        /*self.physics.add.collider(self.barco, self.bomb, function(){
-          destroyed(self.barco, self.barco.x, self.barco.y);
-        });*/
-
+        self.physics.add.collider(self.barco, self.bomb);
+        // Se crea una colision del barco con los cargueros
+        self.physics.add.collider(self.barco, self.grupoCargueros);
+        self.physics.add.collider(self.barco, self.carguero);
+        // Se crea una colision del barco con la costa1
+        self.physics.add.collider(self.barco, self.costa1);
+        // Se crea una colision del barco con la costa2
+        self.physics.add.collider(self.barco, self.costa2);
       }else{
-        self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'uboot')
+        self.barco = self.physics.add.image(playerInfo.x, playerInfo.y, 'destroyer')
         .setOrigin(0.5, 0.5) // Posición de inicio
         .setDisplaySize(200, 100) // Tamaño
         .setDepth(5) // Seteo de la posicion (como las capas de photoshop)
@@ -280,19 +324,24 @@ export class game extends Phaser.Scene{
         // Se indica que la camara siga al componente barco
         self.cameras.main.startFollow(self.barco,true, 0.09, 0.09); 
         // Zoom de la cámara
-        self.cameras.main.setZoom(1.5);
+        self.cameras.main.setZoom(0.9);
         // Se crea una colision del barco con la isla
-        self.physics.add.collider(self.barco, self.isla, function(){
-            self.barco.setBounce(10, 10);
-            //handleHit(self.barco, false, true);
-          });
+        self.physics.add.collider(self.barco, self.isla1); 
+        self.physics.add.collider(self.barco, self.isla2); 
+        self.physics.add.collider(self.barco, self.isla3); 
+        self.physics.add.collider(self.barco, self.isla4); 
         // Se crea una colision del barco con la bomba
-       /* self.physics.add.collider(self.barco, self.bomb, function(){
-          destroyed(self.barco, self.barco.x, self.barco.y);
-        })*/
+        self.physics.add.collider(self.barco, self.bomb);
+        // Se crea una colision del barco con los cargueros
+        self.physics.add.collider(self.barco, self.grupoCargueros);
+        self.physics.add.collider(self.barco, self.carguero);
+        // Se crea una colision del barco con la costa1
+        self.physics.add.collider(self.barco, self.costa1);
+        // Se crea una colision del barco con la costa2
+        self.physics.add.collider(self.barco, self.costa2);
       }
     }
-    
+
     // Creo la funcion para agregar a otro jugador que no sea el propio y lo agrego a la lista/arreglo de otherPlayers con los mismos valores añadiendo la rotación
     function addOtherPlayers (self, playerInfo){
       if(jugador2Equipo === "EQUIPO_CARGUERO"){
@@ -319,8 +368,6 @@ export class game extends Phaser.Scene{
           .setDisplaySize(100, 50)
           .setRotation(playerInfo.rotation)
         self.otherPlayer.playerId = playerInfo.playerId
-      
-        //self.otherPlayers.add(self.otherPlayer)
 
         // Particulas para los otros jugadores
         const particles = self.add.particles("Blue").setDepth(-1) // Imagen Blue como particula
@@ -355,10 +402,29 @@ export class game extends Phaser.Scene{
     this.socket.on('generarCarqueros', function (cargueros){
       cargueros.forEach(carguero => console.log('x:'+carguero.x +' y:'+ carguero.y + ' carguero'));
       cargueros.forEach(function(carguero){
-        self.carguero = self.physics.add.image(carguero.x, carguero.y, 'uboot')
+        //var carguero = this.grupoCargueros.get()
+        self.carguero = self.physics.add.image(carguero.x, carguero.y, 'carguero')
         .setOrigin(0.5, 0.5) // Seteo posicion de inicio
         .setDisplaySize(200, 75) // Seteo tamaño
         .setDepth(5) // seteo de la posicion (como las capas de photoshop)
+
+        // Lo vuelvo inamovible
+        self.carguero.setImmovable(true);
+        self.carguero.setCollideWorldBounds(true) // Colisiones con el fin del mapa
+        // Se crea una colision de los cargueros con la lisa isla
+        self.physics.add.collider(self.carguero, self.isla1); 
+        self.physics.add.collider(self.carguero, self.isla2); 
+        self.physics.add.collider(self.carguero, self.isla3); 
+        self.physics.add.collider(self.carguero, self.isla4); 
+        // Se crea una colision del carguero con la bomba
+        self.physics.add.collider(self.carguero, self.bomb);
+        // Se crea una colision del carguero con los barcos
+        self.physics.add.collider(self.carguero, self.barco);
+        // Se crea una colision del carguero con la costa1
+        self.physics.add.collider(self.carguero, self.costa1);
+        // Se crea una colision del carguero con la costa2
+        self.physics.add.collider(self.carguero, self.costa2);
+        self.physics.add.collider(self.grupoCargueros, self.barco);
       })
     });
 
@@ -408,9 +474,22 @@ export class game extends Phaser.Scene{
           hitted(self.barco.x, self.barco.y);
           SeeHit(self.barco, self.barco.x, self.barco.y);
       }
-    });  
+    }); 
+    
+    // Metodo que cambia de camara con el carguero central de la formacion
+    let camaraValor;
+    function clickear(camaraValor){
+      if(camaraValor==0){
+        self.cameras.main.startFollow(self.barco,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(0.9);
+      }else if(camaraValor==1){
+        self.cameras.main.startFollow(self.carguero,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+      }
+    }
+    const btnCamaraCarguero = this.add.text(600, 600, 'BOTON PARA CAMBIAR DE CAMARA CON LOS CARGUEROS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => clickear(1));
+    const btnCamaraDestructor = this.add.text(600, 650, 'BOTON PARA CAMBIAR DE CAMARA CON EL DESTRUCTOR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => clickear(0));
 }
-
 
   // Función update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje graficamente
   update(time, delta) {
@@ -452,6 +531,16 @@ export class game extends Phaser.Scene{
         rotation: this.barco.rotation
       }
     }
+
+    // Se intentan leer por teclado las letras M y U para mutear y desmutear la musica
+    if (this.KeyMute.isDown){
+      console.log('Muteo audio')
+      //this.sound.stop();
+    }
+    if (this.KeyUnmute.isDown){
+      console.log('Desmuteo audio')
+      //this.sound.play();
+      //this.sound.add('Music').play();
+    }
   }
 }
-
