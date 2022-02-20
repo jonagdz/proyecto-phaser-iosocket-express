@@ -3,6 +3,7 @@ import { game } from './escenas/game.js';
 import { Bullets } from './logica/bullet.js';
 import { Destructor } from './logica/destructor.js';
 import { Carguero } from './logica/carguero.js';
+import { esperaFullServer } from './escenas/esperaFullServer.js';
 
 // Configuracion de Phaser
 var config = {
@@ -23,7 +24,7 @@ var config = {
       gravity: { y: 0 }
     }
   },
-  scene: [bootGame, game]
+  scene: [bootGame, game, esperaFullServer]
 }
 
 window.onload = () =>{

@@ -1,14 +1,17 @@
-import { Bote } from './bote.js';
+export class Submarino{
 
-export class Destructor extends Bote {
-    // se saca el astributo armas del destructor, ya que hay que importar y agregar la clase armas
-    constructor(nom,velocidad,vida,posx,posy,rotacion,cod){
-        super(nom,velocidad,vida,posx,posy,rotacion);
+    constructor(nom,velocidad,profundidad,vida,posx,posy,rotacion,cod,armas){
 
         // Atributos propios
-        this.cod = cod;
-        //this.armas = armas;
+        this.nom = nom;
+        this.velocidad = velocidad;
+        this.profundidad = profundidad;
         this.vida = 8;
+        this.posx = posx;
+        this.posy = posy;
+        this.rotacion = rotacion;
+        this.cod = cod;
+        this.armas = armas;
     };
 
     // Metodos
