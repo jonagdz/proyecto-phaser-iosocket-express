@@ -49,7 +49,7 @@ export class game extends Phaser.Scene{
 
     // Ajusto cámaras
     this.cameras.main.setMask(mask);
-    this.cameras.main.setBounds(0, 0, backgroundW, backgroundH);
+    //this.cameras.main.setBounds(0, 0, backgroundW, backgroundH);
     this.physics.world.setBounds(0, 0, backgroundW, backgroundH);
     
     // Islas
