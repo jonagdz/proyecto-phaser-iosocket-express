@@ -3,7 +3,8 @@ import { Bullets } from '../logica/bullet.js';
 import { Carguero } from '../logica/carguero.js';
 import { Submarino } from '../logica/submarino.js';
 import { Destructor } from '../logica/destructor.js';
-import { esperaFullServer } from '../escenas/esperaFullServer.js'; 
+import { esperaFullServer } from '../escenas/esperaFullServer.js';
+ 
 
 //import { io } from "/socket.io/socket.io-client";
 //var io = require("socket.io")(server);
@@ -18,7 +19,7 @@ export class game extends Phaser.Scene{
     var self = this
     // Declaro Socket 
     this.socket = io()
-
+    self.socket.emit('listarPartidas', {id: 2});
     // Jugadores y equipos - DE PRUEBA
     let jugador1Equipo = "EQUIPO_CARGUERO";
     let jugador2Equipo = "EQUIPO_SUBMARINO";
