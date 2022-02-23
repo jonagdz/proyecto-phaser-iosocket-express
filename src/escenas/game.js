@@ -291,6 +291,31 @@ export class game extends Phaser.Scene{
         })
         particles.setPosition(0, -11)
         emitter.startFollow(self.otherPlayer) // Le indicamos que sigan al objeto barco.
+        self.input.keyboard.on('keydown-' + 'Q', function (event){
+          if (self.barco.profundo == 0){
+            self.barco.profundo = 1;
+            self.barco.setTexture('UbootProfundidad1')
+            .setOrigin(0.5, 0.5)
+            .setDisplaySize(100, 50)
+            .setRotation(playerInfo.rotation)
+            console.log('baje a poca profundidad');
+          }else if (self.barco.profundo == 1){
+            self.barco.profundo = 2;
+            console.log('baje a mucha profundidad');
+            self.barco.setTexture('UbootProfundidad2');
+          } 
+        });
+        self.input.keyboard.on('keydown-' + 'E', function (event){
+          if (self.barco.profundo == 1){
+            self.barco.profundo = 0;
+            console.log('subi a la superficie');
+            self.barco.setTexture('uboot');
+          }else if (self.barco.profundo == 2){
+            self.barco.profundo = 1;
+            self.barco.setTexture('UbootProfundidad1');
+            console.log('subi a poca profundidad');
+          } 
+        });
       }
     }
 
@@ -391,6 +416,29 @@ export class game extends Phaser.Scene{
         self.physics.add.collider(self.barco, self.costa1);
         // Se crea una colision del barco con la costa2
         self.physics.add.collider(self.barco, self.costa2);
+        self.barco.profundo = 0;
+        self.input.keyboard.on('keydown-' + 'Q', function (event){
+          if (self.barco.profundo == 0){
+            self.barco.profundo = 1;
+            self.barco.setTexture('UbootProfundidad1');
+            console.log('baje a poca profundidad');
+          }else if (self.barco.profundo == 1){
+            self.barco.profundo = 2;
+            console.log('baje a mucha profundidad');
+            self.barco.setTexture('UbootProfundidad2');
+          } 
+        });
+        self.input.keyboard.on('keydown-' + 'E', function (event){
+          if (self.barco.profundo == 1){
+            self.barco.profundo = 0;
+            console.log('subi a la superficie');
+            self.barco.setTexture('uboot');
+          }else if (self.barco.profundo == 2){
+            self.barco.profundo = 1;
+            self.barco.setTexture('UbootProfundidad1');
+            console.log('subi a poca profundidad');
+          } 
+        });
     }
 
     /*
