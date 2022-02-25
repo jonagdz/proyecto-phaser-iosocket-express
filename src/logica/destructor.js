@@ -1,8 +1,9 @@
 import { Bote } from './bote.js';
+import { Bullets } from '../logica/bullet.js';
 
 export class Destructor { // extends Bote
     // se saca el astributo armas del destructor, ya que hay que importar y agregar la clase armas
-    constructor(nom,velocidad,vida,posX,posY,rotacion,cod,imagen){
+    constructor(nom,velocidad,vida,posX,posY,rotacion,cod,imagen,bullet,armas,reticula){
         //super(nom,velocidad,vida,posX,posY,rotacion);
 
         // Atributos propios
@@ -14,7 +15,9 @@ export class Destructor { // extends Bote
         this.rotacion = rotacion;
         this.cod = cod;
         this.imagen = imagen;
-        //this.armas = armas;
+        this.bullet = bullet;
+        this.armas = armas;
+        this.reticula = reticula;
     };
 
     // Metodos
@@ -85,6 +88,33 @@ export class Destructor { // extends Bote
     setArmas(nuevaArmas) {
         this.armas = nuevaArmas;
     };
+
+    /*manejoMira(X, Y, miraX, miraY){
+        let distX = miraX - X; // X distancia entre el jugador y la mira
+        let distY = miraY - Y; // Y distancia entre el jugador y la mira
+        console.log("el dist x es", distX, "y el distY es: ", distY);
+        console.log("entro al manejo de la mira");
+        //if(this.armas === 0){
+          if (distX > 200)
+            miraX = X + 200;
+          else if (distX < -200)
+            miraX = X - 200;
+          if (distY > 200)
+            miraY = Y + 200;
+          else if (distY < -200)
+            miraY = Y - 200;
+        /*}else if(this.armas === 1){
+          if (distX > 50)
+            miraX = X + 50;
+          else if (distX < -50)
+            miraX = X - 50;
+          if (distY > 50)
+            miraY = Y + 50;
+          else if (distY < -50)
+            miraY = Y - 50;
+ */
+            //       }
+    //}
     /*
     setAngularVelocity(value){
         this.imagen.setAngularVelocity(value);
@@ -101,12 +131,6 @@ export class Destructor { // extends Bote
         this.imagen.setAcceleration(value);
     }
     */
-    // Metodos propios
-    // Disparo
-
-    // Daño
-
-    // Metodos auxiliares
-
-    // Los metodos de Vision, Detección y Colision los heredaria de bote y habria que hacerle las modificaciones correspondientes (Ej. rango de vision x3)
+    
+    
 }

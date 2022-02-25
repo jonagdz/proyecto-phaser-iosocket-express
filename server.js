@@ -64,7 +64,7 @@ io.on('connection', function (socket) {
         x: 0,
         y: 0,
         playerId: socket.id,
-        hit: false,
+        damage: 0,
         equipo: 1,
       }
       // Seteo esta variable para saber que el primer jugador ya se conectó
@@ -78,7 +78,7 @@ io.on('connection', function (socket) {
         x: 0,
         y: 0,
         playerId: socket.id,
-        hit: false,
+        damage: 0,
         equipo: otroEquipo,
       }
 
@@ -103,8 +103,8 @@ io.on('connection', function (socket) {
     })
 
     socket.on('playerHit', function(data){
-      players[socket.id].hit = true
-      socket.broadcast.emit('playerHitted', data)
+      players[socket.id].damage = data.Dam;
+      socket.broadcast.emit('playerHitted', players[socket.id])
     })
     
     // api url

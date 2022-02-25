@@ -12,20 +12,25 @@ export class game extends Phaser.Scene{
   init(data){
     this.socket = data.socket;
     this.equipo = data.equipo;
-    this.destructor = new Destructor('Destructor',200,8,0,0,0,1,0); // Creo el objeto destructor 
-    this.submarino = new Submarino('Submarino',100,0,8,0,0,0,7); // Creo el objeto submarino 
+    this.destructor = new Destructor('Destructor',200,8,0,0,0,1,0,0,0,0); // Creo el objeto destructor 
+    this.submarino = new Submarino('Submarino',100,0,8,0,0,0,7,0,0,0,0); // Creo el objeto submarino 
   }
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
   create(){
     // DEFINICIÓN DE VARIABLES Y CONSTANTES A UTILIZAR -----------------------------------------------------------------------------------------------------------------------------------
     var self = this
-
+    let bullet;
+    let danio;
+    let reticula;
     self.socket.emit('listarPartidas', {id: 2});
 
     // Grupo para los cargueros y balas
     var arrayCargueros = [];
     this.grupoCargueros = this.physics.add.group({ classType: Carguero, runChildUpdate: true });
+    this.playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
+
+
 
     // Cargo la imagen de fondo del mapa
     this.mar = this.add.image(0, 0, 'mar').setOrigin(0).setScrollFactor(1).setDepth(0); 
@@ -41,7 +46,9 @@ export class game extends Phaser.Scene{
     // Defino variables para las posiciones X e Y de los barcos
     var posX;
     var posY;
-    
+    let distMax;
+    let damAcuD = 0;
+    let damAcuS = 0;
     // Obtengo el centro del canvas para la mascara
     const centroW = this.sys.game.config.width / 2;
     const centroH = this.sys.game.config.height / 2;
@@ -79,17 +86,6 @@ export class game extends Phaser.Scene{
     this.costa2 = self.physics.add.image(6066,1078,'costa2').setDepth(5);;
     this.costa2.setImmovable(true);
 
-    /*
-    // Bomba marítima
-    this.bomb = self.physics.add.image(1430,1200,'bomba').setDisplaySize(50, 40).setDepth(5);  
-    this.bomb.setImmovable(true); 
-    
-    // Musica
-    var sound = this.sound.add('Music');
-    sound.play();
-    this.sound.pauseOnBlur = false;  // Para que se escuche fuera del navegador
-    */
-
     // Introduzco cursores y teclas utilizables
     this.cursors = this.input.keyboard.createCursorKeys();
     this.KeyCamera  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
@@ -99,8 +95,6 @@ export class game extends Phaser.Scene{
     this.left  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.down  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.right  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    
-
 
     // INICIO DE LA LÖGICA DEL COMPORTAMIENTO DEL JUEGO -----------------------------------------------------------------------------------------------------------------------------------
 
@@ -149,8 +143,12 @@ export class game extends Phaser.Scene{
     // Generar destructor
     function generarDestructor(){
       // Generamos la imagen del destructor al objeto destructor
-      self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, 'destroyer').setDisplaySize(200, 100).setRotation(0)
-            
+      self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, 'destroyer')
+      .setDisplaySize(200, 100)
+      .setRotation(0)
+      self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, 'crosshair').setCollideWorldBounds(true);;
+      self.destructor.bullet = self.playerBullets;
+      //self.destructor.vida = 8;
       // Particulas
       const particles = self.add.particles("Blue").setDepth(-1) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
@@ -179,6 +177,16 @@ export class game extends Phaser.Scene{
       self.physics.add.collider(self.destructor.imagen, self.costa1);
       // Se crea una colision del barco con la costa2
       self.physics.add.collider(self.destructor.imagen, self.costa2);
+      // Se crea el evento de cambio de armas para el destructor
+      self.input.keyboard.on('keydown-' + 'Z', function (event){
+        if (self.destructor.armas == 0){
+          self.destructor.armas = 1;
+          console.log('Cambio a Cargas de Profundidad');
+        }else{
+          self.destructor.armas = 0;
+          console.log('cambio a canon');
+        }
+      });
     }
 
     // Generar destructor
@@ -202,7 +210,9 @@ export class game extends Phaser.Scene{
       self.submarino.imagen = self.physics.add.image(self.submarino.posX, self.submarino.posY, 'uboot').setDisplaySize(100,50).setDepth(0) // Seteo tamaño y profundidad de la imagen
       self.submarino.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
       self.submarino.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
-        
+      self.submarino.bullet = self.playerBullets;
+      self.submarino.reticula = self.physics.add.sprite(self.submarino.posX, self.submarino.posY, 'crosshair').setCollideWorldBounds(true);
+      //self.submarino.vida = 7;
       // Particulas
       const particles = self.add.particles("Blue").setDepth(-1) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
@@ -233,7 +243,7 @@ export class game extends Phaser.Scene{
       self.physics.add.collider(self.submarino.imagen, self.costa2);
 
       // PARTE PROFUNDIDAD SUBMARINO JUAN PABLO
-      self.submarino.profundo = 0;
+      /*
       self.input.keyboard.on('keydown-' + 'Q', function (event){
         if (self.submarino.profundo == 0){
           self.submarino.profundo = 1;
@@ -255,7 +265,17 @@ export class game extends Phaser.Scene{
           self.submarino.setTexture('UbootProfundidad1');
           console.log('subi a poca profundidad');
         } 
-      })
+      });*/
+      // Se crea el evento de cambio de armas para el destructor
+      self.input.keyboard.on('keydown-' + 'Z', function (event){
+        if (self.submarino.armas === 0){
+          self.submarino.armas = 1;
+          console.log('Cambio a Torpedos');
+        }else{
+          self.submarino.armas = 0;
+          console.log('cambio a canon');
+        }
+      });
     }
     
     // Genero todo lo relacionado a la imagen del submarino del equipo enemigo
@@ -319,6 +339,217 @@ export class game extends Phaser.Scene{
       })
     };
 
+
+    //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
+    this.input.on('pointerdown', function (pointer, time) {
+      if(self.equipo === 1){
+        bullet = self.destructor.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
+        corchazo(self.destructor.imagen, bullet, self.destructor.reticula, self.submarino.imagen);
+      }else{
+        bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
+        corchazo(self.submarino.imagen, bullet, self.submarino.reticula, self.destructor.imagen);
+      }
+    }, this);
+
+    //FUNCION DE DISPARO DEL JUGADOR
+    function corchazo(player, bullet, reticula, enemyImag, enemyPure){
+      console.log("dentro del balazo");
+      if (bullet){
+        console.log("en la bala");
+          bullet.fire(player, reticula); //LLAMA AL METODO DISPARAR DE BULLET
+          bullet.setCollideWorldBounds(true);
+          bullet.body.onWorldBounds = true;
+          bullet.body.world.on('worldbounds', function(body) {
+            //COLISION CON LOS BORDES DEL MUNDO
+            if (body.gameObject === this ) {
+              this.setActive(false);
+              this.setVisible(false);
+            }
+          }, bullet);
+          
+          //Colision con las islas
+          self.physics.add.collider(bullet, self.isla1, function(bullet){
+            bullet.destroy();
+          });
+          self.physics.add.collider(bullet, self.isla2, function(bullet){
+            bullet.destroy();
+          });
+          self.physics.add.collider(bullet, self.isla3, function(bullet){
+            bullet.destroy();
+          });
+          self.physics.add.collider(bullet, self.isla4, function(bullet){
+            bullet.destroy();
+          });
+          //Colision con la mira
+          self.physics.add.collider(bullet, reticula, function(bullet){
+            bullet.destroy();
+          });
+          //MANEJO DE COLISION ENTRE LA BALA Y OTROS JUGADORES
+          self.physics.add.collider(bullet, enemyImag, function(bullet){
+            bullet.destroy();
+            handleHit(enemyImag);
+          });
+      }
+    }
+    function handleHit(enemy){
+      console.log('DENTRO DEL MANEJO DE DISPARO DEL QUE DISPARA');
+      hitted(enemy.x, enemy.y);    
+      if(self.equipo === 1){
+          if(self.destructor.armas === 0){
+              danio = 1;
+              damAcuD = damAcuD + danio;              
+              self.socket.emit('playerHit', {Dam: danio});
+              if(damAcuD >= self.submarino.vida){
+                destroyed(self.submarino.imagen);
+                self.submarino.imagen.setActive(false);
+                self.submarino.imagen.setVisible(false);
+              }
+          }else if (self.destructor.armas === 1){
+              danio = 3;
+              damAcuD = damAcuD + danio;              
+              self.socket.emit('playerHit', {Dam: danio});
+              if(damAcuD >= self.submarino.vida){
+                destroyed(self.submarino.imagen);
+                self.submarino.imagen.setActive(false);
+                self.submarino.imagen.setVisible(false);
+              }
+          }
+      }else{
+        if(self.submarino.armas === 0){
+          danio = 1;
+          damAcuS = damAcuS + danio;              
+          self.socket.emit('playerHit', {Dam: danio});
+          if(damAcuS >= self.destructor.vida){
+            destroyed(self.destructor.imagen);
+            self.destructor.imagen.setActive(false);
+            self.destructor.imagen.setVisible(false);
+          }
+        }else if (self.submarino.armas === 1){
+          danio = 4;
+          damAcuS = damAcuS + danio;                            
+          self.socket.emit('playerHit', {Dam: danio});
+          if(damAcuS >= self.destructor.vida){
+            destroyed(self.destructor.imagen);
+            self.destructor.imagen.setActive(false);
+            self.destructor.imagen.setVisible(false);
+          }
+        }
+        
+      }
+    }
+    //funcion que muestra la explosion en la posicion determinada
+    function hitted(x, y){
+      self.explotion2 = self.add.sprite(x,y,'explot').setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
+      self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
+      key: 'explot2',
+      frames: [
+          { key: 'explot',frame:"PngItem_4145768_01_29.gif" },
+          { key: 'explot',frame:"PngItem_4145768_01_30.gif" },
+          { key: 'explot',frame:"PngItem_4145768_01_31.gif" },
+          { key: 'explot',frame:"PngItem_4145768_01_32.gif" },
+      ],
+      hideOnComplete: true,
+      });
+      self.explotion2.play('explot2');
+    }
+    //funcion que muestra y destruye un jugador
+    function destroyed(playerIMG){
+      console.log('Entro a destroyed');
+      self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y ,'explot').setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
+      self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
+      key: 'explot3',
+      frames: [
+          { key: 'explot',frame:"PngItem_4145768_01_29.gif" },
+          { key: 'explot',frame:"PngItem_4145768_01_30.gif" },
+          { key: 'explot',frame:"PngItem_4145768_01_31.gif" },
+          { key: 'explot',frame:"PngItem_4145768_01_32.gif" },
+      ],
+      frameRate: 5,
+      repeat:-1,
+      hideOnComplete: false,
+      
+      });
+      console.log('entro a la animacion destruccion');
+      self.explotion3.play('explot3');
+    }
+    //funcion que procesa el dano y el porcentaje de acierto
+    function RecibeHit(player, playerIMG, damage){
+      console.log('dentro de RecibeHit');
+      hitted(player.x, player.y);
+      //aca van las funciones de acierto
+      if(player.vida > 0){
+        console.log('la vida es mayor que 0', player.vida);
+        player.vida = player.vida - damage;
+        
+        console.log('la vida luego del danio', player.vida);
+      }
+      if(player.vida <= 0){
+        console.log('vida menor que 0');
+        destroyed(playerIMG);
+        playerIMG.setActive(false);
+        playerIMG.setVisible(false);
+      }
+    }
+    //funcion que convierte el cursor en una mira
+    this.input.on('pointermove', function (pointer) {
+    //maneja la mira del destructor con el cursor  
+      if(self.equipo === 1){
+        if (this.input.mouse.locked){
+          self.destructor.reticula.x += pointer.movementX;
+          self.destructor.reticula.y += pointer.movementY;
+        }
+        if(self.destructor.armas == 0){
+          distMax = 250;
+          if ((self.destructor.reticula.x - self.destructor.imagen.x) > distMax)
+              self.destructor.reticula.x = self.destructor.imagen.x +distMax;
+            else if (self.destructor.reticula.x - self.destructor.imagen.x < -distMax)
+              self.destructor.reticula.x = self.destructor.imagen.x -distMax;
+            if (self.destructor.reticula.y - self.destructor.imagen.y > distMax)
+              self.destructor.reticula.y = self.destructor.imagen.y +distMax;
+            else if (self.destructor.reticula.y - self.destructor.imagen.y < -distMax)
+              self.destructor.reticula.y = self.destructor.imagen.y-distMax;
+          //self.destructor.manejoMira(self.destructor.imagen.x, self.destructor.imagen.y, self.destructor.reticula.x, self.destructor.reticula.y);
+        }else{
+          distMax = 80;
+          if ((self.destructor.reticula.x - self.destructor.imagen.x) > distMax)
+              self.destructor.reticula.x = self.destructor.imagen.x +distMax;
+            else if (self.destructor.reticula.x - self.destructor.imagen.x < -distMax)
+              self.destructor.reticula.x = self.destructor.imagen.x -distMax;
+            if (self.destructor.reticula.y - self.destructor.imagen.y > distMax)
+              self.destructor.reticula.y = self.destructor.imagen.y +distMax;
+            else if (self.destructor.reticula.y - self.destructor.imagen.y < -distMax)
+              self.destructor.reticula.y = self.destructor.imagen.y-distMax;
+        }
+      }else{
+    //maneja la mira del submarino con el cursor
+        if (this.input.mouse.locked){
+          self.submarino.reticula.x += pointer.movementX;
+          self.submarino.reticula.y += pointer.movementY;
+        }
+        if(self.submarino.armas == 0){
+          distMax = 300;
+          if ((self.submarino.reticula.x - self.submarino.imagen.x) > distMax)
+              self.submarino.reticula.x = self.submarino.imagen.x +distMax;
+            else if (self.submarino.reticula.x - self.submarino.imagen.x < -distMax)
+              self.submarino.reticula.x = self.submarino.imagen.x -distMax;
+            if (self.submarino.reticula.y - self.submarino.imagen.y > distMax)
+              self.submarino.reticula.y = self.submarino.imagen.y +distMax;
+            else if (self.submarino.reticula.y - self.submarino.imagen.y < -distMax)
+              self.submarino.reticula.y = self.submarino.imagen.y-distMax;
+        }else{
+          distMax = 150;
+            if ((self.submarino.reticula.x - self.submarino.imagen.x) > distMax)
+                self.submarino.reticula.x = self.submarino.imagen.x +distMax;
+              else if (self.submarino.reticula.x - self.submarino.imagen.x < -distMax)
+                self.submarino.reticula.x = self.submarino.imagen.x -distMax;
+              if (self.submarino.reticula.y - self.submarino.imagen.y > distMax)
+                self.submarino.reticula.y = self.submarino.imagen.y +distMax;
+              else if (self.submarino.reticula.y - self.submarino.imagen.y < -distMax)
+                self.submarino.reticula.y = self.submarino.imagen.y-distMax; 
+        } 
+      }
+    }, this);
+
     // Destruye a un jugador cuando se desconecta del socket
     this.socket.on('playerDisconnected', function (playerId){
       if (playerId != self.socket.id){
@@ -347,6 +578,21 @@ export class game extends Phaser.Scene{
         }
       }
     });
+    //escucho el tiro que me dieron desde el otro jugADOR y lo proceso
+    this.socket.on('playerHitted', function(playerInfo){      
+      console.log('SOY EL QUE RECIBE! OUCH!');
+      //if(self.socket.id === playerInfo.id){
+        if(self.equipo===1){
+          console.log('entre al recibidor de hitt de destructor');
+            hitted(self.destructor.imagen.x, self.destructor.imagen.x);
+            RecibeHit(self.destructor, self.destructor.imagen, playerInfo.damage);
+        }else{
+          console.log('entre al recibidor de hitt de submarino');
+            hitted(self.submarino.imagen.x, self.submarino.imagen.y);
+            RecibeHit(self.submarino, self.submarino.imagen, playerInfo.damage);
+        }
+      //}
+    }); 
 
     // Si es el equipo 1, muestro el boton para cambiar de camara con los cargueros
     if (this.equipo === 1){

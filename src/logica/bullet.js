@@ -1,5 +1,7 @@
-export class Bullets extends Phaser.Physics.Arcade.Sprite
-  {
+import { Submarino } from '../logica/submarino.js';
+import { Destructor } from '../logica/destructor.js';
+
+export class Bullets extends Phaser.Physics.Arcade.Sprite{
     constructor (scene){
           super(scene);
           Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bullet');
@@ -16,7 +18,7 @@ export class Bullets extends Phaser.Physics.Arcade.Sprite
           this.setPosition(jugador.x, jugador.y); // posicion inicial
           //usamos el metodo numerico Math.atan para devolver el arcotangente entre el X y el Y
           this.direction = Math.atan( (reticula.x-this.x) / (reticula.y-this.y));
-          
+          console.log("dentro del fire");
           // Calcula la velocidad desde el jugador a la reticula
           if (reticula.y >= this.y){
               this.xSpeed = this.speed*Math.sin(this.direction);
@@ -40,5 +42,6 @@ export class Bullets extends Phaser.Physics.Arcade.Sprite
               this.setVisible(false);
           }
     }
-
+    
+    
 }

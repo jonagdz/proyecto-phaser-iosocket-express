@@ -1,18 +1,22 @@
+import { Bullets } from '../logica/bullet.js';
+
 export class Submarino{
 
-    constructor(nom,velocidad,profundidad,vida,posX,posY,rotacion,cod,imagen){
+    constructor(nom,velocidad,profundidad,vida,posX,posY,rotacion,cod,imagen, bullet,armas, reticula){
 
         // Atributos propios
         this.nom = nom;
         this.velocidad = velocidad;
         this.profundidad = profundidad;
-        this.vida = 8;
+        this.vida = vida;
         this.posX = posX;
         this.posY = posY;
         this.rotacion = rotacion;
         this.cod = cod;
         this.imagen = imagen;
-        //this.armas = armas;
+        this.bullet = bullet;
+        this.armas = armas;
+        this.reticula = reticula;
     };
 
     // Metodos
@@ -84,12 +88,30 @@ export class Submarino{
         this.armas = nuevaArmas;
     };
 
-    // Metodos propios
-    // Disparo
-
-    // Daño
-
-    // Metodos auxiliares
-
-    // Los metodos de Vision, Detección y Colision los heredaria de bote y habria que hacerle las modificaciones correspondientes (Ej. rango de vision x3)
+   /* manejoMira(X, Y, miraX, miraY){
+        console.log("la distancia entre mira y x", (miraX - X));
+        console.log("la distancia entre mira e Y", (miraY - Y));
+        console.log("entro al manejo de la mira");
+        //if(this.armas === 0){
+        if ((miraX - X) > 100){
+            miraX = X + 100;
+        }else if ((miraX - X) < -100){
+            miraX = X - 100;
+        }
+        if ((miraY - Y) > 100){
+            miraY = Y + 100;
+        }else if ((miraY - Y) < -100){
+            miraY = Y - 100;
+        }    
+        /*}else if(this.armas === 1){
+          if (miraX - X > 50)
+            miraX = X + 50;
+          else if (miraX - X < -50)
+            miraX = X - 50;
+          if (miraY - Y > 50)
+            miraY = Y + 50;
+          else if (miraY - Y < -50)
+            miraY = Y - 50;
+        }*/
+   // }
 }
