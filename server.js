@@ -3,7 +3,7 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const socketIO = require('socket.io');
-//const mysql = require('mysql');
+const fetch = require('node-fetch');
 
 // Instanciamos el modulo express
 const app = express();
@@ -106,5 +106,26 @@ io.on('connection', function (socket) {
       players[socket.id].hit = true
       socket.broadcast.emit('playerHitted', data)
     })
+    
+    // api url
+    const api_url = "http://localhost:8080/getPartidas";
+
+    // Defining async function
+    async function getapi(url) 
+    {
+      try 
+      {
+       const response = await fetch(url)
+       const data =  await response.json()
+       console.log(data)
+     } catch (e) {
+      //console.log(e)
+       console.log("Error de conexion al BackEnd")
+     }
+   }
+
+   socket.on('listarPartidas', function (data) {
+         getapi(api_url);
+   })
   }
 }); //EOF

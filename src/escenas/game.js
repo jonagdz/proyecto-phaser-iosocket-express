@@ -16,10 +16,12 @@ export class game extends Phaser.Scene{
     this.submarino = new Submarino('Submarino',100,0,8,0,0,0,7); // Creo el objeto submarino 
   }
 
-  // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el uso del WebSocket que me llega desde la escena anterior
+  // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
   create(){
     // DEFINICIÓN DE VARIABLES Y CONSTANTES A UTILIZAR -----------------------------------------------------------------------------------------------------------------------------------
-    const self = this;
+    var self = this
+
+    self.socket.emit('listarPartidas', {id: 2});
 
     // Grupo para los cargueros y balas
     var arrayCargueros = [];
@@ -229,6 +231,31 @@ export class game extends Phaser.Scene{
       self.physics.add.collider(self.submarino.imagen, self.costa1);
       // Se crea una colision del barco con la costa2
       self.physics.add.collider(self.submarino.imagen, self.costa2);
+
+      // PARTE PROFUNDIDAD SUBMARINO JUAN PABLO
+      self.submarino.profundo = 0;
+      self.input.keyboard.on('keydown-' + 'Q', function (event){
+        if (self.submarino.profundo == 0){
+          self.submarino.profundo = 1;
+          self.submarino.setTexture('UbootProfundidad1');
+          console.log('baje a poca profundidad');
+        }else if (self.submarino.profundo == 1){
+          self.submarino.profundo = 2;
+          console.log('baje a mucha profundidad');
+          self.submarino.setTexture('UbootProfundidad2');
+        } 
+      });
+      self.input.keyboard.on('keydown-' + 'E', function (event){
+        if (self.submarino.profundo == 1){
+          self.submarino.profundo = 0;
+          console.log('subi a la superficie');
+          self.submarino.setTexture('uboot');
+        }else if (self.submarino.profundo == 2){
+          self.submarino.profundo = 1;
+          self.submarino.setTexture('UbootProfundidad1');
+          console.log('subi a poca profundidad');
+        } 
+      })
     }
     
     // Genero todo lo relacionado a la imagen del submarino del equipo enemigo
@@ -476,7 +503,6 @@ export class game extends Phaser.Scene{
       }
     }
     
-  
     // Se intentan leer por teclado las letras M y U para mutear y desmutear la musica
     if (this.KeyMute.isDown){
       console.log('Muteo audio')
