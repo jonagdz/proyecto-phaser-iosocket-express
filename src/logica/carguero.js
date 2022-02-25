@@ -1,12 +1,19 @@
 import { Bote } from './bote.js';
 
-export class Carguero extends Bote {
+export class Carguero { // extends Bote
     
-    constructor(nom,velocidad,vida,posx,posy,rotacion,cod){
-        super(nom,velocidad,vida,posx,posy,rotacion);
+    constructor(nom,velocidad,vida,posX,posY,rotacion,cod,imagen){
+        //super(nom,velocidad,vida,posx,posy,rotacion);
 
         // Atributos propios
-        this.cod=cod;
+        this.nom = nom;
+        this.velocidad = velocidad;
+        this.vida = vida;
+        this.posX = posX;
+        this.posY = posY;
+        this.rotacion = rotacion;
+        this.cod = cod;
+        this.imagen = imagen;
     };
 
     // Metodos

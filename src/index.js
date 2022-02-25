@@ -1,9 +1,7 @@
 import { bootGame } from './escenas/bootGame.js';
+import { preGameMenu } from './escenas/preGameMenu.js';
 import { game } from './escenas/game.js';
-import { Bullets } from './logica/bullet.js';
-import { Destructor } from './logica/destructor.js';
-import { Carguero } from './logica/carguero.js';
-import { esperaFullServer } from './escenas/esperaFullServer.js';
+import { salaEspera } from './escenas/salaEspera.js';
 
 // Configuracion de Phaser
 var config = {
@@ -24,7 +22,7 @@ var config = {
       gravity: { y: 0 }
     }
   },
-  scene: [bootGame, game, esperaFullServer]
+  scene: [bootGame, preGameMenu, salaEspera, game]
 }
 
 window.onload = () =>{

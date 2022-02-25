@@ -1,14 +1,20 @@
 import { Bote } from './bote.js';
 
-export class Destructor extends Bote {
+export class Destructor { // extends Bote
     // se saca el astributo armas del destructor, ya que hay que importar y agregar la clase armas
-    constructor(nom,velocidad,vida,posx,posy,rotacion,cod){
-        super(nom,velocidad,vida,posx,posy,rotacion);
+    constructor(nom,velocidad,vida,posX,posY,rotacion,cod,imagen){
+        //super(nom,velocidad,vida,posX,posY,rotacion);
 
         // Atributos propios
+        this.nom = nom;
+        this.velocidad = velocidad;
+        this.vida = vida;
+        this.posX = posX;
+        this.posY = posY;
+        this.rotacion = rotacion;
         this.cod = cod;
+        this.imagen = imagen;
         //this.armas = armas;
-        this.vida = 8;
     };
 
     // Metodos
@@ -28,11 +34,11 @@ export class Destructor extends Bote {
     };
 
     getPosX() {
-        return this.posx;
+        return this.posX;
     };
 
     getPosY() {
-        return this.posy;
+        return this.posY;
     };
 
     getRotacion() {
@@ -79,7 +85,22 @@ export class Destructor extends Bote {
     setArmas(nuevaArmas) {
         this.armas = nuevaArmas;
     };
+    /*
+    setAngularVelocity(value){
+        this.imagen.setAngularVelocity(value);
+    }
+    setVelocityX(value){
+        this.imagen.setVelocityX(value);
+    }
 
+    setVelocityY(value){
+        this.imagen.setVelocityY(value);
+    }
+
+    setAcceleration(value){
+        this.imagen.setAcceleration(value);
+    }
+    */
     // Metodos propios
     // Disparo
 

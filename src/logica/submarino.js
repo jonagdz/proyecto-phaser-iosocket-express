@@ -1,17 +1,18 @@
 export class Submarino{
 
-    constructor(nom,velocidad,profundidad,vida,posx,posy,rotacion,cod,armas){
+    constructor(nom,velocidad,profundidad,vida,posX,posY,rotacion,cod,imagen){
 
         // Atributos propios
         this.nom = nom;
         this.velocidad = velocidad;
         this.profundidad = profundidad;
         this.vida = 8;
-        this.posx = posx;
-        this.posy = posy;
+        this.posX = posX;
+        this.posY = posY;
         this.rotacion = rotacion;
         this.cod = cod;
-        this.armas = armas;
+        this.imagen = imagen;
+        //this.armas = armas;
     };
 
     // Metodos

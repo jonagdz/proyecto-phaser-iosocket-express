@@ -12,6 +12,7 @@ export class bootGame extends Phaser.Scene{
     {
         this.load.image('uboot', './src/assets/uboot7.png');
         this.load.image('mar', './src/assets/mar.png');
+        this.load.image('fondoWaitRoom', './src/assets/fondoEscena.jpg');
         this.load.image('Blue', './src/assets/Blue2.png');
         this.load.image('bullet', 'src/assets/canonB.png');
         this.load.image('crosshair', 'src/assets/Crosshair.png')
@@ -29,6 +30,7 @@ export class bootGame extends Phaser.Scene{
 
     create()
     {
-        this.scene.start("game");
+        //this.scene.start("game");
+        this.scene.start("preGameMenu");
     }
 }
