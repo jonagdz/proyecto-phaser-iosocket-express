@@ -1,3 +1,5 @@
+import { DEF } from "../def.js";
+
 export class preGameMenu extends Phaser.Scene{
   constructor(){
       super({key:'preGameMenu'});
@@ -11,7 +13,7 @@ export class preGameMenu extends Phaser.Scene{
 
     console.log("Dentro de preGameMenu.js");
 
-    self.add.image(0, 0, 'mar').setOrigin(0).setScrollFactor(1);
+    self.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
     self.add.text(400, 200, "Seleccionar equipo destructor.", {fill: '#000000', fontSize: '40px', fontFamily: 'Arial black',}).setInteractive().on('pointerdown', () => ElegirEquipo(1));
     self.add.text(400, 600, "Seleccionar equipo submarino.", {fill: '#000000', fontSize: '40px', fontFamily: 'Arial black',}).setInteractive().on('pointerdown', () => ElegirEquipo(2));
 
@@ -34,7 +36,7 @@ export class preGameMenu extends Phaser.Scene{
 
       self.socket.emit('JugadorUnoEligeEquipo', equipoElegido);
       // Mando al jugador 1 a la sala de espera con el equipo que eligio
-      self.scene.start("salaEspera", data); 
+      self.scene.start(DEF.SCENES.LOBBY, data); 
     }
 
     self.socket.on('JugadoresListosPlayer2', function(equipoRestante){
@@ -45,13 +47,13 @@ export class preGameMenu extends Phaser.Scene{
       }
       
       // Mando al jugador 2 a game.js con el equipo que no se eligio
-      self.scene.start("game", data);
+      self.scene.start(DEF.SCENES.GAME, data);
     })
 
     // Manejo el error de que se alcanzo el maximo numero de clientes mandandolo a la sala de espera con la opcion 2
     self.socket.on('errorConexion', function(){
       //console.log("Inicio socket.on errorConexion");
-      self.scene.start("salaEspera",{ opcion:2 });
+      self.scene.start(DEF.SCENES.LOBBY,{ opcion:2 });
     });
   }
 }

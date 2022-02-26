@@ -1,3 +1,4 @@
+import { DEF } from "../def.js";
 import { Bote } from '../logica/bote.js';
 import { Bullets } from '../logica/bullet.js';
 import { Carguero } from '../logica/carguero.js';
@@ -39,7 +40,8 @@ export class game extends Phaser.Scene{
 
 
     // Cargo la imagen de fondo del mapa
-    this.mar = this.add.image(0, 0, 'mar').setOrigin(0).setScrollFactor(1).setDepth(0); 
+    this.mar = this.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1).setDepth(0);
+    //this.mar = this.add.image(0, 0, 'mar').setOrigin(0).setScrollFactor(1).setDepth(0); 
     const backgroundW = this.mar.width;
     const backgroundH = this.mar.height;
 
@@ -62,7 +64,7 @@ export class game extends Phaser.Scene{
     const maskImage = this.make.image({
       x: centroW,
       y: centroH,
-      key: 'mask',
+      key: DEF.IMAGENES.MASCARA,
       add: false
     });
     const mask = maskImage.createBitmapMask();
@@ -72,23 +74,29 @@ export class game extends Phaser.Scene{
     this.physics.world.setBounds(0, 0, backgroundW, backgroundH);
     
     // Islas
-    this.isla1 = self.physics.add.image(2100,900,'island1').setDepth(1);
+    this.isla1 = self.physics.add.image(2100,900,DEF.IMAGENES.ISLA).setDepth(1);
+   // this.isla1 = self.physics.add.image(2100,900,'island1').setDepth(1);
     this.isla1.setImmovable(true);
     this.isla1.setDisplaySize(400, 400);
-    this.isla2 = self.physics.add.image(2460,1600,'island1').setDepth(1);
+    this.isla2 = self.physics.add.image(2460,1600,DEF.IMAGENES.ISLA).setDepth(1);
+    //this.isla2 = self.physics.add.image(2460,1600,'island1').setDepth(1);
     this.isla2.setImmovable(true);
     this.isla2.setDisplaySize(400, 400);
-    this.isla3 = self.physics.add.image(3200,600,'island1').setDepth(1);
+    this.isla3 = self.physics.add.image(3200,600,DEF.IMAGENES.ISLA).setDepth(1);
+    //this.isla3 = self.physics.add.image(3200,600,'island1').setDepth(1);
     this.isla3.setImmovable(true);
     this.isla3.setDisplaySize(400, 400);
-    this.isla4 = self.physics.add.image(3400,1800,'island1').setDepth(1);
+    this.isla4 = self.physics.add.image(3400,1800,DEF.IMAGENES.ISLA).setDepth(1);
+    //this.isla4 = self.physics.add.image(3400,1800,'island1').setDepth(1);
     this.isla4.setImmovable(true);
     this.isla4.setDisplaySize(400, 400);
 
     // Costas
-    this.costa1 = self.physics.add.image(345,1078,'costa1').setDepth(1);;
+    this.costa1 = self.physics.add.image(345,1078,DEF.IMAGENES.COSTA1).setDepth(1);
+    //this.costa1 = self.physics.add.image(345,1078,'costa1').setDepth(1);;
     this.costa1.setImmovable(true);
-    this.costa2 = self.physics.add.image(6066,1078,'costa2').setDepth(1);;
+    this.costa2 = self.physics.add.image(6066,1078,DEF.IMAGENES.COSTA2).setDepth(1);
+    //this.costa2 = self.physics.add.image(6066,1078,'costa2').setDepth(1);;
     this.costa2.setImmovable(true);
 
     // Introduzco cursores y teclas utilizables
@@ -151,17 +159,20 @@ export class game extends Phaser.Scene{
       self.destructor.posY = posY;
 
       // Generamos la imagen del destructor al objeto destructor
-      self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, 'destroyer')
+      //self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, 'destroyer')
+      self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, DEF.IMAGENES.DESTRUCTOR)
       .setDisplaySize(200, 100)
       .setRotation(0)
       .setDepth(5)
       .setPushable(false);
       //guardo la reticula y el set de balas en variables propias de la clase destructor
-      self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, 'crosshair').setCollideWorldBounds(true);;
+      //self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, 'crosshair').setCollideWorldBounds(true);
+      self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, DEF.SPRITES.RETICULA).setCollideWorldBounds(true);
       self.destructor.bullet = self.playerBullets;
       self.destructor.cargas = 1;
       // Particulas
-      const particles = self.add.particles("Blue").setDepth(2) // Imagen Blue como particula
+      //const particles = self.add.particles("Blue").setDepth(2) // Imagen Blue como particula
+      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
         speed: 10, // Velocidad con la que se mueven
         scale: {start: 0.08, end: 0}, // Tamaño
@@ -206,14 +217,16 @@ export class game extends Phaser.Scene{
     // Generar destructor
     function generarDestructorEnemigo(){
       // Generamos la imagen del destructor al objeto destructor
-      self.destructor.imagen = self.physics.add.image(0,0, 'destroyer')
+      //self.destructor.imagen = self.physics.add.image(0,0, 'destroyer')
+      self.destructor.imagen = self.physics.add.image(0,0, DEF.IMAGENES.DESTRUCTOR)
       .setDisplaySize(200, 100)
       .setRotation(0)
       .setDepth(5)
       .setPushable(false);
     
       // Particulas
-      const particles = self.add.particles("Blue").setDepth(2) // Imagen Blue como particula
+      //const particles = self.add.particles("Blue").setDepth(2)
+      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
         speed: 10, // Velocidad con la que se mueven
         scale: {start: 0.08, end: 0}, // Tamaño
@@ -227,7 +240,8 @@ export class game extends Phaser.Scene{
 
     // Genero todo lo relacionado a la imagen del submarino del jugador actual
     function generarSubmarino(){
-      self.submarino.imagen = self.physics.add.image(self.submarino.posX, self.submarino.posY, 'uboot')
+      //self.submarino.imagen = self.physics.add.image(self.submarino.posX, self.submarino.posY, 'uboot')
+      self.submarino.imagen = self.physics.add.image(self.submarino.posX, self.submarino.posY, DEF.IMAGENES.UBOATP0)
       .setDisplaySize(100,50)
       .setDepth(5) // Seteo tamaño y profundidad de la imagen
       .setPushable(false);
@@ -235,9 +249,11 @@ export class game extends Phaser.Scene{
       self.submarino.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
       //guardo la reticula y el set de balas en variables propias de la clase submarino
       self.submarino.bullet = self.playerBullets;
-      self.submarino.reticula = self.physics.add.sprite(self.submarino.posX, self.submarino.posY, 'crosshair').setCollideWorldBounds(true);
+      //self.submarino.reticula = self.physics.add.sprite(self.submarino.posX, self.submarino.posY, 'crosshair').setCollideWorldBounds(true);
+      self.submarino.reticula = self.physics.add.sprite(self.submarino.posX, self.submarino.posY, DEF.SPRITES.RETICULA).setCollideWorldBounds(true);
       // Particulas
-      const particles = self.add.particles("Blue").setDepth(2) // Imagen Blue como particula
+     // const particles = self.add.particles("Blue").setDepth(2)
+      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
         speed: 10, // Velocidad con la que se mueven
         scale: {start: 0.08, end: 0}, // Tamaño
@@ -298,14 +314,16 @@ export class game extends Phaser.Scene{
     
     // Genero todo lo relacionado a la imagen del submarino del equipo enemigo
     function generarSubmarinoEnemigo(){
-      self.submarino.imagen = self.physics.add.image(1050,550, 'uboot')
+      //self.submarino.imagen = self.physics.add.image(1050,550, 'uboot')
+      self.submarino.imagen = self.physics.add.image(1050,550, DEF.IMAGENES.UBOATP0)
       .setDisplaySize(100,50)
       .setDepth(5) // Seteo tamaño y profundidad de la imagen
       .setPushable(false)
       
         
       // Particulas
-      const particles = self.add.particles("Blue").setDepth(2) // Imagen Blue como particula
+      //const particles = self.add.particles("Blue").setDepth(2)
+      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
         speed: 10, // Velocidad con la que se mueven
         scale: {start: 0.08, end: 0}, // Tamaño
@@ -347,10 +365,11 @@ export class game extends Phaser.Scene{
       // Genero las imagenes de los cargueros, colisiones, particulas, etc
       arrayCargueros.forEach(carguero => console.log('x:'+carguero.posX +' y:'+ carguero.posY));
       arrayCargueros.forEach(function(carguero){
-        carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, 'carguero').setDisplaySize(200, 75).setDepth(5) // Seteo tamaño y profundidad de la imagen
-
+        //carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, 'carguero').setDisplaySize(200, 75).setDepth(5) // Seteo tamaño y profundidad de la imagen
+        carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5)
         // Particulas
-        const particles = self.add.particles("Blue").setDepth(2) // Imagen Blue como particula
+        //const particles = self.add.particles("Blue").setDepth(2)
+        const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
         const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
           speed: 10, // Velocidad con la que se mueven
           scale: {start: 0.08, end: 0}, // Tamaño
@@ -406,7 +425,8 @@ export class game extends Phaser.Scene{
       // vea mi cambio de profundidad
       if (self.submarino.profundidad == 0){
         self.submarino.profundidad = 1;
-        self.submarino.imagen.setTexture('UbootProfundidad1');
+        //self.submarino.imagen.setTexture('UbootProfundidad1');
+        self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
         self.submarino.armas = 4;
         console.log('baje a poca profundidad');
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
@@ -415,7 +435,8 @@ export class game extends Phaser.Scene{
         // vea mi cambio de profundidad
         self.submarino.profundidad = 2;
         self.submarino.armas = -1;
-        self.submarino.imagen.setTexture('UbootProfundidad2');
+        //self.submarino.imagen.setTexture('UbootProfundidad2');
+        self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
         console.log('baje al mucha profundidad');
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
       }
@@ -428,13 +449,15 @@ export class game extends Phaser.Scene{
         self.submarino.profundidad = 0;
         self.submarino.armas = 0;
         console.log('subi a la superficie');
-        self.submarino.imagen.setTexture('uboot');
+        //self.submarino.imagen.setTexture('uboot');
+        self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
       } else if (self.submarino.profundidad == 2){
         // Idem anteriores pero subiendo de 0 a 1
         self.submarino.profundidad = 1;
         self.submarino.armas = 4;
-        self.submarino.imagen.setTexture('UbootProfundidad1');
+        //self.submarino.imagen.setTexture('UbootProfundidad1');
+        self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
         console.log('subi a poca profundidad');
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
       }
@@ -589,7 +612,8 @@ export class game extends Phaser.Scene{
     }
     //funcion que muestra la explosion en la posicion determinada
     function hitted(x, y){
-      self.explotion2 = self.add.sprite(x,y,'explot').setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
+      //self.explotion2 = self.add.sprite(x,y,'explot').setDisplaySize(100, 100).setDepth(5);
+      self.explotion2 = self.add.sprite(x,y,DEF.SPRITES.EXPLOCION).setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
       self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
       key: 'explot2',
       frames: [
@@ -604,7 +628,8 @@ export class game extends Phaser.Scene{
     }
     //funcion que muestra y destruye un jugador
     function destroyed(playerIMG){
-      self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y ,'explot').setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
+      //self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y ,'explot').setDisplaySize(100, 100).setDepth(5);
+      self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y, DEF.SPRITES.EXPLOCION).setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
       self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
       key: 'explot3',
       frames: [
@@ -746,14 +771,16 @@ export class game extends Phaser.Scene{
       //if(self.socket.id == playerInfo.id){
         if(self.equipo===1){
           if (self.submarino.profundidad === 1){
-            self.submarino.imagen.setTexture('UbootProfundidad2').setVisible(true);
+            //self.submarino.imagen.setTexture('UbootProfundidad2').setVisible(true);
+            self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2).setVisible(true);
             console.log('bajo a poca profundidad');
           }else if (self.submarino.profundidad == 2){
             self.submarino.imagen.setVisible(false);
              console.log('bajo a mucha profundidad');
          }else{
             console.log('superficie');
-            self.submarino.imagen.setTexture('uboot').setVisible(true);;
+            //self.submarino.imagen.setTexture('uboot').setVisible(true);
+            self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0).setVisible(true);
          }
         }
       if(self.submarino.profundidad === 0){
