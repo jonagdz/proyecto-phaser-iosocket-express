@@ -12,8 +12,8 @@ export class game extends Phaser.Scene{
   init(data){
     this.socket = data.socket;
     this.equipo = data.equipo;
-    this.destructor = new Destructor('Destructor',200,12,0,0,0,1,0); // Creo el objeto destructor 
-    this.submarino = new Submarino('Submarino',100,0,14,0,0,0,2); // Creo el objeto submarino 
+    this.destructor = new Destructor('Destructor',160,12,0,0,0,1,0); // Creo el objeto destructor 
+    this.submarino = new Submarino('Submarino',160,0,14,0,0,0,2); // Creo el objeto submarino 
     this.carguero1 = new Carguero('Carguero1',100,8,0,0,0,3); // Creo el objeto carguero1 
     this.carguero2 = new Carguero('Carguero2',100,8,0,0,0,4); // Creo el objeto carguero2
     this.carguero3 = new Carguero('Carguero3',100,8,0,0,0,5); // Creo el objeto carguero3
@@ -160,7 +160,7 @@ export class game extends Phaser.Scene{
       self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, 'crosshair').setCollideWorldBounds(true);;
       self.destructor.bullet = self.playerBullets;
       // Particulas
-      const particles = self.add.particles("Blue").setDepth(2) // Imagen Blue como particula
+      const particles = self.add.particles("Blue").setDepth(4) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
         speed: 10, // Velocidad con la que se mueven
         scale: {start: 0.08, end: 0}, // Tamaño
@@ -378,6 +378,7 @@ export class game extends Phaser.Scene{
       // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
       // vea mi cambio de profundidad
       if (self.submarino.profundidad == 0){
+        // VERVER - Setear velocidad del submarino cuando se sumerge y emerge
         self.submarino.profundidad = 1;
         self.submarino.imagen.setTexture('UbootProfundidad1');
         self.submarino.armas = 4;
@@ -779,11 +780,11 @@ export class game extends Phaser.Scene{
         const velX = Math.cos((this.destructor.imagen.angle - 360) * 0.01745)
         const velY = Math.sin((this.destructor.imagen.angle - 360) * 0.01745)
         if (this.cursors.up.isDown) {
-          this.destructor.imagen.setVelocityX(200 * velX)
-          this.destructor.imagen.setVelocityY(200 * velY)
+          this.destructor.imagen.setVelocityX(this.destructor.velocidad * velX)
+          this.destructor.imagen.setVelocityY(this.destructor.velocidad  * velY)
         } else if (this.cursors.down.isDown) {
-          this.destructor.imagen.setVelocityX(-100 * velX)
-          this.destructor.imagen.setVelocityY(-100 * velY)
+          this.destructor.imagen.setVelocityX(-(this.destructor.velocidad/2) * velX)
+          this.destructor.imagen.setVelocityY(-(this.destructor.velocidad/2) * velY)
         } else {
           // Seteo todo en 0 porque no se esta moviendo
           this.destructor.imagen.setAcceleration(0)
@@ -814,6 +815,7 @@ export class game extends Phaser.Scene{
         }
       }
       
+      /*
       // Agregamos el movimiento de los cargueros con las teclas WASD y seteamos la velocidad de rotacion de giro del barco
       if (this.carguero1){
         if (this.left.isDown && (this.up.isDown || this.down.isDown)) {
@@ -858,6 +860,7 @@ export class game extends Phaser.Scene{
           rotation: this.carguero1.imagen.rotation
         }
       }
+      */
     }else{
       if (this.submarino){
         if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
@@ -873,11 +876,11 @@ export class game extends Phaser.Scene{
         const velX = Math.cos((this.submarino.imagen.angle - 360) * 0.01745)
         const velY = Math.sin((this.submarino.imagen.angle - 360) * 0.01745)
         if (this.cursors.up.isDown) {
-          this.submarino.imagen.setVelocityX(200 * velX)
-          this.submarino.imagen.setVelocityY(200 * velY)
+          this.submarino.imagen.setVelocityX(this.submarino.velocidad  * velX)
+          this.submarino.imagen.setVelocityY(this.submarino.velocidad * velY)
         } else if (this.cursors.down.isDown) {
-          this.submarino.imagen.setVelocityX(-100 * velX)
-          this.submarino.imagen.setVelocityY(-100 * velY)
+          this.submarino.imagen.setVelocityX(-(this.submarino.velocidad/2) * velX)
+          this.submarino.imagen.setVelocityY(-(this.submarino.velocidad/2) * velY)
         } else {
           this.submarino.imagen.setAcceleration(0)
         }
