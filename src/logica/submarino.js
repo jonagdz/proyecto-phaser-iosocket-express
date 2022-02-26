@@ -6,7 +6,7 @@ export class Submarino{
         this.nom = nom;
         this.velocidad = velocidad;
         this.profundidad = profundidad;
-        this.vida = 8;
+        this.vida = vida;
         this.posX = posX;
         this.posY = posY;
         this.rotacion = rotacion;
