@@ -1,10 +1,10 @@
 import { Submarino } from '../logica/submarino.js';
 import { Destructor } from '../logica/destructor.js';
-
+import { DEF } from "../def.js";
 export class Bullets extends Phaser.Physics.Arcade.Sprite{
     constructor (scene){
           super(scene);
-          Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bullet');
+          Phaser.GameObjects.Image.call(this, scene, 0, 0, DEF.IMAGENES.BALA);
           this.speed = 1;
           this.born = 0;
           this.direction = 0;
