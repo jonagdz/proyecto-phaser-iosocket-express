@@ -20,8 +20,8 @@ export const DEF = {
         DESTRUCTOR: "Destroyer.png",
         CARGUERO: "liberty.png",
         UBOATP0: "uboot7.png",
-        UBOATP1: "UbootProfundidad1.png",
-        UBOATP2: "UbootProfundidad2.png",
+        UBOATP1: "uboot7P1.png",
+        UBOATP2: "uboot7P3.png",
         MASCARA: "mask.png"
     },
 
