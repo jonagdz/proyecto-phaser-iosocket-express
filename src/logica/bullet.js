@@ -18,7 +18,6 @@ export class Bullets extends Phaser.Physics.Arcade.Sprite{
           this.setPosition(jugador.x, jugador.y); // posicion inicial
           //usamos el metodo numerico Math.atan para devolver el arcotangente entre el X y el Y
           this.direction = Math.atan( (reticula.x-this.x) / (reticula.y-this.y));
-          console.log("dentro del fire");
           // Calcula la velocidad desde el jugador a la reticula
           if (reticula.y >= this.y){
               this.xSpeed = this.speed*Math.sin(this.direction);

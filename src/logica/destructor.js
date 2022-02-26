@@ -3,7 +3,7 @@ import { Bullets } from '../logica/bullet.js';
 
 export class Destructor { // extends Bote
     // se saca el astributo armas del destructor, ya que hay que importar y agregar la clase armas
-    constructor(nom,velocidad,vida,posX,posY,rotacion,cod,imagen,bullet,armas,reticula){
+    constructor(nom,velocidad,vida,posX,posY,rotacion,cod,imagen,bullet,armas,reticula, cargas){
         //super(nom,velocidad,vida,posX,posY,rotacion);
 
         // Atributos propios
@@ -18,6 +18,7 @@ export class Destructor { // extends Bote
         this.bullet = bullet;
         this.armas = armas;
         this.reticula = reticula;
+        this.cargas = cargas;
     };
 
     // Metodos
@@ -56,6 +57,10 @@ export class Destructor { // extends Bote
         return this.armas;
     };
 
+    getCargas(){
+        return this.cargas;
+    }
+
     // Setters
     setNom(nuevoNom) {
         this.nom = nuevoNom;
@@ -88,6 +93,9 @@ export class Destructor { // extends Bote
     setArmas(nuevaArmas) {
         this.armas = nuevaArmas;
     };
+    setCargas(nuevaCarga){
+        this.cargas = nuevaCarga;
+    }
 
     /*manejoMira(X, Y, miraX, miraY){
         let distX = miraX - X; // X distancia entre el jugador y la mira

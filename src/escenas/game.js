@@ -12,7 +12,7 @@ export class game extends Phaser.Scene{
   init(data){
     this.socket = data.socket;
     this.equipo = data.equipo;
-    this.destructor = new Destructor('Destructor',200,8,0,0,0,1,0,0,0,0); // Creo el objeto destructor 
+    this.destructor = new Destructor('Destructor',200,8,0,0,0,1,0,0,0,0,0); // Creo el objeto destructor 
     this.submarino = new Submarino('Submarino',100,0,8,0,0,0,7,0,0,0,0); // Creo el objeto submarino 
   }
 
@@ -151,6 +151,7 @@ export class game extends Phaser.Scene{
       //guardo la reticula y el set de balas en variables propias de la clase destructor
       self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, 'crosshair').setCollideWorldBounds(true);;
       self.destructor.bullet = self.playerBullets;
+      self.destructor.cargas = 1;
       // Particulas
       const particles = self.add.particles("Blue").setDepth(-1) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
@@ -257,9 +258,33 @@ export class game extends Phaser.Scene{
       // Se crea una colision del barco con la costa2
       self.physics.add.collider(self.submarino.imagen, self.costa2);
       // Si el submarino se encuentra en la superficie, que colisione con el destructor
-      
       self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
-
+      
+      // Se crea el evento de cambio de armas
+      self.input.keyboard.on('keydown-' + 'Z', function (event){
+      //si esta en superficie, que cambie de armas tranquilamente
+      if(self.submarino.profundidad === 0){
+        if (self.submarino.armas === 0){
+          self.submarino.armas = 1;
+          console.log('Cambio a Torpedos');
+        }else{
+          self.submarino.armas = 0;
+          console.log('cambio a canon');
+        }
+      }else if(self.submarino.profundidad === 1){
+        //si esta a profundidad 1 que solo pueda usar el arma 1, torpedos
+        if (self.submarino.armas === 1){
+          self.submarino.armas = 1;
+          console.log('Solo Torpedos a esta profundidad');
+        }else{
+          self.submarino.armas = 1;
+          console.log('Solo Torpedos a esta profundidad');
+        }  
+      }else if(self.submarino.profundidad === 2){
+        //si esta en profundidad 2 que no pueda disparar
+        self.submarino.armas = -1;
+      }  
+    });
       
     }
     
@@ -331,7 +356,7 @@ export class game extends Phaser.Scene{
     };
 
     // SETEOS DE PROFUNDIDAD:
-    // Con Q bajas y con E subis, si bajas a nivel 1 podes disparar solo torpedos, en nivel 2 nada
+    // funcion que al presionar la tecla Q, el submarino baja, si bajas a nivel 1 podes disparar solo torpedos, en nivel 2 nada
     self.input.keyboard.on('keydown-' + 'Q', function (event){
       // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
       // vea mi cambio de profundidad
@@ -339,6 +364,7 @@ export class game extends Phaser.Scene{
         self.submarino.profundidad = 1;
         self.submarino.imagen.setTexture('UbootProfundidad1');
         self.submarino.armas = 4;
+        console.log('baje a poca profundidad');
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
       }else if (self.submarino.profundidad == 1){
         // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
@@ -346,12 +372,12 @@ export class game extends Phaser.Scene{
         self.submarino.profundidad = 2;
         self.submarino.armas = -1;
         self.submarino.imagen.setTexture('UbootProfundidad2');
+        console.log('baje al mucha profundidad');
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
       }
-        console.log('ACA REMUEVE LA COLISION');
         self.physics.world.removeCollider(self.colliderSub); 
     });
-
+    //funcion que al precionar la tecla E, el submarino sube
     self.input.keyboard.on('keydown-' + 'E', function (event){
       // Idem anteriores pero subiendo de 1 a 0
       if (self.submarino.profundidad == 1){
@@ -369,11 +395,20 @@ export class game extends Phaser.Scene{
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
       }
       if(self.submarino.profundidad === 0){
-        console.log("ACA ANADE LA COLISION");
         self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
       }
     });
 
+    //funcion que al precionar la tecla V, cambia la profundidad de las cargas de profundidad del destructor
+    self.input.keyboard.on('keydown-' + 'V', function (event){
+     if(self.destructor.cargas === 1){
+       self.destructor.cargas = 2;
+       console.log('detonador para mucha profundidad');
+     }else{
+       self.destructor.cargas = 1;
+       console.log('detonador para poca profundidad');
+     }
+    });
 
     //funcion que recibe un click y ejecuta el evento disparo, el cual activa una bala del set de balas de la clase
     this.input.on('pointerdown', function (pointer, time) {
@@ -381,12 +416,12 @@ export class game extends Phaser.Scene{
         //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.destructor.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
         //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
-        corchazo(self.destructor.imagen, bullet, self.destructor.reticula, self.submarino.imagen);
+        Disparo(self.destructor.imagen, bullet, self.destructor.reticula, self.submarino.imagen);
       }else{
         //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
         //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
-        corchazo(self.submarino.imagen, bullet, self.submarino.reticula, self.destructor.imagen);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.destructor.imagen);
       }
       //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
       //dano al enemigo si el ya te gano
@@ -401,42 +436,15 @@ export class game extends Phaser.Scene{
       if(self.submarino.armas === -1){
         bullet.destroy();
       }
+      /*if(self.destructor.cargas != self.submarino.profundidad){
+        bullet.destroy();
+      }*/
     }, this);
 
 
-    
-    
-    // Se crea el evento de cambio de armas para el destructor
-    self.input.keyboard.on('keydown-' + 'Z', function (event){
-      //si esta en superficie, que cambie de armas tranquilamente
-      if(self.submarino.profundidad === 0){
-        if (self.submarino.armas === 0){
-          self.submarino.armas = 1;
-          console.log('Cambio a Torpedos');
-        }else{
-          self.submarino.armas = 0;
-          console.log('cambio a canon');
-        }
-      }else if(self.submarino.profundidad === 1){
-        //si esta a profundidad 1 que solo pueda usar el arma 1, torpedos
-        if (self.submarino.armas === 1){
-          self.submarino.armas = 1;
-          console.log('Solo Torpedos a esta profundidad');
-        }else{
-          self.submarino.armas = 1;
-          console.log('Solo Torpedos a esta profundidad');
-        }  
-      }else if(self.submarino.profundidad === 2){
-        //si esta en profundidad 2 que no pueda disparar
-        self.submarino.armas = -1;
-      }  
-    });
-
     //FUNCION DE DISPARO DEL JUGADOR
-    function corchazo(player, bullet, reticula, enemyImag){
-      console.log("dentro del balazo");
+    function Disparo(player, bullet, reticula, enemyImag){
       if (bullet){
-        console.log("en la bala");
           bullet.fire(player, reticula); //LLAMA AL METODO DISPARAR DE BULLET
           bullet.setCollideWorldBounds(true);
           bullet.body.onWorldBounds = true;
@@ -472,23 +480,36 @@ export class game extends Phaser.Scene{
           });
       }
     }
+    //funcion que maneja el dano hecho por cada vez que se lanza el evento disparo del click, segun el tipo de arma es el dano hecho
+    //el dano luego es enviado por socket al otro jugador. Tambien realiza la gestion de vida del oponente - danio para poder
+    //mostrar que estamos haciendole danio al otro jugador y que muere.
     function handleHit(enemy){
-      console.log('DENTRO DEL MANEJO DE DISPARO DEL QUE DISPARA');
-      hitted(enemy.x, enemy.y);    
+         
       if(self.equipo === 1){
-          if(self.destructor.armas === 0){
-              danio = 1;
+          //seteo del arma canion del Destructor
+          if(self.destructor.armas === 0 && self.submarino.profundidad === 0){
+              hitted(enemy.x, enemy.y); 
+              danio = 5;
               damAcuD = damAcuD + danio;              
               self.socket.emit('playerHit', {Dam: danio});
+              console.log('danio al enemigo', danio);
               if(damAcuD >= self.submarino.vida){
                 destroyed(self.submarino.imagen);
                 self.submarino.imagen.setActive(false);
                 self.submarino.imagen.setVisible(false);
               }
+            //seteo del arma carga de profundidad del Destructor
           }else if (self.destructor.armas === 1){
-              danio = 3;
+              if(self.destructor.cargas === self.submarino.profundidad){
+                danio = 3;
+                console.log('danio al enemigo', danio);
+                hitted(enemy.x, enemy.y); 
+                self.socket.emit('playerHit', {Dam: danio});
+              }else{
+                danio = 0;
+                console.log('danio al enemigo', danio);
+              }  
               damAcuD = damAcuD + danio;              
-              self.socket.emit('playerHit', {Dam: danio});
               if(damAcuD >= self.submarino.vida){
                 destroyed(self.submarino.imagen);
                 self.submarino.imagen.setActive(false);
@@ -497,8 +518,10 @@ export class game extends Phaser.Scene{
           }
       }else{
         if(self.submarino.armas === 0){
+          hitted(enemy.x, enemy.y); 
           danio = 1;
-          damAcuS = damAcuS + danio;              
+          damAcuS = damAcuS + danio;
+          console.log('danio al enemigo', danio);              
           self.socket.emit('playerHit', {Dam: danio});
           if(damAcuS >= self.destructor.vida){
             destroyed(self.destructor.imagen);
@@ -506,8 +529,10 @@ export class game extends Phaser.Scene{
             self.destructor.imagen.setVisible(false);
           }
         }else if (self.submarino.armas === 1 || self.submarino.armas === 4){
+          hitted(enemy.x, enemy.y); 
           danio = 4;
-          damAcuS = damAcuS + danio;                            
+          damAcuS = damAcuS + danio;
+          console.log('danio al enemigo', danio);                            
           self.socket.emit('playerHit', {Dam: danio});
           if(damAcuS >= self.destructor.vida){
             destroyed(self.destructor.imagen);
@@ -535,7 +560,6 @@ export class game extends Phaser.Scene{
     }
     //funcion que muestra y destruye un jugador
     function destroyed(playerIMG){
-      console.log('Entro a destroyed');
       self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y ,'explot').setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
       self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
       key: 'explot3',
@@ -550,19 +574,17 @@ export class game extends Phaser.Scene{
       hideOnComplete: false,
       
       });
-      console.log('entro a la animacion destruccion');
       self.explotion3.play('explot3');
     }
     //funcion que procesa el dano y el porcentaje de acierto
     function RecibeHit(player, playerIMG, damage){
-      console.log('dentro de RecibeHit');
       hitted(playerIMG.x, playerIMG.y);
       //aca van las funciones de acierto
       if(player.vida > 0){
-        console.log('la vida es mayor que 0', player.vida);
+        console.log('Vida Restante', player.vida);
         player.vida = player.vida - damage;
         
-        console.log('la vida luego del danio', player.vida);
+        console.log('Vida Restante', player.vida);
       }
       if(player.vida <= 0){
         console.log('vida menor que 0');
@@ -589,7 +611,6 @@ export class game extends Phaser.Scene{
               self.destructor.reticula.y = self.destructor.imagen.y +distMax;
             else if (self.destructor.reticula.y - self.destructor.imagen.y < -distMax)
               self.destructor.reticula.y = self.destructor.imagen.y-distMax;
-          //self.destructor.manejoMira(self.destructor.imagen.x, self.destructor.imagen.y, self.destructor.reticula.x, self.destructor.reticula.y);
         }else{
           distMax = 80;
           if ((self.destructor.reticula.x - self.destructor.imagen.x) > distMax)
@@ -661,22 +682,18 @@ export class game extends Phaser.Scene{
     });
     //escucho el tiro que me dieron desde el otro jugADOR y lo proceso
     this.socket.on('playerHitted', function(playerInfo){      
-      console.log('SOY EL QUE RECIBE! OUCH!');
       //if(self.socket.id === playerInfo.id){
         if(self.equipo===1){
-          console.log('entre al recibidor de hitt de destructor');
-            hitted(self.destructor.imagen.x, self.destructor.imagen.x);
+            //hitted(self.destructor.imagen.x, self.destructor.imagen.x);
             RecibeHit(self.destructor, self.destructor.imagen, playerInfo.damage);
         }else{
-          console.log('entre al recibidor de hitt de submarino');
-            hitted(self.submarino.imagen.x, self.submarino.imagen.y);
+            //hitted(self.submarino.imagen.x, self.submarino.imagen.y);
             RecibeHit(self.submarino, self.submarino.imagen, playerInfo.damage);
         }
       //}
     }); 
 
     this.socket.on('playerUnder', function(playerInfo){      
-      console.log('estoy debajo');
       self.submarino.profundidad = playerInfo.deep;
       //if(self.socket.id == playerInfo.id){
         if(self.equipo===1){
@@ -692,7 +709,6 @@ export class game extends Phaser.Scene{
          }
         }
       if(self.submarino.profundidad === 0){
-        console.log("entras aca loco??");
         self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
       }
       else{
