@@ -66,6 +66,7 @@ io.on('connection', function (socket) {
         playerId: socket.id,
         damage: 0,
         equipo: 1,
+        deep: 0
       }
       // Seteo esta variable para saber que el primer jugador ya se conectó
       primerJugadorConectado = 1;
@@ -80,6 +81,7 @@ io.on('connection', function (socket) {
         playerId: socket.id,
         damage: 0,
         equipo: otroEquipo,
+        deep: 0
       }
 
       // Notifico al jugador 1 que el jugador ya ingreso, para que vaya al juego, y mando directo al jugador 2 al juego
@@ -106,7 +108,11 @@ io.on('connection', function (socket) {
       players[socket.id].damage = data.Dam;
       socket.broadcast.emit('playerHitted', players[socket.id])
     })
-    
+
+    socket.on('playerProf', function(data){
+      players[socket.id].deep = data.Pr;
+      socket.broadcast.emit('playerUnder', players[socket.id])
+    })
     // api url
     const api_url = "http://localhost:8080/getPartidas";
 

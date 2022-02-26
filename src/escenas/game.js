@@ -146,9 +146,11 @@ export class game extends Phaser.Scene{
       self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, 'destroyer')
       .setDisplaySize(200, 100)
       .setRotation(0)
+      .setDepth(5)
+      .setPushable(false);
+      //guardo la reticula y el set de balas en variables propias de la clase destructor
       self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, 'crosshair').setCollideWorldBounds(true);;
       self.destructor.bullet = self.playerBullets;
-      //self.destructor.vida = 8;
       // Particulas
       const particles = self.add.particles("Blue").setDepth(-1) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
@@ -156,7 +158,7 @@ export class game extends Phaser.Scene{
         scale: {start: 0.08, end: 0}, // Tamaño
         blendMode: "ADD" // Efecto a aplicar
       })
-      particles.setPosition(0, -11)
+      particles.setPosition(self.destructor.imagen.x, self.destructor.imagen.y)
       emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
       
       // Se indica que la camara siga al destructor
@@ -177,7 +179,10 @@ export class game extends Phaser.Scene{
       self.physics.add.collider(self.destructor.imagen, self.costa1);
       // Se crea una colision del barco con la costa2
       self.physics.add.collider(self.destructor.imagen, self.costa2);
-      // Se crea el evento de cambio de armas para el destructor
+
+      self.colliderSub = self.physics.add.collider(self.destructor.imagen, self.submarino.imagen);
+
+      // Se crea el evento de cambio de armas para el destructor, 0 es para canion, 1 para cargas de profundidad
       self.input.keyboard.on('keydown-' + 'Z', function (event){
         if (self.destructor.armas == 0){
           self.destructor.armas = 1;
@@ -192,7 +197,11 @@ export class game extends Phaser.Scene{
     // Generar destructor
     function generarDestructorEnemigo(){
       // Generamos la imagen del destructor al objeto destructor
-      self.destructor.imagen = self.physics.add.image(0,0, 'destroyer').setDisplaySize(200, 100).setRotation(0) 
+      self.destructor.imagen = self.physics.add.image(0,0, 'destroyer')
+      .setDisplaySize(200, 100)
+      .setRotation(0)
+      .setDepth(5)
+      .setPushable(false);
     
       // Particulas
       const particles = self.add.particles("Blue").setDepth(-1) // Imagen Blue como particula
@@ -203,16 +212,21 @@ export class game extends Phaser.Scene{
       })
       particles.setPosition(0,-1)
       emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
+      
+      self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
     }
 
     // Genero todo lo relacionado a la imagen del submarino del jugador actual
     function generarSubmarino(){
-      self.submarino.imagen = self.physics.add.image(self.submarino.posX, self.submarino.posY, 'uboot').setDisplaySize(100,50).setDepth(0) // Seteo tamaño y profundidad de la imagen
+      self.submarino.imagen = self.physics.add.image(self.submarino.posX, self.submarino.posY, 'uboot')
+      .setDisplaySize(100,50)
+      .setDepth(5) // Seteo tamaño y profundidad de la imagen
+      .setPushable(false);
       self.submarino.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
       self.submarino.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+      //guardo la reticula y el set de balas en variables propias de la clase submarino
       self.submarino.bullet = self.playerBullets;
       self.submarino.reticula = self.physics.add.sprite(self.submarino.posX, self.submarino.posY, 'crosshair').setCollideWorldBounds(true);
-      //self.submarino.vida = 7;
       // Particulas
       const particles = self.add.particles("Blue").setDepth(-1) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
@@ -220,13 +234,14 @@ export class game extends Phaser.Scene{
         scale: {start: 0.08, end: 0}, // Tamaño
         blendMode: "ADD" // Efecto a aplicar
       })
-      particles.setPosition(0, -11)
+      particles.setPosition(self.submarino.imagen.x, self.submarino.imagen.y)
       emitter.startFollow(self.submarino.imagen) // Le indicamos que sigan al objeto barco.
 
       // Se indica que la camara siga al componente barco
       self.cameras.main.startFollow(self.submarino.imagen,true, 0.09, 0.09); 
       // Zoom de la cámara
       self.cameras.main.setZoom(1.4);
+      
       // Se crea una colision del barco con la isla
       self.physics.add.collider(self.submarino.imagen, self.isla1); 
       self.physics.add.collider(self.submarino.imagen, self.isla2); 
@@ -241,46 +256,20 @@ export class game extends Phaser.Scene{
       self.physics.add.collider(self.submarino.imagen, self.costa1);
       // Se crea una colision del barco con la costa2
       self.physics.add.collider(self.submarino.imagen, self.costa2);
+      // Si el submarino se encuentra en la superficie, que colisione con el destructor
+      
+      self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
 
-      // PARTE PROFUNDIDAD SUBMARINO JUAN PABLO
-      /*
-      self.input.keyboard.on('keydown-' + 'Q', function (event){
-        if (self.submarino.profundo == 0){
-          self.submarino.profundo = 1;
-          self.submarino.setTexture('UbootProfundidad1');
-          console.log('baje a poca profundidad');
-        }else if (self.submarino.profundo == 1){
-          self.submarino.profundo = 2;
-          console.log('baje a mucha profundidad');
-          self.submarino.setTexture('UbootProfundidad2');
-        } 
-      });
-      self.input.keyboard.on('keydown-' + 'E', function (event){
-        if (self.submarino.profundo == 1){
-          self.submarino.profundo = 0;
-          console.log('subi a la superficie');
-          self.submarino.setTexture('uboot');
-        }else if (self.submarino.profundo == 2){
-          self.submarino.profundo = 1;
-          self.submarino.setTexture('UbootProfundidad1');
-          console.log('subi a poca profundidad');
-        } 
-      });*/
-      // Se crea el evento de cambio de armas para el destructor
-      self.input.keyboard.on('keydown-' + 'Z', function (event){
-        if (self.submarino.armas === 0){
-          self.submarino.armas = 1;
-          console.log('Cambio a Torpedos');
-        }else{
-          self.submarino.armas = 0;
-          console.log('cambio a canon');
-        }
-      });
+      
     }
     
     // Genero todo lo relacionado a la imagen del submarino del equipo enemigo
     function generarSubmarinoEnemigo(){
-      self.submarino.imagen = self.physics.add.image(1050,550, 'uboot').setDisplaySize(100,50).setDepth(0) // Seteo tamaño y profundidad de la imagen
+      self.submarino.imagen = self.physics.add.image(1050,550, 'uboot')
+      .setDisplaySize(100,50)
+      .setDepth(5) // Seteo tamaño y profundidad de la imagen
+      .setPushable(false)
+      
         
       // Particulas
       const particles = self.add.particles("Blue").setDepth(-1) // Imagen Blue como particula
@@ -289,7 +278,9 @@ export class game extends Phaser.Scene{
         scale: {start: 0.08, end: 0}, // Tamaño
         blendMode: "ADD" // Efecto a aplicar
       })
-      particles.setPosition(0, -11)
+      particles.setPosition(0, -11);
+      self.colliderSub = self.physics.add.collider(self.destructor.imagen, self.submarino.imagen);
+
     }
 
     // Funcion para generarle las imagenes y las particulas a cada barco
@@ -339,20 +330,110 @@ export class game extends Phaser.Scene{
       })
     };
 
+    // SETEOS DE PROFUNDIDAD:
+    // Con Q bajas y con E subis, si bajas a nivel 1 podes disparar solo torpedos, en nivel 2 nada
+    self.input.keyboard.on('keydown-' + 'Q', function (event){
+      // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
+      // vea mi cambio de profundidad
+      if (self.submarino.profundidad == 0){
+        self.submarino.profundidad = 1;
+        self.submarino.imagen.setTexture('UbootProfundidad1');
+        self.submarino.armas = 4;
+        self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+      }else if (self.submarino.profundidad == 1){
+        // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
+        // vea mi cambio de profundidad
+        self.submarino.profundidad = 2;
+        self.submarino.armas = -1;
+        self.submarino.imagen.setTexture('UbootProfundidad2');
+        self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+      }
+        console.log('ACA REMUEVE LA COLISION');
+        self.physics.world.removeCollider(self.colliderSub); 
+    });
 
-    //CUANDO SE HAGA EL INPUT DE CLICK, ACTIVA LA VISIBILIDAD Y ACTIVIDAD DE LAS BALAS DESDE EL BARCO A LA RETICULA
+    self.input.keyboard.on('keydown-' + 'E', function (event){
+      // Idem anteriores pero subiendo de 1 a 0
+      if (self.submarino.profundidad == 1){
+        self.submarino.profundidad = 0;
+        self.submarino.armas = 0;
+        console.log('subi a la superficie');
+        self.submarino.imagen.setTexture('uboot');
+        self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+      } else if (self.submarino.profundidad == 2){
+        // Idem anteriores pero subiendo de 0 a 1
+        self.submarino.profundidad = 1;
+        self.submarino.armas = 4;
+        self.submarino.imagen.setTexture('UbootProfundidad1');
+        console.log('subi a poca profundidad');
+        self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+      }
+      if(self.submarino.profundidad === 0){
+        console.log("ACA ANADE LA COLISION");
+        self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+      }
+    });
+
+
+    //funcion que recibe un click y ejecuta el evento disparo, el cual activa una bala del set de balas de la clase
     this.input.on('pointerdown', function (pointer, time) {
       if(self.equipo === 1){
+        //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.destructor.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
+        //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
         corchazo(self.destructor.imagen, bullet, self.destructor.reticula, self.submarino.imagen);
       }else{
+        //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
+        //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
         corchazo(self.submarino.imagen, bullet, self.submarino.reticula, self.destructor.imagen);
+      }
+      //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
+      //dano al enemigo si el ya te gano
+      if(self.destructor.vida <= 0){
+        bullet.destroy();
+      }
+      //idem anterior
+      if(self.submarino.vida <= 0){
+        bullet.destroy();
+      }
+      //si el submarino no tiene armas porque esta sumergido
+      if(self.submarino.armas === -1){
+        bullet.destroy();
       }
     }, this);
 
+
+    
+    
+    // Se crea el evento de cambio de armas para el destructor
+    self.input.keyboard.on('keydown-' + 'Z', function (event){
+      //si esta en superficie, que cambie de armas tranquilamente
+      if(self.submarino.profundidad === 0){
+        if (self.submarino.armas === 0){
+          self.submarino.armas = 1;
+          console.log('Cambio a Torpedos');
+        }else{
+          self.submarino.armas = 0;
+          console.log('cambio a canon');
+        }
+      }else if(self.submarino.profundidad === 1){
+        //si esta a profundidad 1 que solo pueda usar el arma 1, torpedos
+        if (self.submarino.armas === 1){
+          self.submarino.armas = 1;
+          console.log('Solo Torpedos a esta profundidad');
+        }else{
+          self.submarino.armas = 1;
+          console.log('Solo Torpedos a esta profundidad');
+        }  
+      }else if(self.submarino.profundidad === 2){
+        //si esta en profundidad 2 que no pueda disparar
+        self.submarino.armas = -1;
+      }  
+    });
+
     //FUNCION DE DISPARO DEL JUGADOR
-    function corchazo(player, bullet, reticula, enemyImag, enemyPure){
+    function corchazo(player, bullet, reticula, enemyImag){
       console.log("dentro del balazo");
       if (bullet){
         console.log("en la bala");
@@ -424,7 +505,7 @@ export class game extends Phaser.Scene{
             self.destructor.imagen.setActive(false);
             self.destructor.imagen.setVisible(false);
           }
-        }else if (self.submarino.armas === 1){
+        }else if (self.submarino.armas === 1 || self.submarino.armas === 4){
           danio = 4;
           damAcuS = damAcuS + danio;                            
           self.socket.emit('playerHit', {Dam: danio});
@@ -475,7 +556,7 @@ export class game extends Phaser.Scene{
     //funcion que procesa el dano y el porcentaje de acierto
     function RecibeHit(player, playerIMG, damage){
       console.log('dentro de RecibeHit');
-      hitted(player.x, player.y);
+      hitted(playerIMG.x, playerIMG.y);
       //aca van las funciones de acierto
       if(player.vida > 0){
         console.log('la vida es mayor que 0', player.vida);
@@ -526,7 +607,7 @@ export class game extends Phaser.Scene{
           self.submarino.reticula.x += pointer.movementX;
           self.submarino.reticula.y += pointer.movementY;
         }
-        if(self.submarino.armas == 0){
+        if(self.submarino.armas === 0){
           distMax = 300;
           if ((self.submarino.reticula.x - self.submarino.imagen.x) > distMax)
               self.submarino.reticula.x = self.submarino.imagen.x +distMax;
@@ -536,7 +617,7 @@ export class game extends Phaser.Scene{
               self.submarino.reticula.y = self.submarino.imagen.y +distMax;
             else if (self.submarino.reticula.y - self.submarino.imagen.y < -distMax)
               self.submarino.reticula.y = self.submarino.imagen.y-distMax;
-        }else{
+        }else if(self.submarino.armas === 1 || self.submarino.armas === 4){
           distMax = 150;
             if ((self.submarino.reticula.x - self.submarino.imagen.x) > distMax)
                 self.submarino.reticula.x = self.submarino.imagen.x +distMax;
@@ -594,6 +675,30 @@ export class game extends Phaser.Scene{
       //}
     }); 
 
+    this.socket.on('playerUnder', function(playerInfo){      
+      console.log('estoy debajo');
+      self.submarino.profundidad = playerInfo.deep;
+      //if(self.socket.id == playerInfo.id){
+        if(self.equipo===1){
+          if (self.submarino.profundidad === 1){
+            self.submarino.imagen.setTexture('UbootProfundidad2').setVisible(true);
+            console.log('bajo a poca profundidad');
+          }else if (self.submarino.profundidad == 2){
+            self.submarino.imagen.setVisible(false);
+             console.log('bajo a mucha profundidad');
+         }else{
+            console.log('superficie');
+            self.submarino.imagen.setTexture('uboot').setVisible(true);;
+         }
+        }
+      if(self.submarino.profundidad === 0){
+        console.log("entras aca loco??");
+        self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+      }
+      else{
+        self.physics.world.removeCollider(self.colliderSub);
+      }
+    }); 
     // Si es el equipo 1, muestro el boton para cambiar de camara con los cargueros
     if (this.equipo === 1){
       const btnCamaraCarguero = this.add.text(600, 600, 'BOTON PARA CAMBIAR DE CAMARA CON LOS CARGUEROS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(1));
