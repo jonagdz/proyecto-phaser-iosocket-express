@@ -23,7 +23,15 @@ export const DEF = {
         UBOATP1: "uboot7P1.png",
         UBOATP2: "uboot7P3.png",
         MASCARA: "mask.png",
-        LARGAVISTAS: "maskLongView.png"
+        LARGAVISTAS: "maskLongView.png",
+        BOTONDESTROYER: "boton.png",
+        BOTONUBOOT:"botonuboot.png",
+        FLECHAIZQ:"flechaizq.png",
+        HOME: "home.png",
+        INFO: "information.png",
+        INFOTXT: "infotext.png",
+        CLOSE: "close.png"
+
     },
 
     AUDIO: {
@@ -33,5 +41,11 @@ export const DEF = {
     SPRITES: {
         RETICULA: "Crosshair.png",
         EXPLOSION: "explosion.png",
+        DESTROYS: "destroy.png",
+        UBOOT: "uboot.png",
+        INFO: "info.png",
+        HOMES: "homejj.png",
+        LOADS: "load.png"
+
     },
 };

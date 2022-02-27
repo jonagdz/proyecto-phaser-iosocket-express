@@ -30,6 +30,24 @@ export class bootGame extends Phaser.Scene{
             if(sprite.includes("EXP"))
             {
                 this.load.atlas("explot",DEF.SPRITES[sprite],'./explosion.json');
+                
+            }
+            if(sprite.includes("INF")){
+                this.load.atlas('infos', DEF.SPRITES[sprite],'./info.json');
+                
+            }
+            if(sprite.includes("DEST")){
+                this.load.atlas('destroyy', DEF.SPRITES[sprite],'./destroy.json');
+
+            }
+            if(sprite.includes("UBOOT")){
+                this.load.atlas('uboots', DEF.SPRITES[sprite],'./uboot.json');
+            }
+            if(sprite.includes("HOMES")){
+                this.load.atlas('homes', DEF.SPRITES[sprite],'./homejj.json');
+            }
+            if(sprite.includes("LOAD")){
+                this.load.atlas('load', DEF.SPRITES[sprite],'./load.json');
             }
             else
             {
