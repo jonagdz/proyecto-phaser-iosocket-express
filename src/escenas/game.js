@@ -251,6 +251,9 @@ export class game extends Phaser.Scene{
       self.submarino.bullet = self.playerBullets;
       //self.submarino.reticula = self.physics.add.sprite(self.submarino.posX, self.submarino.posY, 'crosshair').setCollideWorldBounds(true);
       self.submarino.reticula = self.physics.add.sprite(self.submarino.posX, self.submarino.posY, DEF.SPRITES.RETICULA).setCollideWorldBounds(true);
+      self.submarino.reticula.setDrag(1000)
+      self.submarino.reticula.x += 300;
+      //self.submarino.reticula.y += pointer.movementY;
       // Particulas
      // const particles = self.add.particles("Blue").setDepth(2)
       const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
@@ -421,49 +424,56 @@ export class game extends Phaser.Scene{
     // SETEOS DE PROFUNDIDAD:
     // funcion que al presionar la tecla Q, el submarino baja, si bajas a nivel 1 podes disparar solo torpedos, en nivel 2 nada
     self.input.keyboard.on('keydown-' + 'Q', function (event){
-      // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
-      // vea mi cambio de profundidad
-      if (self.submarino.profundidad == 0){
-        // VERVER - Setear velocidad del submarino cuando se sumerge y emerge
-        self.submarino.profundidad = 1;
-        //self.submarino.imagen.setTexture('UbootProfundidad1');
-        self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
-        self.submarino.armas = 4;
-        console.log('baje a poca profundidad');
-        self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-      }else if (self.submarino.profundidad == 1){
-        // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
+      if (self.equipo != 1)
+      {
+        console.log(self.equipo)
+        // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
         // vea mi cambio de profundidad
-        self.submarino.profundidad = 2;
-        self.submarino.armas = -1;
-        //self.submarino.imagen.setTexture('UbootProfundidad2');
-        self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
-        console.log('baje al mucha profundidad');
-        self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        if (self.submarino.profundidad == 0){
+          // VERVER - Setear velocidad del submarino cuando se sumerge y emerge
+          self.submarino.profundidad = 1;
+          //self.submarino.imagen.setTexture('UbootProfundidad1');
+          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
+          self.submarino.armas = 4;
+          console.log('baje a poca profundidad');
+          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        }else if (self.submarino.profundidad == 1){
+          // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
+          // vea mi cambio de profundidad
+          self.submarino.profundidad = 2;
+          self.submarino.armas = -1;
+          //self.submarino.imagen.setTexture('UbootProfundidad2');
+          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
+          console.log('baje al mucha profundidad');
+          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        }
+          self.physics.world.removeCollider(self.colliderSub); 
       }
-        self.physics.world.removeCollider(self.colliderSub); 
     });
     //funcion que al precionar la tecla E, el submarino sube
     self.input.keyboard.on('keydown-' + 'E', function (event){
-      // Idem anteriores pero subiendo de 1 a 0
-      if (self.submarino.profundidad == 1){
-        self.submarino.profundidad = 0;
-        self.submarino.armas = 0;
-        console.log('subi a la superficie');
-        //self.submarino.imagen.setTexture('uboot');
-        self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
-        self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-      } else if (self.submarino.profundidad == 2){
-        // Idem anteriores pero subiendo de 0 a 1
-        self.submarino.profundidad = 1;
-        self.submarino.armas = 4;
-        //self.submarino.imagen.setTexture('UbootProfundidad1');
-        self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
-        console.log('subi a poca profundidad');
-        self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-      }
-      if(self.submarino.profundidad === 0){
-        self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+      if (self.equipo != 1)
+      {
+        // Idem anteriores pero subiendo de 1 a 0
+        if (self.submarino.profundidad == 1){
+          self.submarino.profundidad = 0;
+          self.submarino.armas = 0;
+          console.log('subi a la superficie');
+          //self.submarino.imagen.setTexture('uboot');
+          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
+          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        } else if (self.submarino.profundidad == 2){
+          // Idem anteriores pero subiendo de 0 a 1
+          self.submarino.profundidad = 1;
+          self.submarino.armas = 4;
+          //self.submarino.imagen.setTexture('UbootProfundidad1');
+          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
+          console.log('subi a poca profundidad');
+          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        }
+        if(self.submarino.profundidad === 0){
+          self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+        }
       }
     });
 
@@ -695,8 +705,8 @@ export class game extends Phaser.Scene{
       }else{
     //maneja la mira del submarino con el cursor
         if (this.input.mouse.locked){
-          self.submarino.reticula.x += pointer.movementX;
-          self.submarino.reticula.y += pointer.movementY;
+          /*self.submarino.reticula.x += pointer.movementX;
+          self.submarino.reticula.y += pointer.movementY;*/
         }
         if(self.submarino.armas === 0){
           distMax = 300;
@@ -910,10 +920,14 @@ export class game extends Phaser.Scene{
       if (this.submarino){
         if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
           this.submarino.imagen.setAngularVelocity(-100)
+          //this.submarino.reticula.setAngularVelocity(-200)
+      
         } else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
           this.submarino.imagen.setAngularVelocity(100)
+          //this.submarino.reticula.setAngularVelocity(200)
         } else {
           this.submarino.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
+          //this.submarino.reticula.setAngularVelocity(0)
         }
 
         let oldPosition = {}
@@ -922,19 +936,27 @@ export class game extends Phaser.Scene{
         const velY = Math.sin((this.submarino.imagen.angle - 360) * 0.01745)
         if (this.cursors.up.isDown) {
           this.submarino.imagen.setVelocityX(this.submarino.velocidad  * velX)
+          //this.submarino.reticula.setVelocityX(this.submarino.velocidad * (velX))
           this.submarino.imagen.setVelocityY(this.submarino.velocidad * velY)
+          //this.submarino.reticula.setVelocityY(this.submarino.velocidad * (velY))
         } else if (this.cursors.down.isDown) {
           this.submarino.imagen.setVelocityX(-(this.submarino.velocidad/2) * velX)
+          //this.submarino.reticula.setVelocityX(-(this.submarino.velocidad/2) * (velX))
           this.submarino.imagen.setVelocityY(-(this.submarino.velocidad/2) * velY)
+          //this.submarino.reticula.setVelocityY(-(this.submarino.velocidad/2) * (velY + 0.2))
         } else {
           this.submarino.imagen.setAcceleration(0)
+          //this.submarino.reticula.setAcceleration(0)
         }
 
         // Comparo la posicion y rotacion actual del barco, y en caso de que haya cambiado envio el evento "playerMovement" al socket para comunicar a todos los clientes
         var x = this.submarino.imagen.x;
         var y = this.submarino.imagen.y;
         var r = this.submarino.imagen.rotation;
-
+        this.submarino.reticula.x = this.submarino.imagen.x + (Math.cos((this.submarino.imagen.angle - 360) * 0.01745) * 300);
+        this.submarino.reticula.y = this.submarino.imagen.y + (Math.sin((this.submarino.imagen.angle - 360) * 0.01745) * 300);
+        //this.submarino.reticula.angle = this.submarino.imagen.angle;
+        //this.submarino.reticula.rotacion = this.submarino.imagen.rotation;
         if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y || r !== oldPosition.rotation)) {
           let data = {
             x: this.submarino.imagen.x,
