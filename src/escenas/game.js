@@ -12,19 +12,22 @@ export class game extends Phaser.Scene{
   init(data){
     this.socket = data.socket;
     this.equipo = data.equipo;
-    this.destructor = new Destructor('Destructor',160,12,0,0,0,1,0); // Creo el objeto destructor 
-    this.submarino = new Submarino('Submarino',160,0,14,0,0,0,2); // Creo el objeto submarino 
-    this.carguero1 = new Carguero('Carguero1',100,8,0,0,0,3); // Creo el objeto carguero1 
-    this.carguero2 = new Carguero('Carguero2',100,8,0,0,0,4); // Creo el objeto carguero2
-    this.carguero3 = new Carguero('Carguero3',100,8,0,0,0,5); // Creo el objeto carguero3
-    this.carguero4 = new Carguero('Carguero4',100,8,0,0,0,6); // Creo el objeto carguero4
-    this.carguero5 = new Carguero('Carguero5',100,8,0,0,0,7); // Creo el objeto carguero5
-    this.carguero6 = new Carguero('Carguero6',100,8,0,0,0,8); // Creo el objeto carguero6
+    // Seteo las velocidades que se utilizaran en el juego
+    this.velocidadMedia = 600; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
+    this.velocidadBaja = 80;
+    this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0); // Creo el objeto destructor 
+    this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,0,2); // Creo el objeto submarino 
+    this.carguero1 = new Carguero('Carguero1',this.velocidadBaja,8,0,0,0,3); // Creo el objeto carguero1 
+    this.carguero2 = new Carguero('Carguero2',this.velocidadBaja,8,0,0,0,4); // Creo el objeto carguero2
+    this.carguero3 = new Carguero('Carguero3',this.velocidadBaja,8,0,0,0,5); // Creo el objeto carguero3
+    this.carguero4 = new Carguero('Carguero4',this.velocidadBaja,8,0,0,0,6); // Creo el objeto carguero4
+    this.carguero5 = new Carguero('Carguero5',this.velocidadBaja,8,0,0,0,7); // Creo el objeto carguero5
+    this.carguero6 = new Carguero('Carguero6',this.velocidadBaja,8,0,0,0,8); // Creo el objeto carguero6
   }
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
   create(){
-    // DEFINICIÓN DE VARIABLES Y CONSTANTES A UTILIZAR -----------------------------------------------------------------------------------------------------------------------------------
+    // DEFINICIÓN DE VARIABLES, CONSTANTES Y OBJETOS VISULES EN EL MAPA A UTILIZAR -----------------------------------------------------------------------------------------------------------------------------------
     var self = this
     let bullet;
     let danio;
@@ -44,10 +47,10 @@ export class game extends Phaser.Scene{
     const backgroundH = this.mar.height;
 
     // Defino los limites de las dimensiones del mapa para el posicionamiento inicial de los barcos
-    var frameW = 4576;
+    var frameW = 6416;
     var frameH = 2156;
     var margenCostaX = 810;
-    var margenCostaY = 400;
+    var margenCostaY = 300;
 
     // Defino variables para las posiciones X e Y de los barcos
     var posX;
@@ -93,19 +96,23 @@ export class game extends Phaser.Scene{
 
     // Introduzco cursores y teclas utilizables
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.KeyCamera  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
-    this.KeyMute  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
-    this.KeyUnmute  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U);
-    this.up  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    this.left  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-    this.down  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-    this.right  =this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.KeyCamera = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
+    this.KeyMute = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+    this.KeyUnmute = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U);
+    this.up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    this.left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    this.right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
     // INICIO DE LA LÖGICA DEL COMPORTAMIENTO DEL JUEGO -----------------------------------------------------------------------------------------------------------------------------------
 
     // Segun el equipo del jugador actual, genero todos elementos del equipo correspondiente
     if(self.equipo === 1){ // Genero el equipo 1 que son el destructor y los cargueros, aunque tambien debo generar al submarino (Pero sin su camara ni colisiones) para ir actualizando su posicion en este cliente con el movimiento del otro jugador      
       generarEquipo1();
+
+      // Habilito el boton para cambiar de camara con los cargueros
+      const btnCamaraCarguero = this.add.text(600, 600, 'BOTON PARA CAMBIAR DE CAMARA CON LOS CARGUEROS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(1));
+      const btnCamaraDestructor = this.add.text(600, 650, 'BOTON PARA CAMBIAR DE CAMARA CON EL DESTRUCTOR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(0));
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
     }    
@@ -122,14 +129,6 @@ export class game extends Phaser.Scene{
     }
 
     function generarEquipo2(){
-      // Genero las posiciones X e Y para el submarino
-      posX = Math.floor((Math.random()*((frameW*0.87)- (frameW*0.63)))+(frameW*0.63)), // El margen x para generarse el submarino sera desde el 63% al 87% del lado derecho del mapa 
-      posY = Math.floor((Math.random()*((frameH-200)- margenCostaY))+margenCostaY), // El margen y para generarse el submarino es el mismo que los demas barcos (total - 200)
-      
-      // Actualizo la posicion del objeto submarino creado previamente
-      self.submarino.posX = posX;
-      self.submarino.posY = posY;
-
       // Genero la imagen del submarino, colisiones, particulas, etc
       generarSubmarino();
 
@@ -143,7 +142,7 @@ export class game extends Phaser.Scene{
     // Generar destructor
     function generarDestructor(){
       // Genero las posiciones X e Y para el destructor
-      posX = Math.floor((Math.random()*((frameW*0.25)- margenCostaX))+margenCostaX), // El margen x para generarse los cargueros sera desde la costa (810) hasta el 35% del total del mapa (0.35)
+      posX = Math.floor((Math.random()*((frameW*0.25)- margenCostaX))+margenCostaX), // El margen x para generarse los cargueros sera desde la costa (810) hasta el 25% del total del mapa
       posY = Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY), // El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa
       
       // Actualizo la posicion del objeto destructor creado previamente
@@ -156,6 +155,10 @@ export class game extends Phaser.Scene{
       .setRotation(0)
       .setDepth(5)
       .setPushable(false);
+
+      self.destructor.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
+      self.destructor.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+
       //guardo la reticula y el set de balas en variables propias de la clase destructor
       self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, 'crosshair').setCollideWorldBounds(true);;
       self.destructor.bullet = self.playerBullets;
@@ -183,7 +186,7 @@ export class game extends Phaser.Scene{
       self.physics.add.collider(self.destructor.imagen, self.bomb);
       // Se crea una colision del barco con los cargueros
       self.physics.add.collider(self.destructor.imagen, self.grupoCargueros);
-      self.physics.add.collider(self.destructor.imagen, self.carguero);
+      self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen);
       // Se crea una colision del barco con la costa1
       self.physics.add.collider(self.destructor.imagen, self.costa1);
       // Se crea una colision del barco con la costa2
@@ -227,12 +230,22 @@ export class game extends Phaser.Scene{
 
     // Genero todo lo relacionado a la imagen del submarino del jugador actual
     function generarSubmarino(){
+      // Genero las posiciones X e Y para el submarino
+      posX = Math.floor((Math.random()*((frameW-800)-(frameW*0.75)))+(frameW*0.75)), // El margen x para generarse el submarino sera desde el 70% del mapa hasta el final - 800 del lado derecho
+      posY = Math.floor((Math.random()*((frameH-300)- margenCostaY))+margenCostaY), // El margen y para generarse el submarino es el mismo que los demas barcos (total - 300)
+      
+      // Actualizo la posicion del objeto submarino creado previamente
+      self.submarino.posX = posX;
+      self.submarino.posY = posY;
+
       self.submarino.imagen = self.physics.add.image(self.submarino.posX, self.submarino.posY, 'uboot')
       .setDisplaySize(100,50)
       .setDepth(5) // Seteo tamaño y profundidad de la imagen
       .setPushable(false);
+
       self.submarino.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
       self.submarino.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+
       //guardo la reticula y el set de balas en variables propias de la clase submarino
       self.submarino.bullet = self.playerBullets;
       self.submarino.reticula = self.physics.add.sprite(self.submarino.posX, self.submarino.posY, 'crosshair').setCollideWorldBounds(true);
@@ -259,15 +272,15 @@ export class game extends Phaser.Scene{
       // Se crea una colision del barco con la bomba
       self.physics.add.collider(self.submarino.imagen, self.bomb);
       // Se crea una colision del barco con los cargueros
-      self.physics.add.collider(self.submarino.imagen, self.grupoCargueros);
-      self.physics.add.collider(self.submarino.imagen, self.carguero);
+      //self.physics.add.collider(self.submarino.imagen, self.grupoCargueros);
+      self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
       // Se crea una colision del barco con la costa1
       self.physics.add.collider(self.submarino.imagen, self.costa1);
       // Se crea una colision del barco con la costa2
       self.physics.add.collider(self.submarino.imagen, self.costa2);
       // Si el submarino se encuentra en la superficie, que colisione con el destructor
       self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
-      
+
       // Se crea el evento de cambio de armas
       self.input.keyboard.on('keydown-' + 'Z', function (event){
       //si esta en superficie, que cambie de armas tranquilamente
@@ -298,12 +311,11 @@ export class game extends Phaser.Scene{
     
     // Genero todo lo relacionado a la imagen del submarino del equipo enemigo
     function generarSubmarinoEnemigo(){
-      self.submarino.imagen = self.physics.add.image(1050,550, 'uboot')
+      self.submarino.imagen = self.physics.add.image(0,0, 'uboot')
       .setDisplaySize(100,50)
       .setDepth(5) // Seteo tamaño y profundidad de la imagen
       .setPushable(false)
       
-        
       // Particulas
       const particles = self.add.particles("Blue").setDepth(2) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
@@ -313,14 +325,13 @@ export class game extends Phaser.Scene{
       })
       particles.setPosition(0, -11);
       self.colliderSub = self.physics.add.collider(self.destructor.imagen, self.submarino.imagen);
-
     }
 
     // Funcion para generarle las imagenes y las particulas a cada barco
     function generarCargueros(){
       // Genero las posiciones X e Y para el primer carguero principal
-      posX = Math.floor((Math.random()*((frameW*0.25)- margenCostaX))+margenCostaX);
-      posY = Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY);
+      posX = Math.floor((Math.random()*((frameW*0.2)- margenCostaX))+margenCostaX); // El margen x para generarse los cargueros sera desde la costa (810) hasta el 20% del total del mapa
+      posY = Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY); // El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa    
 
       // Actualizo la posicion x e de todos los cargueros en base a la posicion inicial del carguero principal
       self.carguero1.posX = posX;
@@ -345,9 +356,8 @@ export class game extends Phaser.Scene{
       arrayCargueros[5] = self.carguero6;
 
       // Genero las imagenes de los cargueros, colisiones, particulas, etc
-      arrayCargueros.forEach(carguero => console.log('x:'+carguero.posX +' y:'+ carguero.posY));
       arrayCargueros.forEach(function(carguero){
-        carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, 'carguero').setDisplaySize(200, 75).setDepth(5) // Seteo tamaño y profundidad de la imagen
+        carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, 'carguero').setDisplaySize(200, 75).setDepth(5); // Seteo tamaño y profundidad de la imagen
 
         // Particulas
         const particles = self.add.particles("Blue").setDepth(2) // Imagen Blue como particula
@@ -370,47 +380,58 @@ export class game extends Phaser.Scene{
         // Se crea una colision del carguero con la bomba
         self.physics.add.collider(carguero.imagen, self.bomb);
         // Se crea una colision del carguero con la costa1
-        self.physics.add.collider(carguero.imagen, self.costa1);
+        self.physics.add.collider(self.carguero1.imagen, self.costa1);
         // Se crea una colision del carguero con la costa2
         self.physics.add.collider(carguero.imagen, self.costa2);
-        //self.physics.add.collider(self.grupoCargueros, self.barco);
+        // Se crea la colision con el submarino y el destructor
+        self.physics.add.collider(self.carguero1.imagen, self.destructor.imagen);
+        self.physics.add.collider(self.carguero1.imagen, self.submarino.imagen);
       })
     };
 
-    // Funcion para generarle las imagenes y las particulas a cada barco
+    // Funcion para generarle las imagenes y las particulas a cada carguero estando en el equipo del submarino
     function generarCarguerosEnemigos(){
+      // Particulas
+      const particles = self.add.particles("Blue").setDepth(2) // Imagen Blue como particula
+      const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
+        speed: 10, // Velocidad con la que se mueven
+        scale: {start: 0.08, end: 0}, // Tamaño
+        blendMode: "ADD" // Efecto a aplicar
+      })
+      particles.setPosition(0, -11)
+      emitter.startFollow( self.carguero1.imagen);
+      emitter.startFollow( self.carguero2.imagen);
+      emitter.startFollow( self.carguero3.imagen);
+      emitter.startFollow( self.carguero4.imagen);
+      emitter.startFollow( self.carguero5.imagen);
+      emitter.startFollow( self.carguero6.imagen);
 
-      // VERVER tema de que se genere una unica posX aleatoria para todos los cargueros
-      // Genero las posiciones X e Y para el primer carguero principal
-      posX = Math.floor((Math.random()*((frameW*0.25)- margenCostaX))+margenCostaX);
-      posY = Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY);
-      
-      // Actualizo la posicion x e de todos los cargueros en base a la posicion inicial del carguero principal
-      self.carguero1.posX = posX;
-      self.carguero1.posY = posY;
-      self.carguero2.posX = posX+600;
-      self.carguero2.posY = posY+240
-      self.carguero3.posX = posX+50
-      self.carguero3.posY = posY+370;
-      self.carguero4.posX = posX-270;
-      self.carguero4.posY = posY+150;
-      self.carguero5.posX = posX+300;
-      self.carguero5.posY = posY-150;
-      self.carguero6.posX = posX+180;
-      self.carguero6.posY = posY+150;
+      self.carguero1.imagen = self.physics.add.image(self.carguero1.posX, self.carguero1.posY, 'carguero').setDisplaySize(200, 75).setDepth(5);
+      self.carguero2.imagen = self.physics.add.image(self.carguero2.posX, self.carguero2.posY, 'carguero').setDisplaySize(200, 75).setDepth(5);
+      self.carguero3.imagen = self.physics.add.image(self.carguero3.posX, self.carguero3.posY, 'carguero').setDisplaySize(200, 75).setDepth(5);
+      self.carguero4.imagen = self.physics.add.image(self.carguero4.posX, self.carguero4.posY, 'carguero').setDisplaySize(200, 75).setDepth(5);
+      self.carguero5.imagen = self.physics.add.image(self.carguero5.posX, self.carguero5.posY, 'carguero').setDisplaySize(200, 75).setDepth(5);
+      self.carguero6.imagen = self.physics.add.image(self.carguero6.posX, self.carguero6.posY, 'carguero').setDisplaySize(200, 75).setDepth(5);
+
+      self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
+      self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen);
     };
+
+
     // SETEOS DE PROFUNDIDAD:
     // funcion que al presionar la tecla Q, el submarino baja, si bajas a nivel 1 podes disparar solo torpedos, en nivel 2 nada
     self.input.keyboard.on('keydown-' + 'Q', function (event){
       // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
       // vea mi cambio de profundidad
       if (self.submarino.profundidad == 0){
-        // VERVER - Setear velocidad del submarino cuando se sumerge y emerge
         self.submarino.profundidad = 1;
         self.submarino.imagen.setTexture('UbootProfundidad1');
         self.submarino.armas = 4;
         console.log('baje a poca profundidad');
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+
+        // Seteo la velocidad del submarino para que cuando este a baja profundidad se mueva a velocidad media
+        self.submarino.velocidad = 160; 
       }else if (self.submarino.profundidad == 1){
         // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
         // vea mi cambio de profundidad
@@ -419,9 +440,22 @@ export class game extends Phaser.Scene{
         self.submarino.imagen.setTexture('UbootProfundidad2');
         console.log('baje al mucha profundidad');
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+      }       
+      self.physics.world.removeCollider(self.colliderSub); 
+
+      // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
+      if (self.submarino.profundidad == 0){
+        // Si me encuentro en la superficie la velocidad va a ser lenta
+        self.submarino.velocidad = self.velocidadBaja; 
+      }else if(self.submarino.profundidad == 1){
+        // Si me encuentro a baja profundidad la velocidad va a ser media
+        self.submarino.velocidad = self.velocidadMedia; 
+      }else if(self.submarino.profundidad == 2){
+       // Si me encuentro a mucha profundidad la velocidad va a ser lenta
+        self.submarino.velocidad = self.velocidadBaja; 
       }
-        self.physics.world.removeCollider(self.colliderSub); 
     });
+
     //funcion que al precionar la tecla E, el submarino sube
     self.input.keyboard.on('keydown-' + 'E', function (event){
       // Idem anteriores pero subiendo de 1 a 0
@@ -441,6 +475,18 @@ export class game extends Phaser.Scene{
       }
       if(self.submarino.profundidad === 0){
         self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+      }
+
+      // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
+      if (self.submarino.profundidad == 0){
+        // Si me encuentro en la superficie la velocidad va a ser lenta
+        self.submarino.velocidad = self.velocidadBaja; 
+      }else if(self.submarino.profundidad == 1){
+        // Si me encuentro a baja profundidad la velocidad va a ser media
+        self.submarino.velocidad = self.velocidadMedia; 
+      }else if(self.submarino.profundidad == 2){
+       // Si me encuentro a mucha profundidad la velocidad va a ser lenta
+        self.submarino.velocidad = self.velocidadBaja; 
       }
     });
 
@@ -715,7 +761,7 @@ export class game extends Phaser.Scene{
       }
     });
     
-    // Creo el evento de movimiento de cada jugador para comunicar a través del Socket
+    // Escucho el movimiento del otro jugador y lo dibujo en mi cliente
     this.socket.on('playerMoved', function (playerInfo) {
       if(playerInfo.id != self.socket.id){
         if(self.equipo===1){
@@ -729,7 +775,46 @@ export class game extends Phaser.Scene{
         }
       }
     });
-    //escucho el tiro que me dieron desde el otro jugADOR y lo proceso
+
+    // Escucho el evento de movimiento de los cargueros y lo dibujo en mi cliente dependiendo del carguero que se haya desplazado
+    this.socket.on('carguerosMoved', function (playerInfo) {
+      if(playerInfo.id != self.socket.id){
+        if(self.equipo===2){
+          if(playerInfo.carguero === 1){
+            self.carguero1.imagen.x = playerInfo.x;
+            self.carguero1.imagen.y = playerInfo.y;
+            self.carguero1.imagen.rotation = playerInfo.rotation;
+          }
+          if(playerInfo.carguero === 2){
+            self.carguero2.imagen.x = playerInfo.x;
+            self.carguero2.imagen.y = playerInfo.y;
+            self.carguero2.imagen.rotation = playerInfo.rotation;
+          }
+          if(playerInfo.carguero === 3){
+            self.carguero3.imagen.x = playerInfo.x;
+            self.carguero3.imagen.y = playerInfo.y;
+            self.carguero3.imagen.rotation = playerInfo.rotation;
+          }
+          if(playerInfo.carguero === 4){
+            self.carguero4.imagen.x = playerInfo.x;
+            self.carguero4.imagen.y = playerInfo.y;
+            self.carguero4.imagen.rotation = playerInfo.rotation;
+          }
+          if(playerInfo.carguero === 5){
+            self.carguero5.imagen.x = playerInfo.x;
+            self.carguero5.imagen.y = playerInfo.y;
+            self.carguero5.imagen.rotation = playerInfo.rotation;
+          }
+          if(playerInfo.carguero === 6){
+            self.carguero6.imagen.x = playerInfo.x;
+            self.carguero6.imagen.y = playerInfo.y;
+            self.carguero6.imagen.rotation = playerInfo.rotation;
+          }
+        }
+      }
+    });
+
+    //escucho el tiro que me dieron desde el otro jugador y lo proceso
     this.socket.on('playerHitted', function(playerInfo){      
       //if(self.socket.id === playerInfo.id){
         if(self.equipo===1){
@@ -764,18 +849,14 @@ export class game extends Phaser.Scene{
         self.physics.world.removeCollider(self.colliderSub);
       }
     }); 
-    // Si es el equipo 1, muestro el boton para cambiar de camara con los cargueros
-    if (this.equipo === 1){
-      const btnCamaraCarguero = this.add.text(600, 600, 'BOTON PARA CAMBIAR DE CAMARA CON LOS CARGUEROS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(1));
-      const btnCamaraDestructor = this.add.text(600, 650, 'BOTON PARA CAMBIAR DE CAMARA CON EL DESTRUCTOR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(0));
-    }
+
     // Metodo que cambia de camara con el carguero central de la formacion
     function cambioCamaraCargueros(camara){
       if(camara==0){
         self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(0.9);
       }else if(camara==1){
-        self.cameras.main.startFollow(self.carguero,true, 0.09, 0.09); 
+        self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
       }
     }
@@ -784,7 +865,7 @@ export class game extends Phaser.Scene{
   // Función update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje graficamente
   update(time, delta) {
     if(this.equipo === 1){
-      // Agregamos el movimiento de los barcos con las flechas de direccion y seteamos la velocidad de rotacion de giro del barco
+      // Agregamos el movimiento de los barcos con las flechas de direccion y seteamos la velocidad de rotacion de giro del destructor
       if (this.destructor){
         if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
           this.destructor.imagen.setAngularVelocity(-100)
@@ -797,6 +878,7 @@ export class game extends Phaser.Scene{
         // Calculo y seteo la velocidad de los barcos y el angulo de rotacion como una constante
         const velX = Math.cos((this.destructor.imagen.angle - 360) * 0.01745)
         const velY = Math.sin((this.destructor.imagen.angle - 360) * 0.01745)
+        // Seteo la velocidad de movimiento
         if (this.cursors.up.isDown) {
           this.destructor.imagen.setVelocityX(this.destructor.velocidad * velX)
           this.destructor.imagen.setVelocityY(this.destructor.velocidad  * velY)
@@ -833,54 +915,234 @@ export class game extends Phaser.Scene{
         }
       }
       
-      /*
+      
       // Agregamos el movimiento de los cargueros con las teclas WASD y seteamos la velocidad de rotacion de giro del barco
-      if (this.carguero1){
+      if (this.carguero1 || this.carguero2 || this.carguero3 || this.carguero4 || this.carguero5 || this.carguero6 ){
         if (this.left.isDown && (this.up.isDown || this.down.isDown)) {
           this.carguero1.imagen.setAngularVelocity(-100)
+          this.carguero2.imagen.setAngularVelocity(-100)
+          this.carguero3.imagen.setAngularVelocity(-100)
+          this.carguero4.imagen.setAngularVelocity(-100)
+          this.carguero5.imagen.setAngularVelocity(-100)
+          this.carguero6.imagen.setAngularVelocity(-100)
         } else if (this.right.isDown && (this.up.isDown || this.down.isDown)) {
           this.carguero1.imagen.setAngularVelocity(100)
+          this.carguero2.imagen.setAngularVelocity(100)
+          this.carguero3.imagen.setAngularVelocity(100)
+          this.carguero4.imagen.setAngularVelocity(100)
+          this.carguero5.imagen.setAngularVelocity(100)
+          this.carguero6.imagen.setAngularVelocity(100)
         } else {
           this.carguero1.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
+          this.carguero2.imagen.setAngularVelocity(0)
+          this.carguero3.imagen.setAngularVelocity(0)
+          this.carguero4.imagen.setAngularVelocity(0)
+          this.carguero5.imagen.setAngularVelocity(0)
+          this.carguero6.imagen.setAngularVelocity(0)
         }
 
         // Calculo y seteo la velocidad de los barcos y el angulo de rotacion como una constante
         const velCX = Math.cos((this.carguero1.imagen.angle - 360) * 0.01745)
         const velCY = Math.sin((this.carguero1.imagen.angle - 360) * 0.01745)
         if (this.up.isDown) {
-          this.carguero1.imagen.setVelocityX(200 * velCX)
-          this.carguero1.imagen.setVelocityY(200 * velCY)
+          this.carguero1.imagen.setVelocityX(this.carguero1.velocidad * velCX)
+          this.carguero1.imagen.setVelocityY(this.carguero1.velocidad * velCY)
+          this.carguero2.imagen.setVelocityX(this.carguero2.velocidad * velCX)
+          this.carguero2.imagen.setVelocityY(this.carguero2.velocidad * velCY)
+          this.carguero3.imagen.setVelocityX(this.carguero3.velocidad * velCX)
+          this.carguero3.imagen.setVelocityY(this.carguero3.velocidad * velCY)
+          this.carguero4.imagen.setVelocityX(this.carguero4.velocidad * velCX)
+          this.carguero4.imagen.setVelocityY(this.carguero4.velocidad * velCY)
+          this.carguero5.imagen.setVelocityX(this.carguero5.velocidad * velCX)
+          this.carguero5.imagen.setVelocityY(this.carguero5.velocidad * velCY)
+          this.carguero6.imagen.setVelocityX(this.carguero6.velocidad * velCX)
+          this.carguero6.imagen.setVelocityY(this.carguero6.velocidad * velCY)
         } else if (this.down.isDown) {
-          this.carguero1.imagen.setVelocityX(-100 * velCX)
-          this.carguero1.imagen.setVelocityY(-100 * velCY)
+          this.carguero1.imagen.setVelocityX(-(this.carguero1.velocidad/2) * velCX)
+          this.carguero1.imagen.setVelocityY(-(this.carguero1.velocidad/2) * velCY)
+          this.carguero2.imagen.setVelocityX(-(this.carguero2.velocidad/2) * velCX)
+          this.carguero2.imagen.setVelocityY(-(this.carguero2.velocidad/2) * velCY)
+          this.carguero3.imagen.setVelocityX(-(this.carguero3.velocidad/2) * velCX)
+          this.carguero3.imagen.setVelocityY(-(this.carguero3.velocidad/2) * velCY)
+          this.carguero4.imagen.setVelocityX(-(this.carguero4.velocidad/2) * velCX)
+          this.carguero4.imagen.setVelocityY(-(this.carguero4.velocidad/2) * velCY)
+          this.carguero5.imagen.setVelocityX(-(this.carguero5.velocidad/2) * velCX)
+          this.carguero5.imagen.setVelocityY(-(this.carguero5.velocidad/2) * velCY)
+          this.carguero6.imagen.setVelocityX(-(this.carguero6.velocidad/2) * velCX)
+          this.carguero6.imagen.setVelocityY(-(this.carguero6.velocidad/2) * velCY)
         } else {
           this.carguero1.imagen.setAcceleration(0)
+          this.carguero2.imagen.setAcceleration(0)
+          this.carguero3.imagen.setAcceleration(0)
+          this.carguero4.imagen.setAcceleration(0)
+          this.carguero5.imagen.setAcceleration(0)
+          this.carguero6.imagen.setAcceleration(0)
         }
 
-        let oldPosition = {}
-        // Comparo la posicion y rotacion actual del barco, y en caso de que haya cambiado envio el evento "playerMovement" al socket para comunicar a todos los clientes
+        /*
+        let i;
+        for(i=1;i<5;i++){
+          let oldPosition = {}
+          console.log("i: "+i);
+          // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
+          var x = self.arrayCargueros[i].imagen.x;
+          var y = self.arrayCargueros[i].imagen.y;
+          var r = self.arrayCargueros[i].imagen.rotation;
+          if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y || r !== oldPosition.rotation)){
+            let data = {
+              x: self.arrayCargueros[i].imagen.x,
+              y: self.arrayCargueros[i].imagen.y,
+              rotation: self.arrayCargueros[i].imagen.rotation, 
+              carguero: i
+            }
+            this.socket.emit('carguerosMovement', data);
+          }
+
+          // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+          oldPosition = {
+            x: self.arrayCargueros[i].imagen.x,
+            y: self.arrayCargueros[i].imagen.y,
+            rotation: self.arrayCargueros[i].imagen.rotation
+          }
+        }        
+        */
+  
+        // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 1
+        let oldPosition1 = {}
+        // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
         var x = this.carguero1.imagen.x;
         var y = this.carguero1.imagen.y;
         var r = this.carguero1.imagen.rotation;
-        if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y || r !== oldPosition.rotation)) {
+        if (oldPosition1 && (x !== oldPosition1.x || y !== oldPosition1.y || r !== oldPosition1.rotation)) {
           let data = {
             x: this.carguero1.imagen.x,
             y: this.carguero1.imagen.y, 
-            rotation: this.carguero1.imagen.rotation 
+            rotation: this.carguero1.imagen.rotation, 
+            carguero: 1
           }
-          this.socket.emit('playerMovement', data);
+          this.socket.emit('carguerosMovement', data);
         }
-
         // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
-        oldPosition = {
+        oldPosition1 = {
           x: this.carguero1.imagen.x,
           y: this.carguero1.imagen.y,
           rotation: this.carguero1.imagen.rotation
         }
+
+        // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 2
+        let oldPosition2 = {}
+        // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
+        var x = this.carguero2.imagen.x;
+        var y = this.carguero2.imagen.y;
+        var r = this.carguero2.imagen.rotation;
+        if (oldPosition2 && (x !== oldPosition2.x || y !== oldPosition2.y || r !== oldPosition2.rotation)) {
+          let data = {
+            x: this.carguero2.imagen.x,
+            y: this.carguero2.imagen.y, 
+            rotation: this.carguero2.imagen.rotation,
+            carguero: 2
+          }
+          this.socket.emit('carguerosMovement', data);
+        }
+        // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+        oldPosition2 = {
+          x: this.carguero2.imagen.x,
+          y: this.carguero2.imagen.y,
+          rotation: this.carguero2.imagen.rotation
+        }
+
+        // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 3
+        let oldPosition3 = {}
+        // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
+        var x = this.carguero3.imagen.x;
+        var y = this.carguero3.imagen.y;
+        var r = this.carguero3.imagen.rotation;
+        if (oldPosition3 && (x !== oldPosition3.x || y !== oldPosition3.y || r !== oldPosition3.rotation)) {
+          let data = {
+            x: this.carguero3.imagen.x,
+            y: this.carguero3.imagen.y, 
+            rotation: this.carguero3.imagen.rotation,
+            carguero: 3
+          }
+          this.socket.emit('carguerosMovement', data);
+        }
+        // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+        oldPosition3 = {
+          x: this.carguero3.imagen.x,
+          y: this.carguero3.imagen.y,
+          rotation: this.carguero3.imagen.rotation
+        }
+
+        // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 4
+        let oldPosition4 = {}
+        // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
+        var x = this.carguero4.imagen.x;
+        var y = this.carguero4.imagen.y;
+        var r = this.carguero4.imagen.rotation;
+        if (oldPosition4 && (x !== oldPosition4.x || y !== oldPosition4.y || r !== oldPosition4.rotation)) {
+          let data = {
+            x: this.carguero4.imagen.x,
+            y: this.carguero4.imagen.y, 
+            rotation: this.carguero4.imagen.rotation,
+            carguero: 4
+          }
+          this.socket.emit('carguerosMovement', data);
+        }
+        // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+        oldPosition4 = {
+          x: this.carguero4.imagen.x,
+          y: this.carguero4.imagen.y,
+          rotation: this.carguero4.imagen.rotation
+        }
+
+        // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 5
+        let oldPosition5 = {}
+        // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
+        var x = this.carguero5.imagen.x;
+        var y = this.carguero5.imagen.y;
+        var r = this.carguero5.imagen.rotation;
+        if (oldPosition5 && (x !== oldPosition5.x || y !== oldPosition5.y || r !== oldPosition5.rotation)) {
+          let data = {
+            x: this.carguero5.imagen.x,
+            y: this.carguero5.imagen.y, 
+            rotation: this.carguero5.imagen.rotation,
+            carguero: 5
+          }
+          this.socket.emit('carguerosMovement', data);
+        }
+        // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+        oldPosition5 = {
+          x: this.carguero5.imagen.x,
+          y: this.carguero5.imagen.y,
+          rotation: this.carguero5.imagen.rotation
+        }
+
+        // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 6
+        let oldPosition6 = {}
+        // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
+        var x = this.carguero6.imagen.x;
+        var y = this.carguero6.imagen.y;
+        var r = this.carguero6.imagen.rotation;
+        if (oldPosition6 && (x !== oldPosition6.x || y !== oldPosition6.y || r !== oldPosition6.rotation)) {
+          let data = {
+            x: this.carguero6.imagen.x,
+            y: this.carguero6.imagen.y, 
+            rotation: this.carguero6.imagen.rotation,
+            carguero: 6
+          }
+          this.socket.emit('carguerosMovement', data);
+        }
+        // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+        oldPosition6 = {
+          x: this.carguero6.imagen.x,
+          y: this.carguero6.imagen.y,
+          rotation: this.carguero6.imagen.rotation
+        }
       }
-      */
+      
     }else{
       if (this.submarino){
+        // Seteo velocidad de rotacion y giro
         if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
           this.submarino.imagen.setAngularVelocity(-100)
         } else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
@@ -893,6 +1155,7 @@ export class game extends Phaser.Scene{
         // Calculo y seteo la velocidad de los barcos y el angulo de rotacion como una constante
         const velX = Math.cos((this.submarino.imagen.angle - 360) * 0.01745)
         const velY = Math.sin((this.submarino.imagen.angle - 360) * 0.01745)
+        // Seteo velocidad de movimiento
         if (this.cursors.up.isDown) {
           this.submarino.imagen.setVelocityX(this.submarino.velocidad  * velX)
           this.submarino.imagen.setVelocityY(this.submarino.velocidad * velY)

@@ -98,10 +98,19 @@ io.on('connection', function (socket) {
 
     // Estoy escuchando el "evento" playerMovement de los sockets para cuando suceda comunicarselo a todos los demas clientes (broadcast)
     socket.on('playerMovement', function (movementData) {
-      players[socket.id].x = movementData.x
-      players[socket.id].y = movementData.y
-      players[socket.id].rotation = movementData.rotation
+      players[socket.id].x = movementData.x;
+      players[socket.id].y = movementData.y;
+      players[socket.id].rotation = movementData.rotation;
       socket.broadcast.emit('playerMoved', players[socket.id])
+    })
+
+    // Estoy escuchando el "evento" cargueroMovement de los sockets para cuando suceda comunicarselo al submarino
+    socket.on('carguerosMovement', function (movementData) {
+      players[socket.id].x = movementData.x;
+      players[socket.id].y = movementData.y;
+      players[socket.id].rotation = movementData.rotation;
+      players[socket.id].carguero = movementData.carguero;
+      socket.broadcast.emit('carguerosMoved', players[socket.id])
     })
 
     socket.on('playerHit', function(data){
