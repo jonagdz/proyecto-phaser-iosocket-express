@@ -21,6 +21,9 @@ export class game extends Phaser.Scene{
     this.carguero4 = new Carguero('Carguero4',100,8,0,0,0,6); // Creo el objeto carguero4
     this.carguero5 = new Carguero('Carguero5',100,8,0,0,0,7); // Creo el objeto carguero5
     this.carguero6 = new Carguero('Carguero6',100,8,0,0,0,8); // Creo el objeto carguero6
+    //
+    this.largaVistas = {};
+    this.mar;
   }
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
@@ -30,14 +33,13 @@ export class game extends Phaser.Scene{
     let bullet;
     let danio;
     let reticula;
+    let lvactivado;
     self.socket.emit('listarPartidas', {id: 2});
 
     // Grupo para los cargueros y balas
     var arrayCargueros = [];
     this.grupoCargueros = this.physics.add.group({ classType: Carguero, runChildUpdate: true });
     this.playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
-
-
 
     // Cargo la imagen de fondo del mapa
     this.mar = this.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1).setDepth(0);
@@ -46,7 +48,7 @@ export class game extends Phaser.Scene{
     const backgroundH = this.mar.height;
 
     // Defino los limites de las dimensiones del mapa para el posicionamiento inicial de los barcos
-    var frameW = 4576;
+    var frameW = 6416;
     var frameH = 2156;
     var margenCostaX = 810;
     var margenCostaY = 400;
@@ -57,9 +59,11 @@ export class game extends Phaser.Scene{
     let distMax;
     let damAcuD = 0;
     let damAcuS = 0;
-    // Obtengo el centro del canvas para la mascara
+
+    // Obtengo el centro del canvas para la máscara
     const centroW = this.sys.game.config.width / 2;
     const centroH = this.sys.game.config.height / 2;
+    
     // Construyo la máscara de visión
     const maskImage = this.make.image({
       x: centroW,
@@ -68,6 +72,16 @@ export class game extends Phaser.Scene{
       add: false
     });
     const mask = maskImage.createBitmapMask();
+
+    // Construyo el larga vista
+    this.largaVistas = self.make.sprite({
+      x: centroW,
+      y: centroH,
+      key: DEF.IMAGENES.LARGAVISTAS,
+      add: false
+    });
+    this.largaVistas.setOrigin(0.5,0);
+    this.mar.masklv = new Phaser.Display.Masks.BitmapMask(this, this.largaVistas);
 
     // Ajusto cámaras
     this.cameras.main.setMask(mask);
@@ -320,7 +334,6 @@ export class game extends Phaser.Scene{
       .setDepth(5) // Seteo tamaño y profundidad de la imagen
       .setPushable(false)
       
-        
       // Particulas
       //const particles = self.add.particles("Blue").setDepth(2)
       const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
@@ -330,8 +343,8 @@ export class game extends Phaser.Scene{
         blendMode: "ADD" // Efecto a aplicar
       })
       particles.setPosition(0, -11);
-      self.colliderSub = self.physics.add.collider(self.destructor.imagen, self.submarino.imagen);
 
+      self.colliderSub = self.physics.add.collider(self.destructor.imagen, self.submarino.imagen);
     }
 
     // Funcion para generarle las imagenes y las particulas a cada barco
@@ -431,6 +444,11 @@ export class game extends Phaser.Scene{
         self.submarino.armas = 4;
         console.log('baje a poca profundidad');
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        // Cambio de cámara
+        if (self.lvactivado === true){
+          self.cameras.main.setMask(self.mask);
+          self.cameras.main.setZoom(1.4);
+        }
       }else if (self.submarino.profundidad == 1){
         // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
         // vea mi cambio de profundidad
@@ -510,7 +528,7 @@ export class game extends Phaser.Scene{
     }, this);
 
 
-    //FUNCION DE DISPARO DEL JUGADOR
+    // FUNCION DE DISPARO DEL JUGADOR
     function Disparo(player, bullet, reticula, enemyImag){
       if (bullet){
           bullet.fire(player, reticula); //LLAMA AL METODO DISPARAR DE BULLET
@@ -614,7 +632,7 @@ export class game extends Phaser.Scene{
     //funcion que muestra la explosion en la posicion determinada
     function hitted(x, y){
       //self.explotion2 = self.add.sprite(x,y,'explot').setDisplaySize(100, 100).setDepth(5);
-      self.explotion2 = self.add.sprite(x,y,DEF.SPRITES.EXPLOCION).setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
+      self.explotion2 = self.add.sprite(x,y,DEF.SPRITES.EXPLOSION).setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
       self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
       key: 'explot2',
       frames: [
@@ -630,7 +648,7 @@ export class game extends Phaser.Scene{
     //funcion que muestra y destruye un jugador
     function destroyed(playerIMG){
       //self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y ,'explot').setDisplaySize(100, 100).setDepth(5);
-      self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y, DEF.SPRITES.EXPLOCION).setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
+      self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y, DEF.SPRITES.EXPLOSION).setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
       self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
       key: 'explot3',
       frames: [
@@ -790,19 +808,38 @@ export class game extends Phaser.Scene{
       else{
         self.physics.world.removeCollider(self.colliderSub);
       }
-    }); 
+    });
+
     // Si es el equipo 1, muestro el boton para cambiar de camara con los cargueros
     if (this.equipo === 1){
       const btnCamaraCarguero = this.add.text(600, 600, 'BOTON PARA CAMBIAR DE CAMARA CON LOS CARGUEROS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(1));
       const btnCamaraDestructor = this.add.text(600, 650, 'BOTON PARA CAMBIAR DE CAMARA CON EL DESTRUCTOR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(0));
+    }else{
+      const btnActivarLargaVista = this.add.text(600, 600, 'ACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(1));
+      const btnDesactivarLargaVista = this.add.text(600, 650, 'DESACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(0));
     }
-    // Metodo que cambia de camara con el carguero central de la formacion
+
+    // Método que cambia de camara con el carguero central de la formacion
     function cambioCamaraCargueros(camara){
       if(camara==0){
         self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(0.9);
       }else if(camara==1){
         self.cameras.main.startFollow(self.carguero,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+      }
+    }
+
+    // Método para activar el larga vistas
+    function cambioLargaVistas(lv){
+      if(lv === 1 && (self.submarino.profundidad === 0)){
+        self.lvactivado=true;
+        self.largaVistas.angle=self.submarino.imagen.angle+270;
+        self.cameras.main.setMask(self.mar.masklv);
+        self.cameras.main.setZoom(0.9);
+      }else if(lv === 0 && (self.submarino.profundidad === 0)){
+        self.lvactivado=false;
+        self.cameras.main.setMask(self.mask);
         self.cameras.main.setZoom(1.4);
       }
     }
@@ -910,8 +947,14 @@ export class game extends Phaser.Scene{
       if (this.submarino){
         if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
           this.submarino.imagen.setAngularVelocity(-100)
+          if(this.lvactivado==true){
+            this.largaVistas.angle=this.submarino.imagen.angle+270;
+          }
         } else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
           this.submarino.imagen.setAngularVelocity(100)
+          if(this.lvactivado==true){
+            this.largaVistas.angle=this.submarino.imagen.angle-90;
+          }
         } else {
           this.submarino.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
         }
