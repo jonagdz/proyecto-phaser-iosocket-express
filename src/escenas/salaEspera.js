@@ -1,3 +1,5 @@
+import { DEF } from "../def.js";
+
 export class salaEspera extends Phaser.Scene{
   constructor(){
     super({key:'salaEspera'});
@@ -18,7 +20,7 @@ export class salaEspera extends Phaser.Scene{
     //this.socket = io()
     console.log("Entré a salaEspera.js con el socket.id: " + this.socket.id + " - equipo: "+this.equipo);
     // Agrego imagen de fondo
-    self.add.image(0, 0, 'fondoWaitRoom').setOrigin(0).setScrollFactor(1);
+    self.add.image(0, 0, DEF.IMAGENES.FONDOESPERA).setOrigin(0).setScrollFactor(1);
 
     // Muestro el mensaje dependiendo de con que opcion fue llamada la escena
     if (self.opcion == 1){
@@ -35,7 +37,7 @@ export class salaEspera extends Phaser.Scene{
         socket: self.socket,
         equipo: self.equipo
       }
-      self.scene.start("game", data);
+      self.scene.start(DEF.SCENES.GAME, data);
     })
   }
 }

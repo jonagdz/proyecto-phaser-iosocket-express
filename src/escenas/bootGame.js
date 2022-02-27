@@ -1,3 +1,5 @@
+import { DEF } from "../def.js";
+
 //Clase que permite bootear el juego
 export class bootGame extends Phaser.Scene{
     
@@ -6,11 +8,43 @@ export class bootGame extends Phaser.Scene{
         super("bootGame");
     }
 
+    loadImages() {
+        this.load.setPath("./src/assets");
+
+        for (let imagen in DEF.IMAGENES) {
+            this.load.image(DEF.IMAGENES[imagen], DEF.IMAGENES[imagen]);
+        }
+    }
+
+    loadAudio() {
+        this.load.setPath("./src/assets");
+
+        for (let audio in DEF.AUDIO) {
+            this.load.audio(DEF.AUDIO[audio], DEF.AUDIO[audio]);
+        }
+    }
+
+    loadSprites() {
+        this.load.setPath("./src/assets");
+        for (let sprite in DEF.SPRITES) {
+            if(sprite.includes("EXP"))
+            {
+                this.load.atlas("explot",DEF.SPRITES[sprite],'./explosion.json');
+            }
+            else
+            {
+                this.load.image(DEF.SPRITES[sprite], DEF.SPRITES[sprite]);
+            }
+        }
+    }
     
     // Funcion preload: Cargo todos los recursos que utilizare en el juego como imagenes y demas
     preload() 
     {
-        this.load.image('uboot', './src/assets/uboot7.png');
+        this.loadImages();
+        this.loadAudio();
+        this.loadSprites();
+        /*this.load.image('uboot', './src/assets/uboot7.png');
         this.load.image('mar', './src/assets/mar.png');
         this.load.image('fondoWaitRoom', './src/assets/fondoEscena.jpg');
         this.load.image('Blue', './src/assets/Blue2.png');
@@ -27,12 +61,11 @@ export class bootGame extends Phaser.Scene{
         this.load.image('costa2', './src/assets/costa2.png');
         this.load.image('carguero', './src/assets/liberty.png');
         this.load.image('UbootProfundidad1', './src/assets/uboot7P1.png');
-        this.load.image('UbootProfundidad2', './src/assets/uboot7P3.png');
+        this.load.image('UbootProfundidad2', './src/assets/uboot7P3.png');*/
       }
 
     create()
     {
-        //this.scene.start("game");
-        this.scene.start("preGameMenu");
+        this.scene.start(DEF.SCENES.MENU);
     }
 }
