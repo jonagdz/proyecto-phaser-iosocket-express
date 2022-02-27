@@ -979,6 +979,8 @@ export class game extends Phaser.Scene{
           this.carguero6.imagen.setAcceleration(0)
         }
 
+
+        // MANERA DE ACTUALIZAR EL MOVIMIENTO DE LOS CARGUEROS CON UN FOR, NO FUNCIONA
         /*
         let i;
         for(i=1;i<5;i++){
