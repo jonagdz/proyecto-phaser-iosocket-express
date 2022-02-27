@@ -22,7 +22,8 @@ export const DEF = {
         UBOATP0: "uboot7.png",
         UBOATP1: "uboot7P1.png",
         UBOATP2: "uboot7P3.png",
-        MASCARA: "mask.png"
+        MASCARA: "mask.png",
+        LARGAVISTAS: "maskLongView.png"
     },
 
     AUDIO: {
@@ -31,6 +32,6 @@ export const DEF = {
 
     SPRITES: {
         RETICULA: "Crosshair.png",
-        EXPLOCION: "explosion.png",
+        EXPLOSION: "explosion.png",
     },
 };
