@@ -437,9 +437,7 @@ export class game extends Phaser.Scene{
     // SETEOS DE PROFUNDIDAD:
     // funcion que al presionar la tecla Q, el submarino baja, si bajas a nivel 1 podes disparar solo torpedos, en nivel 2 nada
     self.input.keyboard.on('keydown-' + 'Q', function (event){
-      if (self.equipo != 1)
-      {
-        console.log(self.equipo)
+      if(self.equipo === 2){
         // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
         // vea mi cambio de profundidad
         if (self.submarino.profundidad == 0){
@@ -450,6 +448,11 @@ export class game extends Phaser.Scene{
           self.submarino.armas = 4;
           console.log('baje a poca profundidad');
           self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+          // Cambio de cámara
+          if (self.lvactivado === true){
+            self.cameras.main.setMask(self.mask);
+            self.cameras.main.setZoom(1.4);
+          }
         }else if (self.submarino.profundidad == 1){
           // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
           // vea mi cambio de profundidad
@@ -460,13 +463,12 @@ export class game extends Phaser.Scene{
           console.log('baje al mucha profundidad');
           self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
         }
-          self.physics.world.removeCollider(self.colliderSub); 
+        self.physics.world.removeCollider(self.colliderSub); 
       }
     });
     //funcion que al precionar la tecla E, el submarino sube
     self.input.keyboard.on('keydown-' + 'E', function (event){
-      if (self.equipo != 1)
-      {
+      if (self.equipo === 2){
         // Idem anteriores pero subiendo de 1 a 0
         if (self.submarino.profundidad == 1){
           self.submarino.profundidad = 0;
@@ -490,15 +492,17 @@ export class game extends Phaser.Scene{
       }
     });
 
-    //funcion que al precionar la tecla V, cambia la profundidad de las cargas de profundidad del destructor
+    // Funcion que al precionar la tecla V, cambia la profundidad de las cargas de profundidad del destructor
     self.input.keyboard.on('keydown-' + 'V', function (event){
-     if(self.destructor.cargas === 1){
-       self.destructor.cargas = 2;
-       console.log('detonador para mucha profundidad');
-     }else{
-       self.destructor.cargas = 1;
-       console.log('detonador para poca profundidad');
-     }
+      if (self.equipo === 1){
+        if(self.destructor.cargas === 1){
+          self.destructor.cargas = 2;
+          console.log('detonador para mucha profundidad');
+        }else{
+          self.destructor.cargas = 1;
+          console.log('detonador para poca profundidad');
+        }
+      }  
     });
 
     //funcion que recibe un click y ejecuta el evento disparo, el cual activa una bala del set de balas de la clase
