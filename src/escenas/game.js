@@ -17,7 +17,8 @@ export class game extends Phaser.Scene{
     this.velocidadMedia = 600; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
     this.velocidadBaja = 80;
     this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0,0,0,0,0); // Creo el objeto destructor 
-    this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,180,2,0,0,0,0); // Creo el objeto submarino 
+    this.submarino = new Submarino()
+    this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,180,2,3,0,0,0,0); // Creo el objeto submarino 
     this.carguero1 = new Carguero('Carguero1',this.velocidadBaja,8,0,0,0,3); // Creo el objeto carguero1 
     this.carguero2 = new Carguero('Carguero2',this.velocidadBaja,8,0,0,0,4); // Creo el objeto carguero2
     this.carguero3 = new Carguero('Carguero3',this.velocidadBaja,8,0,0,0,5); // Creo el objeto carguero3
@@ -1136,32 +1137,56 @@ export class game extends Phaser.Scene{
 
     // Método para activar la función de sonar
     function activarSonar(){
-      // Cambio de cámaras
-      self.cameras.main.setMask(self.mask);
-      self.cameras.main.setZoom(0.9);
-      
-      // Texto de tiempo restante
+      // Texto de aviso
       self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
 
-      self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
-      self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
-      
-      function camaraSonar(){
-        // Restablezco las cámaras
+      // Activo sonar si hay sonares disponibles
+      if(self.submarino.sonar>0){
+        // Cambio de cámaras
         self.cameras.main.setMask(self.mask);
-        self.cameras.main.setZoom(1.4);
+        self.cameras.main.setZoom(0.9);
+        
+        // Activo cuenta regresiva
+        self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
 
-        // Elimino texto de tiempo restante
-        removeText();
-        contadorS=0;
-      }
-      
-      function actualizarContSonar(){
-        console.log("ENTRE A ACT SONAR");
-        contadorS++;
-        self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS));
-        if (contadorS === 10){
-          self.cuentaSonar.remove(true);
+        // Vuelvo a vista normal y elimino aviso
+        self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
+        
+        function camaraSonar(){
+          // Restablezco las cámaras
+          self.cameras.main.setMask(self.mask);
+          self.cameras.main.setZoom(1.4);
+
+          // Elimino texto de tiempo restante
+          removeText();
+          contadorS=0;
+        }
+        
+        function actualizarContSonar(){
+          contadorS++;
+          self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS) + '\nSONARES RESTANTES: '+(self.submarino.sonar));
+          if (contadorS === 10){
+            self.cuentaSonar.remove(true);
+          }
+        }
+        self.submarino.sonar--; 
+      }else{
+
+        self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
+        self.resetSonar = self.time.addEvent({ delay: 10000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
+        
+        function eliminoAvisoNHS(){
+          // Elimino texto de aviso no hay sonar
+          removeText();
+          contadorS=0;
+        }
+
+        function avisoNoHaySonar(){
+          contadorS++;
+          self.statusSonar.setText('¡SONAR AGOTADO!');
+          if (contadorS === 10){
+            self.cuentaSonar.remove(true);
+          }
         }
       }
     }
