@@ -26,6 +26,7 @@ export class game extends Phaser.Scene{
     this.carguero6 = new Carguero('Carguero6',this.velocidadBaja,8,0,0,0,8); // Creo el objeto carguero6
     this.largaVistas = {};
     this.mar;
+    this.distMax = 300;
   }
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
@@ -58,9 +59,16 @@ export class game extends Phaser.Scene{
     // Defino variables para las posiciones X e Y de los barcos
     var posX;
     var posY;
-    let distMax;
+    let distMaxima = 50;
     let damAcuD = 0;
     let damAcuS = 0;
+    let distCorta = 0;
+    let distMedia = 0;
+    let corta = false;
+    let media = false;
+    let larga = false;
+    let probabilidad = 0;
+    let probExtra = 0;
 
     // Obtengo el centro del canvas para la máscara
     const centroW = this.sys.game.config.width / 2;
@@ -124,6 +132,7 @@ export class game extends Phaser.Scene{
     this.left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+
 
     // INICIO DE LA LÖGICA DEL COMPORTAMIENTO DEL JUEGO -----------------------------------------------------------------------------------------------------------------------------------
 
@@ -330,17 +339,19 @@ export class game extends Phaser.Scene{
         }
       }else if(self.submarino.profundidad === 1){
         //si esta a profundidad 1 que solo pueda usar el arma 1, torpedos
-        if (self.submarino.armas === 1){
-          self.submarino.armas = 1;
-          console.log('Solo Torpedos a esta profundidad');
-        }else{
-          self.submarino.armas = 1;
-          console.log('Solo Torpedos a esta profundidad');
-        }  
+          self.submarino.armas = 4;
+          console.log('Solo Torpedos a esta profundidad');  
       }else if(self.submarino.profundidad === 2){
         //si esta en profundidad 2 que no pueda disparar
         self.submarino.armas = -1;
-      }  
+      }
+      if(self.submarino.armas === 0){
+        self.distMax = 300;
+      }else if(self.submarino.armas === 1 || self.submarino.armas === 4){
+        self.distMax = 500;
+      }   
+      self.submarino.reticula.x = self.submarino.imagen.x + (Math.cos((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
+      self.submarino.reticula.y = self.submarino.imagen.y + (Math.sin((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
     });
       
     }
@@ -619,73 +630,280 @@ export class game extends Phaser.Scene{
           });
           //MANEJO DE COLISION ENTRE LA BALA Y OTROS JUGADORES
           self.physics.add.collider(bullet, enemyImag, function(bullet){
+            distCorta = 75;
+            distMedia = 200;
+
+            corta = false;
+            media = false;
+            larga = false;  
+            let distancia = Math.sqrt((bullet.x - player.x)**2 + (bullet.y - player.y)**2);
+            //console.log((bullet.x - player.x)**2);
+            if(distancia <= distCorta){
+              corta = true;
+              media = false;
+              larga = false;
+            }else if(distancia > distCorta && distancia<= distMedia){
+              corta = false;
+              media = true;
+              larga = false;
+            }else if(distancia > distMedia){
+              corta = false;
+              media = false;
+              larga = true;  
+            }
+            console.log("distancia corta", corta);
+            console.log("distancia media", media);
+            console.log("distiancia larga", larga);
+            
             bullet.destroy();
-            handleHit(enemyImag);
+            handleHit(enemyImag, corta, media, larga);
           });
       }
     }
     //funcion que maneja el dano hecho por cada vez que se lanza el evento disparo del click, segun el tipo de arma es el dano hecho
     //el dano luego es enviado por socket al otro jugador. Tambien realiza la gestion de vida del oponente - danio para poder
     //mostrar que estamos haciendole danio al otro jugador y que muere.
-    function handleHit(enemy){
-         
+    function handleHit(enemy, corta, media, larga){
+      probabilidad = Math.floor(Math.random() * (11));
+      console.log('la probabilidad base es %', probabilidad, '0');
       if(self.equipo === 1){
-          //seteo del arma canion del Destructor
+//--------------------------------------------------------------------------------------------------------------------------------
+//                                                  CANON DEL DESTRUCTOR
+//--------------------------------------------------------------------------------------------------------------------------------
           if(self.destructor.armas === 0 && self.submarino.profundidad === 0){
-              hitted(enemy.x, enemy.y); 
-              danio = 5;
-              damAcuD = damAcuD + danio;              
-              self.socket.emit('playerHit', {Dam: danio});
-              console.log('danio al enemigo', danio);
-              if(damAcuD >= self.submarino.vida){
-                destroyed(self.submarino.imagen);
-                self.submarino.imagen.setActive(false);
-                self.submarino.imagen.setVisible(false);
-              }
-            //seteo del arma carga de profundidad del Destructor
-          }else if (self.destructor.armas === 1){
-              if(self.destructor.cargas === self.submarino.profundidad){
-                danio = 3;
-                console.log('danio al enemigo', danio);
+            if(corta){
+              probExtra = Math.floor(Math.random() * (2));
+              console.log('la probabilidad extra del canion es %', probExtra, '0');
+              console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              //si la probabilidad de errar es mayor que el 40%, entonces fallo
+              if((probabilidad + probExtra) > 4){
                 hitted(enemy.x, enemy.y); 
+                danio = 5;
+                damAcuD = damAcuD + danio;              
                 self.socket.emit('playerHit', {Dam: danio});
-              }else{
+                console.log('danio al enemigo', danio);
+                if(damAcuD >= self.submarino.vida){
+                  destroyed(self.submarino.imagen);
+                  self.submarino.imagen.setActive(false);
+                  self.submarino.imagen.setVisible(false);
+                }
+              }  
+            }else if(media){
+              probExtra = Math.floor(Math.random() * (3));
+              console.log('la probabilidad extra del canion es %', probExtra, '0');
+              console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              //si la probabilidad de errar es mayor que el 40%, entonces fallo
+              if((probabilidad + probExtra) > 3){
+                hitted(enemy.x, enemy.y); 
+                danio = 5;
+                damAcuD = damAcuD + danio;              
+                self.socket.emit('playerHit', {Dam: danio});
+                console.log('danio al enemigo', danio);
+                if(damAcuD >= self.submarino.vida){
+                  destroyed(self.submarino.imagen);
+                  self.submarino.imagen.setActive(false);
+                  self.submarino.imagen.setVisible(false);
+                }
+              }  
+            }else if(larga){
+              probExtra = Math.floor(Math.random() * (3));
+              console.log('la probabilidad extra del canion es %', probExtra, '0');
+              console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              //si la probabilidad de errar es mayor que el 60%, entonces fallo
+              if((probabilidad + probExtra) > 6){
+                hitted(enemy.x, enemy.y); 
+                danio = 5;
+                damAcuD = damAcuD + danio;              
+                self.socket.emit('playerHit', {Dam: danio});
+                console.log('danio al enemigo', danio);
+                if(damAcuD >= self.submarino.vida){
+                  destroyed(self.submarino.imagen);
+                  self.submarino.imagen.setActive(false);
+                  self.submarino.imagen.setVisible(false);
+                }
+              } 
+            }   
+//--------------------------------------------------------------------------------------------------------------------------------
+//                                                  CARGAS DE PROFUNDIDAD DEL DESTRUCTOR
+//--------------------------------------------------------------------------------------------------------------------------------
+          }else if (self.destructor.armas === 1){
+            if(corta){
+              probExtra = Math.floor(Math.random() * (2));
+              console.log('la probabilidad extra de la carga es %', probExtra, '0');
+              console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              //si la probabilidad de errar es mayor que el 10%, entonces fallo
+              if((probabilidad + probExtra) > 1){
+                if(self.destructor.cargas === self.submarino.profundidad){
+                  danio = 3;
+                  console.log('danio al enemigo', danio);
+                  hitted(enemy.x, enemy.y); 
+                  self.socket.emit('playerHit', {Dam: danio});
+                }else{
+                  danio = 0;
+                  console.log('danio al enemigo', danio);
+                }  
+                damAcuD = damAcuD + danio;              
+                if(damAcuD >= self.submarino.vida){
+                  destroyed(self.submarino.imagen);
+                  self.submarino.imagen.setActive(false);
+                  self.submarino.imagen.setVisible(false);
+                }
+              }  
+            }else if(media){
+              probExtra = Math.floor(Math.random() * (3));
+              console.log('la probabilidad extra de la carga es %', probExtra, '0');
+              console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              //si la probabilidad de errar es mayor que el 70%, entonces fallo
+              if((probabilidad + probExtra) > 7){
+                if(self.destructor.cargas === self.submarino.profundidad){
+                  danio = 3;
+                  console.log('danio al enemigo', danio);
+                  hitted(enemy.x, enemy.y); 
+                  self.socket.emit('playerHit', {Dam: danio});
+                }else{
+                  danio = 0;
+                  console.log('danio al enemigo', danio);
+                }  
+                damAcuD = damAcuD + danio;              
+                if(damAcuD >= self.submarino.vida){
+                  destroyed(self.submarino.imagen);
+                  self.submarino.imagen.setActive(false);
+                  self.submarino.imagen.setVisible(false);
+                }
+              }  
+            }else if(larga){
+              //La probabilidad de acertar a larga distancia es imposible, entonces 0 danio
                 danio = 0;
                 console.log('danio al enemigo', danio);
-              }  
-              damAcuD = damAcuD + danio;              
-              if(damAcuD >= self.submarino.vida){
-                destroyed(self.submarino.imagen);
-                self.submarino.imagen.setActive(false);
-                self.submarino.imagen.setVisible(false);
+                damAcuD = damAcuD + danio;              
+                if(damAcuD >= self.submarino.vida){
+                  destroyed(self.submarino.imagen);
+                  self.submarino.imagen.setActive(false);
+                  self.submarino.imagen.setVisible(false);
+                }
               }
+            }   
+//--------------------------------------------------------------------------------------------------------------------------------
+//                                                  CANON DEL SUBMARINO
+//--------------------------------------------------------------------------------------------------------------------------------            
+      }else if (self.equipo === 2){
+            if(self.submarino.armas === 0){
+              if(corta){
+                probExtra = Math.floor(Math.random() * (2));
+                console.log('la probabilidad extra del canion es %', probExtra, '0');
+                console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                //si la probabilidad de errar es mayor que el 10%, entonces fallo
+                if((probabilidad + probExtra) > 3){
+                  console.log("entro al if del danio sub corto");
+                  hitted(enemy.x, enemy.y); 
+                  danio = 1;
+                  damAcuS = damAcuS + danio;
+                  console.log('danio al enemigo', danio);              
+                  self.socket.emit('playerHit', {Dam: danio});
+                  if(damAcuS >= self.destructor.vida){
+                    destroyed(self.destructor.imagen);
+                    self.destructor.imagen.setActive(false);
+                    self.destructor.imagen.setVisible(false);
+                  }
+                } 
+              }else if(media){
+                  probExtra = Math.floor(Math.random() * (3));
+                  console.log('la probabilidad extra del canion es %', probExtra, '0');
+                  console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                  //si la probabilidad de errar es mayor que el 10%, entonces fallo
+                  if((probabilidad + probExtra) > 6){
+                    console.log("entro al if del danio sub medio");
+                    hitted(enemy.x, enemy.y); 
+                    danio = 1;
+                    damAcuS = damAcuS + danio;
+                    console.log('danio al enemigo', danio);              
+                    self.socket.emit('playerHit', {Dam: danio});
+                    if(damAcuS >= self.destructor.vida){
+                      destroyed(self.destructor.imagen);
+                      self.destructor.imagen.setActive(false);
+                      self.destructor.imagen.setVisible(false);
+                    }
+                  }  
+              }else if(larga){
+                    probExtra = Math.floor(Math.random() * (3));
+                    console.log('la probabilidad extra del canion es %', probExtra, '0');
+                    console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                    //si la probabilidad de errar es mayor que el 10%, entonces fallo
+                    if((probabilidad + probExtra) > 8){
+                      console.log("entro al if del danio sub largo");
+                      hitted(enemy.x, enemy.y); 
+                      danio = 1;
+                      damAcuS = damAcuS + danio;
+                      console.log('danio al enemigo', danio);              
+                      self.socket.emit('playerHit', {Dam: danio});
+                      if(damAcuS >= self.destructor.vida){
+                        destroyed(self.destructor.imagen);
+                        self.destructor.imagen.setActive(false);
+                        self.destructor.imagen.setVisible(false);
+                      }
+                    }
+                  }
+//--------------------------------------------------------------------------------------------------------------------------------
+//                                                  TORPEDOS DEL SUBMARINO
+//--------------------------------------------------------------------------------------------------------------------------------
+            }else if (self.submarino.armas === 1 || self.submarino.armas === 4){
+              if(corta){
+                probExtra = Math.floor(Math.random() * (2));
+                console.log('la probabilidad extra del canion es %', probExtra, '0');
+                console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                //si la probabilidad de errar es mayor que el 10%, entonces fallo
+                if((probabilidad + probExtra) > 2){
+                  console.log("entro al if del danio sub corto torpedo");
+                  hitted(enemy.x, enemy.y); 
+                  danio = 4;
+                  damAcuS = damAcuS + danio;
+                  console.log('danio al enemigo', danio);                            
+                  self.socket.emit('playerHit', {Dam: danio});
+                  if(damAcuS >= self.destructor.vida){
+                    destroyed(self.destructor.imagen);
+                    self.destructor.imagen.setActive(false);
+                    self.destructor.imagen.setVisible(false);
+                  }
+                }
+              }else if(media){
+                probExtra = Math.floor(Math.random() * (3));
+                console.log('la probabilidad extra del canion es %', probExtra, '0');
+                console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                //si la probabilidad de errar es mayor que el 10%, entonces fallo
+                if((probabilidad + probExtra) > 3){
+                  hitted(enemy.x, enemy.y); 
+                  danio = 4;
+                  damAcuS = damAcuS + danio;
+                  console.log('danio al enemigo', danio);                            
+                  self.socket.emit('playerHit', {Dam: danio});
+                  if(damAcuS >= self.destructor.vida){
+                    destroyed(self.destructor.imagen);
+                    self.destructor.imagen.setActive(false);
+                    self.destructor.imagen.setVisible(false);
+                  }
+                }
+              }else if(larga){
+                probExtra = Math.floor(Math.random() * (3));
+                console.log('la probabilidad extra del canion es %', probExtra, '0');
+                console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                //si la probabilidad de errar es mayor que el 10%, entonces fallo
+                if((probabilidad + probExtra) > 5){
+                  hitted(enemy.x, enemy.y); 
+                  danio = 4;
+                  damAcuS = damAcuS + danio;
+                  console.log('danio al enemigo', danio);                            
+                  self.socket.emit('playerHit', {Dam: danio});
+                  if(damAcuS >= self.destructor.vida){
+                    destroyed(self.destructor.imagen);
+                    self.destructor.imagen.setActive(false);
+                    self.destructor.imagen.setVisible(false);
+                  }
+                }
+              }     
+            }
+            
           }
-      }else{
-        if(self.submarino.armas === 0){
-          hitted(enemy.x, enemy.y); 
-          danio = 1;
-          damAcuS = damAcuS + danio;
-          console.log('danio al enemigo', danio);              
-          self.socket.emit('playerHit', {Dam: danio});
-          if(damAcuS >= self.destructor.vida){
-            destroyed(self.destructor.imagen);
-            self.destructor.imagen.setActive(false);
-            self.destructor.imagen.setVisible(false);
-          }
-        }else if (self.submarino.armas === 1 || self.submarino.armas === 4){
-          hitted(enemy.x, enemy.y); 
-          danio = 4;
-          damAcuS = damAcuS + danio;
-          console.log('danio al enemigo', danio);                            
-          self.socket.emit('playerHit', {Dam: danio});
-          if(damAcuS >= self.destructor.vida){
-            destroyed(self.destructor.imagen);
-            self.destructor.imagen.setActive(false);
-            self.destructor.imagen.setVisible(false);
-          }
-        }
-        
-      }
+           
     }
     //funcion que muestra la explosion en la posicion determinada
     function hitted(x, y){
@@ -748,54 +966,28 @@ export class game extends Phaser.Scene{
           self.destructor.reticula.y += pointer.movementY;
         }
         if(self.destructor.armas == 0){
-          distMax = 250;
-          if ((self.destructor.reticula.x - self.destructor.imagen.x) > distMax)
-              self.destructor.reticula.x = self.destructor.imagen.x +distMax;
-            else if (self.destructor.reticula.x - self.destructor.imagen.x < -distMax)
-              self.destructor.reticula.x = self.destructor.imagen.x -distMax;
-            if (self.destructor.reticula.y - self.destructor.imagen.y > distMax)
-              self.destructor.reticula.y = self.destructor.imagen.y +distMax;
-            else if (self.destructor.reticula.y - self.destructor.imagen.y < -distMax)
-              self.destructor.reticula.y = self.destructor.imagen.y-distMax;
-        }else{
-          distMax = 80;
-          if ((self.destructor.reticula.x - self.destructor.imagen.x) > distMax)
-              self.destructor.reticula.x = self.destructor.imagen.x +distMax;
-            else if (self.destructor.reticula.x - self.destructor.imagen.x < -distMax)
-              self.destructor.reticula.x = self.destructor.imagen.x -distMax;
-            if (self.destructor.reticula.y - self.destructor.imagen.y > distMax)
-              self.destructor.reticula.y = self.destructor.imagen.y +distMax;
-            else if (self.destructor.reticula.y - self.destructor.imagen.y < -distMax)
-              self.destructor.reticula.y = self.destructor.imagen.y-distMax;
+          distMaxima = 300;
+          if ((self.destructor.reticula.x - self.destructor.imagen.x) > distMaxima)
+              self.destructor.reticula.x = self.destructor.imagen.x +distMaxima;
+            else if (self.destructor.reticula.x - self.destructor.imagen.x < -distMaxima)
+              self.destructor.reticula.x = self.destructor.imagen.x -distMaxima;
+            if (self.destructor.reticula.y - self.destructor.imagen.y > distMaxima)
+              self.destructor.reticula.y = self.destructor.imagen.y +distMaxima;
+            else if (self.destructor.reticula.y - self.destructor.imagen.y < -distMaxima)
+              self.destructor.reticula.y = self.destructor.imagen.y-distMaxima;
+        }else if (self.destructor.armas == 1){
+          distMaxima = 200;
+          if ((self.destructor.reticula.x - self.destructor.imagen.x) > distMaxima)
+              self.destructor.reticula.x = self.destructor.imagen.x +distMaxima;
+            else if (self.destructor.reticula.x - self.destructor.imagen.x < -distMaxima)
+              self.destructor.reticula.x = self.destructor.imagen.x -distMaxima;
+            if (self.destructor.reticula.y - self.destructor.imagen.y > distMaxima)
+              self.destructor.reticula.y = self.destructor.imagen.y +distMaxima;
+            else if (self.destructor.reticula.y - self.destructor.imagen.y < -distMaxima)
+              self.destructor.reticula.y = self.destructor.imagen.y-distMaxima;
         }
-      }else{
-    //maneja la mira del submarino con el cursor
-        if (this.input.mouse.locked){
-          /*self.submarino.reticula.x += pointer.movementX;
-          self.submarino.reticula.y += pointer.movementY;*/
-        }
-        if(self.submarino.armas === 0){
-          distMax = 300;
-          if ((self.submarino.reticula.x - self.submarino.imagen.x) > distMax)
-              self.submarino.reticula.x = self.submarino.imagen.x +distMax;
-            else if (self.submarino.reticula.x - self.submarino.imagen.x < -distMax)
-              self.submarino.reticula.x = self.submarino.imagen.x -distMax;
-            if (self.submarino.reticula.y - self.submarino.imagen.y > distMax)
-              self.submarino.reticula.y = self.submarino.imagen.y +distMax;
-            else if (self.submarino.reticula.y - self.submarino.imagen.y < -distMax)
-              self.submarino.reticula.y = self.submarino.imagen.y-distMax;
-        }else if(self.submarino.armas === 1 || self.submarino.armas === 4){
-          distMax = 150;
-            if ((self.submarino.reticula.x - self.submarino.imagen.x) > distMax)
-                self.submarino.reticula.x = self.submarino.imagen.x +distMax;
-              else if (self.submarino.reticula.x - self.submarino.imagen.x < -distMax)
-                self.submarino.reticula.x = self.submarino.imagen.x -distMax;
-              if (self.submarino.reticula.y - self.submarino.imagen.y > distMax)
-                self.submarino.reticula.y = self.submarino.imagen.y +distMax;
-              else if (self.submarino.reticula.y - self.submarino.imagen.y < -distMax)
-                self.submarino.reticula.y = self.submarino.imagen.y-distMax; 
-        } 
       }
+    //maneja la mira del submarino con el cursor 
     }, this);
 
     // Destruye a un jugador cuando se desconecta del socket
@@ -1255,8 +1447,8 @@ export class game extends Phaser.Scene{
         var x = this.submarino.imagen.x;
         var y = this.submarino.imagen.y;
         var r = this.submarino.imagen.rotation;
-        this.submarino.reticula.x = this.submarino.imagen.x + (Math.cos((this.submarino.imagen.angle - 360) * 0.01745) * 300);
-        this.submarino.reticula.y = this.submarino.imagen.y + (Math.sin((this.submarino.imagen.angle - 360) * 0.01745) * 300);
+        this.submarino.reticula.x = this.submarino.imagen.x + (Math.cos((this.submarino.imagen.angle - 360) * 0.01745) * this.distMax);
+        this.submarino.reticula.y = this.submarino.imagen.y + (Math.sin((this.submarino.imagen.angle - 360) * 0.01745) * this.distMax);
         //this.submarino.reticula.angle = this.submarino.imagen.angle;
         //this.submarino.reticula.rotacion = this.submarino.imagen.rotation;
         if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y || r !== oldPosition.rotation)) {
