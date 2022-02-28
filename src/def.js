@@ -31,6 +31,7 @@ export const DEF = {
         INFO: "information.png",
         INFOTXT: "infotext.png",
         CLOSE: "close.png"
+        
 
     },
 
@@ -46,7 +47,8 @@ export const DEF = {
         UBOOT: "uboot.png",
         INFO: "info.png",
         HOMES: "homejj.png",
-        LOADS: "load.png"
-
+        LOADS: "load.png",
+        TXTESP: "txtespera.png",
+        TXTESP2: "txtespera2.png"
     },
 };

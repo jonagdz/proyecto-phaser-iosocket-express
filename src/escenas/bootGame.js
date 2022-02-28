@@ -49,6 +49,12 @@ export class bootGame extends Phaser.Scene{
             if(sprite.includes("LOAD")){
                 this.load.atlas('load', DEF.SPRITES[sprite],'./load.json');
             }
+            if(sprite.includes("TXTESP")){
+                this.load.atlas('txtesp', DEF.SPRITES[sprite],'./txtespera.json');
+            }
+            if(sprite.includes("TXTESP2")){
+                this.load.atlas('txtesp2', DEF.SPRITES[sprite],'./txtespera2.json');
+            }
             else
             {
                 this.load.image(DEF.SPRITES[sprite], DEF.SPRITES[sprite]);
