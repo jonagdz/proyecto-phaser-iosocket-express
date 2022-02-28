@@ -46,7 +46,7 @@ export class game extends Phaser.Scene{
 
     // Grupo para los cargueros y balas
     var arrayCargueros = [];
-    this.grupoCargueros = this.physics.add.group({ classType: Carguero, runChildUpdate: true });
+    //this.grupoCargueros = this.physics.add.group({ classType: Carguero, runChildUpdate: true });
     this.playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
 
     // Cargo la imagen de fondo del mapa
@@ -103,28 +103,28 @@ export class game extends Phaser.Scene{
     this.physics.world.setBounds(0, 0, backgroundW, backgroundH);
     
     // Islas
-    this.isla1 = self.physics.add.image(2100,900,DEF.IMAGENES.ISLA).setDepth(1);
+    this.isla1 = self.physics.add.image(2100,900,DEF.IMAGENES.ISLA).setDepth(5);
    // this.isla1 = self.physics.add.image(2100,900,'island1').setDepth(1);
     this.isla1.setImmovable(true);
     this.isla1.setDisplaySize(400, 400);
-    this.isla2 = self.physics.add.image(2460,1600,DEF.IMAGENES.ISLA).setDepth(1);
+    this.isla2 = self.physics.add.image(2460,1600,DEF.IMAGENES.ISLA).setDepth(5);
     //this.isla2 = self.physics.add.image(2460,1600,'island1').setDepth(1);
     this.isla2.setImmovable(true);
     this.isla2.setDisplaySize(400, 400);
-    this.isla3 = self.physics.add.image(3200,600,DEF.IMAGENES.ISLA).setDepth(1);
+    this.isla3 = self.physics.add.image(3200,600,DEF.IMAGENES.ISLA).setDepth(5);
     //this.isla3 = self.physics.add.image(3200,600,'island1').setDepth(1);
     this.isla3.setImmovable(true);
     this.isla3.setDisplaySize(400, 400);
-    this.isla4 = self.physics.add.image(3400,1800,DEF.IMAGENES.ISLA).setDepth(1);
+    this.isla4 = self.physics.add.image(3400,1800,DEF.IMAGENES.ISLA).setDepth(5);
     //this.isla4 = self.physics.add.image(3400,1800,'island1').setDepth(1);
     this.isla4.setImmovable(true);
     this.isla4.setDisplaySize(400, 400);
 
     // Costas
-    this.costa1 = self.physics.add.image(345,1078,DEF.IMAGENES.COSTA1).setDepth(1);
+    this.costa1 = self.physics.add.image(345,1078,DEF.IMAGENES.COSTA1).setDepth(5);
     //this.costa1 = self.physics.add.image(345,1078,'costa1').setDepth(1);;
     this.costa1.setImmovable(true);
-    this.costa2 = self.physics.add.image(6066,1078,DEF.IMAGENES.COSTA2).setDepth(1);
+    this.costa2 = self.physics.add.image(6066,1078,DEF.IMAGENES.COSTA2).setDepth(5);
     //this.costa2 = self.physics.add.image(6066,1078,'costa2').setDepth(1);;
     this.costa2.setImmovable(true);
 
@@ -158,11 +158,11 @@ export class game extends Phaser.Scene{
     }    
 
     function generarEquipo1(){     
-      // Genero la imagen del destructor, colisiones, particulas, etc
-      generarDestructor();
-
       // Genero los objetos cargueros, con sus imagenes, colisiones, etc
       generarCargueros();
+
+      // Genero la imagen del destructor, colisiones, particulas, etc
+      generarDestructor();
 
       // Genero la imagen del submarino enemigo
       generarSubmarinoEnemigo();
@@ -228,8 +228,13 @@ export class game extends Phaser.Scene{
       // Se crea una colision del barco con la bomba
       self.physics.add.collider(self.destructor.imagen, self.bomb);
       // Se crea una colision del barco con los cargueros
-      self.physics.add.collider(self.destructor.imagen, self.grupoCargueros);
+      //self.physics.add.collider(self.destructor.imagen, self.grupoCargueros);
       self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen);
+      self.physics.add.collider(self.destructor.imagen, self.carguero2.imagen);
+      self.physics.add.collider(self.destructor.imagen, self.carguero3.imagen);
+      self.physics.add.collider(self.destructor.imagen, self.carguero4.imagen);
+      self.physics.add.collider(self.destructor.imagen, self.carguero5.imagen);
+      self.physics.add.collider(self.destructor.imagen, self.carguero6.imagen);
       // Se crea una colision del barco con la costa1
       self.physics.add.collider(self.destructor.imagen, self.costa1);
       // Se crea una colision del barco con la costa2
@@ -414,10 +419,10 @@ export class game extends Phaser.Scene{
       // Genero las imagenes de los cargueros, colisiones, particulas, etc
       arrayCargueros.forEach(function(carguero){
         //carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, 'carguero').setDisplaySize(200, 75).setDepth(5) // Seteo tamaño y profundidad de la imagen
-        carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5)
+        carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
         // Particulas
         //const particles = self.add.particles("Blue").setDepth(2)
-        const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
+        const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(1) // Imagen Blue como particula
         const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
           speed: 10, // Velocidad con la que se mueven
           scale: {start: 0.08, end: 0}, // Tamaño
@@ -427,13 +432,13 @@ export class game extends Phaser.Scene{
         emitter.startFollow(carguero.imagen) // Le indicamos que sigan al destructor
 
         // Lo vuelvo inamovible
-        carguero.imagen.setImmovable(true);
+        //carguero.imagen.setImmovable(true);
         carguero.imagen.setCollideWorldBounds(true); // Colisiones con el fin del mapa
         // Se crea una colision de los cargueros con la lisa isla
-        self.physics.add.collider(carguero.imagen, self.isla1); 
-        self.physics.add.collider(carguero.imagen, self.isla2); 
-        self.physics.add.collider(carguero.imagen, self.isla3); 
-        self.physics.add.collider(carguero.imagen, self.isla4); 
+        self.physics.add.collider(carguero.imagen, self.isla1, handleCollisionCargo, collisionCargoIsland, self); 
+        self.physics.add.collider(carguero.imagen, self.isla2, handleCollisionCargo, collisionCargoIsland, self); 
+        self.physics.add.collider(carguero.imagen, self.isla3, handleCollisionCargo, collisionCargoIsland, self); 
+        self.physics.add.collider(carguero.imagen, self.isla4, handleCollisionCargo, collisionCargoIsland, self); 
         // Se crea una colision del carguero con la bomba
         self.physics.add.collider(carguero.imagen, self.bomb);
         // Se crea una colision del carguero con la costa1
@@ -449,7 +454,7 @@ export class game extends Phaser.Scene{
     // Funcion para generarle las imagenes y las particulas a cada carguero estando en el equipo del submarino
     function generarCarguerosEnemigos(){
       // Particulas
-      const particles = self.add.particles("Blue").setDepth(2) // Imagen Blue como particula
+      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(5) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
         speed: 10, // Velocidad con la que se mueven
         scale: {start: 0.08, end: 0}, // Tamaño
@@ -463,17 +468,45 @@ export class game extends Phaser.Scene{
       emitter.startFollow( self.carguero5.imagen);
       emitter.startFollow( self.carguero6.imagen);
 
-      self.carguero1.imagen = self.physics.add.image(self.carguero1.posX, self.carguero1.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5);
-      self.carguero2.imagen = self.physics.add.image(self.carguero2.posX, self.carguero2.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5);
-      self.carguero3.imagen = self.physics.add.image(self.carguero3.posX, self.carguero3.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5);
-      self.carguero4.imagen = self.physics.add.image(self.carguero4.posX, self.carguero4.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5);
-      self.carguero5.imagen = self.physics.add.image(self.carguero5.posX, self.carguero5.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5);
-      self.carguero6.imagen = self.physics.add.image(self.carguero6.posX, self.carguero6.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5);
+      self.carguero1.imagen = self.physics.add.image(self.carguero1.posX, self.carguero1.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
+      self.carguero2.imagen = self.physics.add.image(self.carguero2.posX, self.carguero2.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
+      self.carguero3.imagen = self.physics.add.image(self.carguero3.posX, self.carguero3.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
+      self.carguero4.imagen = self.physics.add.image(self.carguero4.posX, self.carguero4.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
+      self.carguero5.imagen = self.physics.add.image(self.carguero5.posX, self.carguero5.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
+      self.carguero6.imagen = self.physics.add.image(self.carguero6.posX, self.carguero6.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
 
       self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
       self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen);
     };
 
+    function collisionCargoIsland(carguero, isla)
+    {
+      return true;
+    }
+
+    //Funcion que maneja la colision entre el carguero y la isla
+    function handleCollisionCargo(carguero, isla)
+    {
+      if (carguero.body.touching.right) //Cuando la el carguero colisiona de "frente" gira 90 grados hacia abajo, espera 2 segundos y continua con su marcha.
+      {
+        carguero.angle = carguero.angle + 90;
+        const velCY = Math.sin((carguero.angle - 360) * 0.01745)
+        carguero.setVelocityY(self.velocidadBaja * velCY)
+        setTimeout(() => {
+          carguero.angle = carguero.angle - 90;
+          contMarcha(carguero);
+        }, 2000)
+      }
+      
+    }
+
+    function contMarcha(carguero)
+    {
+      const velCX = Math.cos((carguero.angle - 360) * 0.01745)
+      const velCY = Math.sin((carguero.angle - 360) * 0.01745)
+      carguero.setVelocityX(self.velocidadBaja * velCX)
+      carguero.setVelocityY(self.velocidadBaja * velCY)
+    }
 
     // SETEOS DE PROFUNDIDAD:
     // funcion que al presionar la tecla Q, el submarino baja, si bajas a nivel 1 podes disparar solo torpedos, en nivel 2 nada
@@ -1247,8 +1280,7 @@ export class game extends Phaser.Scene{
           rotation: this.destructor.rotacion
         }
       }
-      
-      
+
       // Agregamos el movimiento de los cargueros con las teclas WASD y seteamos la velocidad de rotacion de giro del barco
       if (this.carguero1 || this.carguero2 || this.carguero3 || this.carguero4 || this.carguero5 || this.carguero6 ){
         if (this.left.isDown && (this.up.isDown || this.down.isDown)) {
