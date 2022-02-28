@@ -16,8 +16,8 @@ export class game extends Phaser.Scene{
     // Seteo las velocidades que se utilizaran en el juego
     this.velocidadMedia = 600; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
     this.velocidadBaja = 80;
-    this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0); // Creo el objeto destructor 
-    this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,0,2); // Creo el objeto submarino 
+    this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0,0,0,0,0); // Creo el objeto destructor 
+    this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,180,2,0,0,0,0); // Creo el objeto submarino 
     this.carguero1 = new Carguero('Carguero1',this.velocidadBaja,8,0,0,0,3); // Creo el objeto carguero1 
     this.carguero2 = new Carguero('Carguero2',this.velocidadBaja,8,0,0,0,4); // Creo el objeto carguero2
     this.carguero3 = new Carguero('Carguero3',this.velocidadBaja,8,0,0,0,5); // Creo el objeto carguero3
@@ -136,7 +136,7 @@ export class game extends Phaser.Scene{
       const btnCamaraDestructor = this.add.text(600, 650, 'BOTON PARA CAMBIAR DE CAMARA CON EL DESTRUCTOR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(0));
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
-
+      
       // Habilito el boton para acceder a la funcion de largavistas
       const btnActivarLargaVista = this.add.text(600, 600, 'ACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(1));
       const btnDesactivarLargaVista = this.add.text(600, 650, 'DESACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(0));
@@ -446,12 +446,12 @@ export class game extends Phaser.Scene{
       emitter.startFollow( self.carguero5.imagen);
       emitter.startFollow( self.carguero6.imagen);
 
-      self.carguero1.imagen = self.physics.add.image(self.carguero1.posX, self.carguero1.posY, 'carguero').setDisplaySize(200, 75).setDepth(5);
-      self.carguero2.imagen = self.physics.add.image(self.carguero2.posX, self.carguero2.posY, 'carguero').setDisplaySize(200, 75).setDepth(5);
-      self.carguero3.imagen = self.physics.add.image(self.carguero3.posX, self.carguero3.posY, 'carguero').setDisplaySize(200, 75).setDepth(5);
-      self.carguero4.imagen = self.physics.add.image(self.carguero4.posX, self.carguero4.posY, 'carguero').setDisplaySize(200, 75).setDepth(5);
-      self.carguero5.imagen = self.physics.add.image(self.carguero5.posX, self.carguero5.posY, 'carguero').setDisplaySize(200, 75).setDepth(5);
-      self.carguero6.imagen = self.physics.add.image(self.carguero6.posX, self.carguero6.posY, 'carguero').setDisplaySize(200, 75).setDepth(5);
+      self.carguero1.imagen = self.physics.add.image(self.carguero1.posX, self.carguero1.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5);
+      self.carguero2.imagen = self.physics.add.image(self.carguero2.posX, self.carguero2.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5);
+      self.carguero3.imagen = self.physics.add.image(self.carguero3.posX, self.carguero3.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5);
+      self.carguero4.imagen = self.physics.add.image(self.carguero4.posX, self.carguero4.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5);
+      self.carguero5.imagen = self.physics.add.image(self.carguero5.posX, self.carguero5.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5);
+      self.carguero6.imagen = self.physics.add.image(self.carguero6.posX, self.carguero6.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5);
 
       self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
       self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen);
@@ -1049,36 +1049,6 @@ export class game extends Phaser.Scene{
           this.carguero5.imagen.setAcceleration(0)
           this.carguero6.imagen.setAcceleration(0)
         }
-
-
-        // MANERA DE ACTUALIZAR EL MOVIMIENTO DE LOS CARGUEROS CON UN FOR, NO FUNCIONA
-        /*
-        let i;
-        for(i=1;i<5;i++){
-          let oldPosition = {}
-          console.log("i: "+i);
-          // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
-          var x = self.arrayCargueros[i].imagen.x;
-          var y = self.arrayCargueros[i].imagen.y;
-          var r = self.arrayCargueros[i].imagen.rotation;
-          if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y || r !== oldPosition.rotation)){
-            let data = {
-              x: self.arrayCargueros[i].imagen.x,
-              y: self.arrayCargueros[i].imagen.y,
-              rotation: self.arrayCargueros[i].imagen.rotation, 
-              carguero: i
-            }
-            this.socket.emit('carguerosMovement', data);
-          }
-
-          // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
-          oldPosition = {
-            x: self.arrayCargueros[i].imagen.x,
-            y: self.arrayCargueros[i].imagen.y,
-            rotation: self.arrayCargueros[i].imagen.rotation
-          }
-        }        
-        */
   
         // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 1
         let oldPosition1 = {}
