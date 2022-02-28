@@ -29,6 +29,7 @@ export class game extends Phaser.Scene{
     this.mar;
     this.distMax = 300;
     this.statusSonar;
+    this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
   }
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
@@ -40,8 +41,8 @@ export class game extends Phaser.Scene{
     let reticula;
     let cuentaSonar;
     let resetSonar;
-    let lactivado;
     let contadorS=0;
+    let largavist = false;
     self.socket.emit('listarPartidas', {id: 2});
 
     // Grupo para los cargueros y balas
@@ -1151,18 +1152,15 @@ export class game extends Phaser.Scene{
 
     // Método para activar el larga vistas
     function cambioLargaVistas(lv){
-      console.log("ENTRE LV PROF: "+self.submarino.profundidad);
-      console.log("ESTADO LV: "+self.lactivado);
       if(lv === 1 && (self.submarino.profundidad === 0)){
         console.log("LARGAVISTAS ACTIVADO");
-        self.lvactivado=true;
-        console.log("ESTADO LV ADENTRO: "+self.lactivado);
+        self.largavist = true;
         self.largaVistas.angle=self.submarino.imagen.angle+270;
         self.cameras.main.setMask(self.mar.masklv);
         self.cameras.main.setZoom(0.9);
       }else if(lv === 0 && (self.submarino.profundidad === 0)){
         console.log("LARGAVISTAS DESACTIVADO");
-        self.lvactivado=false;
+        self.largavist = false;
         self.cameras.main.setMask(self.mask);
         self.cameras.main.setZoom(1.4);
       }
@@ -1170,18 +1168,20 @@ export class game extends Phaser.Scene{
 
     // Método para activar la función de sonar
     function activarSonar(){
+      
       // Texto de aviso
       self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
 
       // Activo sonar si hay sonares disponibles
       if(self.submarino.sonar>0){
+        self.soundSonar.play();
         // Cambio de cámaras
         self.cameras.main.setMask(self.mask);
         self.cameras.main.setZoom(0.9);
         
         // Activo cuenta regresiva
         self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
-
+        
         // Vuelvo a vista normal y elimino aviso
         self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
         
@@ -1192,6 +1192,7 @@ export class game extends Phaser.Scene{
 
           // Elimino texto de tiempo restante
           removeText();
+          self.soundSonar.stop();
           contadorS=0;
         }
         
@@ -1202,7 +1203,7 @@ export class game extends Phaser.Scene{
             self.cuentaSonar.remove(true);
           }
         }
-        self.submarino.sonar--; 
+        self.submarino.sonar--;
       }else{
 
         self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
@@ -1479,64 +1480,68 @@ export class game extends Phaser.Scene{
       
     }else{
       if (this.submarino){
-        // Seteo velocidad de rotacion y giro
-        if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
-          this.submarino.imagen.setAngularVelocity(-100)
-          if(this.lvactivado==true){
+        if(this.largavist === true){
+          if(this.cursors.left.isDown){
+            this.submarino.imagen.rotation-=0.05;
             this.largaVistas.angle=this.submarino.imagen.angle+270;
-          }
-        } else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
-          this.submarino.imagen.setAngularVelocity(100)
-          if(this.lvactivado==true){
+          }else if(this.cursors.right.isDown){
+            this.submarino.imagen.rotation+=0.05;
             this.largaVistas.angle=this.submarino.imagen.angle-90;
           }
-        } else {
-          this.submarino.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
-          //this.submarino.reticula.setAngularVelocity(0)
-        }
+        }else{
+          // Seteo velocidad de rotacion y giro
+          if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
+            this.submarino.imagen.setAngularVelocity(-100)
+          } else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
+            this.submarino.imagen.setAngularVelocity(100)
+          } else {
+            this.submarino.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
+            //this.submarino.reticula.setAngularVelocity(0)
+          }
 
-        let oldPosition = {}
-        // Calculo y seteo la velocidad de los barcos y el angulo de rotacion como una constante
-        const velX = Math.cos((this.submarino.imagen.angle - 360) * 0.01745)
-        const velY = Math.sin((this.submarino.imagen.angle - 360) * 0.01745)
-        // Seteo velocidad de movimiento
-        if (this.cursors.up.isDown) {
-          this.submarino.imagen.setVelocityX(this.submarino.velocidad  * velX)
-          //this.submarino.reticula.setVelocityX(this.submarino.velocidad * (velX))
-          this.submarino.imagen.setVelocityY(this.submarino.velocidad * velY)
-          //this.submarino.reticula.setVelocityY(this.submarino.velocidad * (velY))
-        } else if (this.cursors.down.isDown) {
-          this.submarino.imagen.setVelocityX(-(this.submarino.velocidad/2) * velX)
-          //this.submarino.reticula.setVelocityX(-(this.submarino.velocidad/2) * (velX))
-          this.submarino.imagen.setVelocityY(-(this.submarino.velocidad/2) * velY)
-          //this.submarino.reticula.setVelocityY(-(this.submarino.velocidad/2) * (velY + 0.2))
-        } else {
-          this.submarino.imagen.setAcceleration(0)
-          //this.submarino.reticula.setAcceleration(0)
-        }
+          let oldPosition = {}
+          // Calculo y seteo la velocidad de los barcos y el angulo de rotacion como una constante
+          const velX = Math.cos((this.submarino.imagen.angle - 360) * 0.01745)
+          const velY = Math.sin((this.submarino.imagen.angle - 360) * 0.01745)
+          // Seteo velocidad de movimiento
+          if (this.cursors.up.isDown) {
+            this.submarino.imagen.setVelocityX(this.submarino.velocidad  * velX)
+            //this.submarino.reticula.setVelocityX(this.submarino.velocidad * (velX))
+            this.submarino.imagen.setVelocityY(this.submarino.velocidad * velY)
+            //this.submarino.reticula.setVelocityY(this.submarino.velocidad * (velY))
+          } else if (this.cursors.down.isDown) {
+            this.submarino.imagen.setVelocityX(-(this.submarino.velocidad/2) * velX)
+            //this.submarino.reticula.setVelocityX(-(this.submarino.velocidad/2) * (velX))
+            this.submarino.imagen.setVelocityY(-(this.submarino.velocidad/2) * velY)
+            //this.submarino.reticula.setVelocityY(-(this.submarino.velocidad/2) * (velY + 0.2))
+          } else {
+            this.submarino.imagen.setAcceleration(0)
+            //this.submarino.reticula.setAcceleration(0)
+          }
 
-        // Comparo la posicion y rotacion actual del barco, y en caso de que haya cambiado envio el evento "playerMovement" al socket para comunicar a todos los clientes
-        var x = this.submarino.imagen.x;
-        var y = this.submarino.imagen.y;
-        var r = this.submarino.imagen.rotation;
-        this.submarino.reticula.x = this.submarino.imagen.x + (Math.cos((this.submarino.imagen.angle - 360) * 0.01745) * this.distMax);
-        this.submarino.reticula.y = this.submarino.imagen.y + (Math.sin((this.submarino.imagen.angle - 360) * 0.01745) * this.distMax);
-        //this.submarino.reticula.angle = this.submarino.imagen.angle;
-        //this.submarino.reticula.rotacion = this.submarino.imagen.rotation;
-        if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y || r !== oldPosition.rotation)) {
-          let data = {
+          // Comparo la posicion y rotacion actual del barco, y en caso de que haya cambiado envio el evento "playerMovement" al socket para comunicar a todos los clientes
+          var x = this.submarino.imagen.x;
+          var y = this.submarino.imagen.y;
+          var r = this.submarino.imagen.rotation;
+          this.submarino.reticula.x = this.submarino.imagen.x + (Math.cos((this.submarino.imagen.angle - 360) * 0.01745) * this.distMax);
+          this.submarino.reticula.y = this.submarino.imagen.y + (Math.sin((this.submarino.imagen.angle - 360) * 0.01745) * this.distMax);
+          //this.submarino.reticula.angle = this.submarino.imagen.angle;
+          //this.submarino.reticula.rotacion = this.submarino.imagen.rotation;
+          if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y || r !== oldPosition.rotation)) {
+            let data = {
+              x: this.submarino.imagen.x,
+              y: this.submarino.imagen.y,
+              rotation: this.submarino.imagen.rotation
+            }
+            this.socket.emit('playerMovement', data);
+          }
+          
+          // Guardo la posicion actual del submarino para comparar con la nueva y chequear si hubo movimiento
+          oldPosition = {
             x: this.submarino.imagen.x,
             y: this.submarino.imagen.y,
             rotation: this.submarino.imagen.rotation
           }
-          this.socket.emit('playerMovement', data);
-        }
-        
-        // Guardo la posicion actual del submarino para comparar con la nueva y chequear si hubo movimiento
-        oldPosition = {
-          x: this.submarino.imagen.x,
-          y: this.submarino.imagen.y,
-          rotation: this.submarino.imagen.rotation
         }
       }
     }

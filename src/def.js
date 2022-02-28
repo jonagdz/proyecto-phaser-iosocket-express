@@ -31,11 +31,13 @@ export const DEF = {
         INFO: "information.png",
         INFOTXT: "infotext.png",
         CLOSE: "close.png"
+        
 
     },
 
     AUDIO: {
-        JUEGO: "bensound-deepblue.mp3"
+        JUEGO: "bensound-deepblue.mp3",
+        SONAR: "sonarSound.mp3"
     },
 
     SPRITES: {
@@ -45,7 +47,8 @@ export const DEF = {
         UBOOT: "uboot.png",
         INFO: "info.png",
         HOMES: "homejj.png",
-        LOADS: "load.png"
-
+        LOADS: "load.png",
+        TXTESP: "txtespera.png",
+        TXTESP2: "txtespera2.png"
     },
 };
