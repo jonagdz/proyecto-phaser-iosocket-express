@@ -26,6 +26,7 @@ export class game extends Phaser.Scene{
     this.carguero6 = new Carguero('Carguero6',this.velocidadBaja,8,0,0,0,8); // Creo el objeto carguero6
     this.largaVistas = {};
     this.mar;
+    this.statusSonar;
   }
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
@@ -35,7 +36,10 @@ export class game extends Phaser.Scene{
     let bullet;
     let danio;
     let reticula;
-    let lvactivado;
+    let cuentaSonar;
+    let resetSonar;
+    let lactivado;
+    let contadorS=0;
     self.socket.emit('listarPartidas', {id: 2});
 
     // Grupo para los cargueros y balas
@@ -138,8 +142,9 @@ export class game extends Phaser.Scene{
       generarEquipo2();
       
       // Habilito el boton para acceder a la funcion de largavistas
-      const btnActivarLargaVista = this.add.text(600, 600, 'ACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(1));
-      const btnDesactivarLargaVista = this.add.text(600, 650, 'DESACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(0));
+      const btnActivarLargaVista = this.add.text(900, 600, 'ACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(1));
+      const btnDesactivarLargaVista = this.add.text(900, 650, 'DESACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(0));
+      const btnActivarSonar = this.add.text(900, 700, 'ACTIVAR SONAR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => activarSonar());
     }    
 
     function generarEquipo1(){     
@@ -920,16 +925,56 @@ export class game extends Phaser.Scene{
 
     // Método para activar el larga vistas
     function cambioLargaVistas(lv){
+      console.log("ENTRE LV PROF: "+self.submarino.profundidad);
+      console.log("ESTADO LV: "+self.lactivado);
       if(lv === 1 && (self.submarino.profundidad === 0)){
+        console.log("LARGAVISTAS ACTIVADO");
         self.lvactivado=true;
+        console.log("ESTADO LV ADENTRO: "+self.lactivado);
         self.largaVistas.angle=self.submarino.imagen.angle+270;
         self.cameras.main.setMask(self.mar.masklv);
         self.cameras.main.setZoom(0.9);
       }else if(lv === 0 && (self.submarino.profundidad === 0)){
+        console.log("LARGAVISTAS DESACTIVADO");
         self.lvactivado=false;
         self.cameras.main.setMask(self.mask);
         self.cameras.main.setZoom(1.4);
       }
+    }
+
+    // Método para activar la función de sonar
+    function activarSonar(){
+      // Cambio de cámaras
+      self.cameras.main.setMask(self.mask);
+      self.cameras.main.setZoom(0.9);
+      
+      // Texto de tiempo restante
+      self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
+
+      self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
+      self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
+      
+      function camaraSonar(){
+        // Restablezco las cámaras
+        self.cameras.main.setMask(self.mask);
+        self.cameras.main.setZoom(1.4);
+
+        // Elimino texto de tiempo restante
+        removeText();
+        contadorS=0;
+      }
+      
+      function actualizarContSonar(){
+        console.log("ENTRE A ACT SONAR");
+        contadorS++;
+        self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS));
+        if (contadorS === 10){
+          self.cuentaSonar.remove(true);
+        }
+      }
+    }
+    function removeText() {
+      self.statusSonar.destroy();
     }
   }
 
