@@ -30,6 +30,104 @@ export class game extends Phaser.Scene{
     this.distMax = 300;
     this.statusSonar;
     this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
+    this.partida = {
+      naves: 
+      [
+        {
+            codP: 5,
+            vida: 100,
+            posX: 0.0,
+            posY: 0.0,
+            codNave: 0,
+            clase: "Liberty"
+        },
+        {
+            codP: 5,
+            vida: 100,
+            posX: 0.0,
+            posY: 0.0,
+            codNave: 0,
+            clase: "Liberty"
+        },
+        {
+            codP: 5,
+            vida: 100,
+            posX: 0.0,
+            posY: 0.0,
+            codNave: 0,
+            clase: "Liberty"
+        },
+        {
+            codP: 5,
+            vida: 100,
+            posX: 0.0,
+            posY: 0.0,
+            codNave: 0,
+            clase: "Liberty"
+        },
+        {
+            codP: 5,
+            vida: 100,
+            posX: 0.0,
+            posY: 0.0,
+            codNave: 0,
+            clase: "Liberty"
+        },
+        {
+            codP: 5,
+            vida: 100,
+            posX: 0.0,
+            posY: 0.0,
+            codNave: 0,
+            clase: "Liberty"
+        },
+        {
+            codP: 5,
+            vida: 100,
+            posX: 0.0,
+            posY: 0.0,
+            codNave: 1,
+            clase: "Fletcher",
+            armas: [
+              {
+                codNave: 1,
+                tipo: 1,
+                codP: 5,
+                municion: 6
+              },
+              {
+                codNave: 1,
+                tipo: 2,
+                codP: 5,
+                municion: 5
+              }
+            ]
+        },
+        {
+            codP: 5,
+            vida: 100,
+            posX: 0.0,
+            posY: 0.0,
+            codNave: 2,
+            clase: "UBoat",
+            armas: [
+              {
+                codNave: 2,
+                tipo: 0,
+                codP: 5,
+                municion: 8
+              },
+              {
+                codNave: 2,
+                tipo: 3,
+                codP: 5,
+                municion: 5
+              }
+            ]
+        }
+      ],
+      codP: 5
+    }
   }
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
@@ -153,11 +251,17 @@ export class game extends Phaser.Scene{
 
     // Segun el equipo del jugador actual, genero todos elementos del equipo correspondiente
     if(self.equipo === 1){ // Genero el equipo 1 que son el destructor y los cargueros, aunque tambien debo generar al submarino (Pero sin su camara ni colisiones) para ir actualizando su posicion en este cliente con el movimiento del otro jugador      
+
       generarEquipo1();
 
       // Habilito el boton para cambiar de camara con los cargueros
       const btnCamaraCarguero = this.add.text(600, 600, 'BOTON PARA CAMBIAR DE CAMARA CON LOS CARGUEROS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(1));
       const btnCamaraDestructor = this.add.text(600, 650, 'BOTON PARA CAMBIAR DE CAMARA CON EL DESTRUCTOR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(0));
+      self.input.on('pointerdown', function (pointer) {
+        self.input.mouse.requestPointerLock();
+      }, self);
+      //this.botonDOWNDI = self.physics.add.image(700, 900, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
+      //this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
       
@@ -176,6 +280,9 @@ export class game extends Phaser.Scene{
 
       // Genero la imagen del submarino enemigo
       generarSubmarinoEnemigo();
+
+      iniciarPartida();
+      self.socket.emit('iniciarPartida', self.partida);
     }
 
     function generarEquipo2(){
@@ -365,7 +472,10 @@ export class game extends Phaser.Scene{
     function generarSubmarinoEnemigo(){
       //self.submarino.imagen = self.physics.add.image(0,0, 'uboot')
       self.submarino.imagen = self.physics.add.image(0,0, DEF.IMAGENES.UBOATP0).setDisplaySize(100,50).setDepth(5).setPushable(false)
-      
+      posX = Math.floor((Math.random()*((frameW-800)-(frameW*0.75)))+(frameW*0.75)), // El margen x para generarse el submarino sera desde el 70% del mapa hasta el final - 800 del lado derecho
+      posY = Math.floor((Math.random()*((frameH-300)- margenCostaY))+margenCostaY), // El margen y para generarse el submarino es el mismo que los demas barcos (total - 300)
+      self.submarino.posX = posX;
+      self.submarino.posY = posY;
       // Particulas
       //const particles = self.add.particles("Blue").setDepth(2)
       const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
@@ -1706,9 +1816,28 @@ export class game extends Phaser.Scene{
     }
     function removeText() {
       self.statusSonar.destroy();
+    function iniciarPartida()
+    {
+      self.partida.codP = 1;
+      self.partida.naves[0].posX = self.carguero1.posX;
+      self.partida.naves[0].posY = self.carguero1.posY;
+      self.partida.naves[1].posX = self.carguero2.posX;
+      self.partida.naves[1].posY = self.carguero2.posY;
+      self.partida.naves[2].posX = self.carguero3.posX;
+      self.partida.naves[2].posY = self.carguero3.posY;
+      self.partida.naves[3].posX = self.carguero4.posX;
+      self.partida.naves[3].posY = self.carguero4.posY;
+      self.partida.naves[4].posX = self.carguero5.posX;
+      self.partida.naves[4].posY = self.carguero5.posY;
+      self.partida.naves[5].posX = self.carguero6.posX;
+      self.partida.naves[5].posY = self.carguero6.posY;
+      self.partida.naves[6].posX = self.destructor.posX;
+      self.partida.naves[6].posY = self.destructor.posY;
+      self.partida.naves[7].posX = self.submarino.posX;
+      self.partida.naves[7].posY = self.submarino.posY;
     }
   }
-
+}
   // Función update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje graficamente
   update(time, delta) {
     if(this.equipo === 1){

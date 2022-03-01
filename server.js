@@ -156,21 +156,45 @@ io.on('connection', function (socket) {
     socket.broadcast.emit('playerUnder', players[socket.id])
   })
 
-  // api url
   const api_url = "http://localhost:8080/getPartidas";
-  // Defining async function
-  async function getapi(url){
-    try {
-      const response = await fetch(url)
-      const data =  await response.json()
-      console.log(data)
-    } catch (e) {
-      //console.log(e)
-      console.log("Error de conexion al BackEnd")
-    }
-  }
+  const api_url_iniciarPartida = "http://localhost:8080/iniciarPartida"; 
 
   socket.on('listarPartidas', function (data) {
-      getapi(api_url);
+    getapi(api_url);
   })
+
+  socket.on('iniciarPartida', function (data) {
+  postApiInitPart(api_url_iniciarPartida, data);
+  })
+  // Defining async function
+  async function getapi(url) 
+  {
+    try 
+    {
+     const response = await fetch(url)
+     const data =  await response.json()
+     console.log(data)
+   } catch (e) {
+    //console.log(e)
+     console.log("Error de conexion al BackEnd")
+   }
+ }
+
+ async function postApiInitPart(url, data) 
+  {
+    try 
+    {
+      const response = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+      //const json = await response.json()
+    } catch (e) {
+      //console.log(e)
+      console.log("Se intento guardar la partida iniciada pero tenes problemas con el BackEnd")
+    }
+ }
 }); //EOF
