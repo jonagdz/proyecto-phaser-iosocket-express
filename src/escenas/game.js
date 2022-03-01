@@ -29,9 +29,6 @@ export class game extends Phaser.Scene{
     this.mar;
     this.distMax = 300;
     this.statusSonar;
-    this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
-    // Para que el audio se escuche fuera del navegador
-    this.soundSonar.pauseOnBlur = false;
   }
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
@@ -56,7 +53,6 @@ export class game extends Phaser.Scene{
 
     // Cargo la imagen de fondo del mapa
     this.mar = this.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1).setDepth(0);
-    //this.mar = this.add.image(0, 0, 'mar').setOrigin(0).setScrollFactor(1).setDepth(0); 
     const backgroundW = this.mar.width;
     const backgroundH = this.mar.height;
  
@@ -88,7 +84,6 @@ export class game extends Phaser.Scene{
     let carguerosAsalvo = 0;
     let pack;
 
-
     // Obtengo el centro del canvas para la máscara
     const centroW = this.sys.game.config.width / 2;
     const centroH = this.sys.game.config.height / 2;
@@ -115,7 +110,13 @@ export class game extends Phaser.Scene{
     // Ajusto cámaras
     this.cameras.main.setMask(mask);
     this.physics.world.setBounds(0, 0, backgroundW, backgroundH);
-    
+  
+    // Ajusto audio
+    this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
+    let soundBackground = this.sound.add(DEF.AUDIO.JUEGO,{loop: true});
+    let audioActivado = true;
+    //soundBackground.play();
+
     // Islas
     this.isla1 = self.physics.add.image(2100,900,DEF.IMAGENES.ISLA).setDepth(5);
     // this.isla1 = self.physics.add.image(2100,900,'island1').setDepth(1);
@@ -144,23 +145,30 @@ export class game extends Phaser.Scene{
 
     // Introduzco cursores y teclas utilizables
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.KeyCamera = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
-    this.KeyMute = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
-    this.KeyUnmute = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U);
     this.up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-   
-    
-    
+    // Se crea el evento de cambio de mute de audio
+    self.input.keyboard.on('keydown-' + 'M', function (event){
+      if(audioActivado === true){
+        soundBackground.mute = true;
+        audioActivado=false;
+      }else{
+        soundBackground.mute = false;
+        audioActivado=true;
+      }
+    });
 
+    // Se crea el evento de pausa
+    self.input.keyboard.on('keydown-' + 'P', function (event){
+      
+    });
 
    // this.destroy.setInteractive().on('pointerover', () => ElegirDestroy(1));
    // this.destroy.setInteractive().on('pointerout', () => ElegirDestroy(2));
     
-
    //////////////////////////////////////////////////////////////////////
     // INICIO DE LA LÖGICA DEL COMPORTAMIENTO DEL JUEGO -----------------------------------------------------------------------------------------------------------------------------------
 
@@ -811,7 +819,6 @@ export class game extends Phaser.Scene{
         bullet.destroy();
       }
     }, this);
-
 
     // FUNCION DE DISPARO DEL JUGADOR
     function Disparo(player, bullet, reticula, enemyImag, enemy){
@@ -1523,8 +1530,7 @@ export class game extends Phaser.Scene{
               }     
             }
             
-          }
-           
+          } 
     }
     //funcion que muestra la explosion en la posicion determinada
     function hitted(x, y){
@@ -2080,17 +2086,6 @@ export class game extends Phaser.Scene{
           }
         }
       }
-    }
-    
-    // Se intentan leer por teclado las letras M y U para mutear y desmutear la musica
-    if (this.KeyMute.isDown){
-      console.log('Muteo audio')
-      //this.sound.stop();
-    }
-    if (this.KeyUnmute.isDown){
-      console.log('Desmuteo audio')
-      //this.sound.play();
-      //this.sound.add('Music').play();
     }
   }
 }
