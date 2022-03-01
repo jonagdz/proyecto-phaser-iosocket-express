@@ -156,8 +156,7 @@ export class game extends Phaser.Scene{
 
    
     
-    this.botonDOWNDI = self.physics.add.image(350, 700, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(1).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
-    this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
+    
 
 
    // this.destroy.setInteractive().on('pointerover', () => ElegirDestroy(1));
@@ -170,13 +169,15 @@ export class game extends Phaser.Scene{
     // Segun el equipo del jugador actual, genero todos elementos del equipo correspondiente
     if(self.equipo === 1){ // Genero el equipo 1 que son el destructor y los cargueros, aunque tambien debo generar al submarino (Pero sin su camara ni colisiones) para ir actualizando su posicion en este cliente con el movimiento del otro jugador      
       generarEquipo1();
-
+      this.botonDOWNDI = self.physics.add.image(700, 900, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
+      this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
       // Habilito el boton para cambiar de camara con los cargueros
       const btnCamaraCarguero = this.add.text(600, 600, 'BOTON PARA CAMBIAR DE CAMARA CON LOS CARGUEROS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(1));
       const btnCamaraDestructor = this.add.text(600, 650, 'BOTON PARA CAMBIAR DE CAMARA CON EL DESTRUCTOR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(0));
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
-      
+      this.botonDOWNDI = self.physics.add.image(700, 700, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
+      this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
       // Habilito el boton para acceder a la funcion de largavistas
       const btnActivarLargaVista = this.add.text(900, 600, 'ACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(1));
       const btnDesactivarLargaVista = this.add.text(900, 650, 'DESACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(0));
