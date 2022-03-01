@@ -2,12 +2,13 @@ import { bootGame } from './escenas/bootGame.js';
 import { preGameMenu } from './escenas/preGameMenu.js';
 import { game } from './escenas/game.js';
 import { salaEspera } from './escenas/salaEspera.js';
+import { gameOver } from './escenas/gameOver.js';
 
 // Configuracion de Phaser
 var config = {
   type: Phaser.AUTO,
   scale: {
-    //mode: Phaser.Scale.FIT,
+    mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     parent: 'thegame',
     width: 1920,
@@ -22,7 +23,7 @@ var config = {
       gravity: { y: 0 }
     }
   },
-  scene: [bootGame, preGameMenu, salaEspera, game]
+  scene: [bootGame, preGameMenu, salaEspera, game, gameOver]
 }
 
 window.onload = () =>{

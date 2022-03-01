@@ -15,7 +15,7 @@ export class game extends Phaser.Scene{
     this.equipo = data.equipo;
     // Seteo las velocidades que se utilizaran en el juego
     this.velocidadMedia = 600; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
-    this.velocidadBaja = 80;
+    this.velocidadBaja = 500;
     this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0,0,0,0,0); // Creo el objeto destructor 
     this.submarino = new Submarino()
     this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,180,2,3,0,0,0,0); // Creo el objeto submarino 
@@ -75,6 +75,7 @@ export class game extends Phaser.Scene{
     let larga = false;
     let probabilidad = 0;
     let probExtra = 0;
+    let carguerosAsalvo = 0;
 
     // Obtengo el centro del canvas para la máscara
     const centroW = this.sys.game.config.width / 2;
@@ -445,11 +446,12 @@ export class game extends Phaser.Scene{
         // Se crea una colision del carguero con la costa1
         self.physics.add.collider(self.carguero1.imagen, self.costa1);
         // Se crea una colision del carguero con la costa2
-        self.physics.add.collider(carguero.imagen, self.costa2);
+        self.physics.add.collider(carguero.imagen, self.costa2, handleCollisionCosta, colisionCargoCosta2, self);
         // Se crea la colision con el submarino y el destructor
         self.physics.add.collider(self.carguero1.imagen, self.destructor.imagen);
         self.physics.add.collider(self.carguero1.imagen, self.submarino.imagen);
       })
+      
     };
 
     // Funcion para generarle las imagenes y las particulas a cada carguero estando en el equipo del submarino
@@ -500,6 +502,28 @@ export class game extends Phaser.Scene{
       }
       
     }
+    function handleCollisionCosta(carguero, costa2){
+      carguerosAsalvo++;
+      if (carguerosAsalvo >= 3){
+        let envio={
+          socket: self.socket,
+          resultado: 1,
+          equipo: 1
+        }
+        let envioSocket= {
+          resultado: 1,
+          equipo: 1
+        }
+        self.socket.emit('Finalizo', envioSocket);
+        self.scene.start(DEF.SCENES.FinScene, envio);
+        
+      }
+    }
+    
+    function colisionCargoCosta2(carguero, costa2)
+    {
+      return true;
+    }
 
     function contMarcha(carguero)
     {
@@ -515,7 +539,7 @@ export class game extends Phaser.Scene{
       if(self.equipo === 2){
         // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
         // vea mi cambio de profundidad
-        if (self.submarino.profundidad == 0){
+        if (self.submarino.profundidad === 0){
           // VERVER - Setear velocidad del submarino cuando se sumerge y emerge
           self.submarino.profundidad = 1;
           //self.submarino.imagen.setTexture('UbootProfundidad1');
@@ -528,7 +552,7 @@ export class game extends Phaser.Scene{
             self.cameras.main.setMask(self.mask);
             self.cameras.main.setZoom(1.4);
           }
-        }else if (self.submarino.profundidad == 1){
+        }else if (self.submarino.profundidad === 1){
           // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
           // vea mi cambio de profundidad
           self.submarino.profundidad = 2;
@@ -542,13 +566,13 @@ export class game extends Phaser.Scene{
       }
 
       // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
-      if (self.submarino.profundidad == 0){
+      if (self.submarino.profundidad === 0){
         // Si me encuentro en la superficie la velocidad va a ser lenta
-        self.submarino.velocidad = self.velocidadBaja; 
-      }else if(self.submarino.profundidad == 1){
+        self.submarino.velocidad = self.velocidadMedia; 
+      }else if(self.submarino.profundidad === 1){
         // Si me encuentro a baja profundidad la velocidad va a ser media
         self.submarino.velocidad = self.velocidadMedia; 
-      }else if(self.submarino.profundidad == 2){
+      }else if(self.submarino.profundidad === 2){
         // Si me encuentro a mucha profundidad la velocidad va a ser lenta
         self.submarino.velocidad = self.velocidadBaja; 
       }
@@ -617,6 +641,12 @@ export class game extends Phaser.Scene{
         bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
         //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
         Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.destructor.imagen);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero1.imagen);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero2.imagen);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero3.imagen);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero4.imagen);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero5.imagen);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero6.imagen);
       }
       //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
       //dano al enemigo si el ya te gano
@@ -631,9 +661,6 @@ export class game extends Phaser.Scene{
       if(self.submarino.armas === -1){
         bullet.destroy();
       }
-      /*if(self.destructor.cargas != self.submarino.profundidad){
-        bullet.destroy();
-      }*/
     }, this);
 
 
@@ -841,9 +868,9 @@ export class game extends Phaser.Scene{
                   console.log('danio al enemigo', danio);              
                   self.socket.emit('playerHit', {Dam: danio});
                   if(damAcuS >= self.destructor.vida){
-                    destroyed(self.destructor.imagen);
-                    self.destructor.imagen.setActive(false);
-                    self.destructor.imagen.setVisible(false);
+                    destroyed(enemy);
+                    enemy.setActive(false);
+                    enemy.setVisible(false);
                   }
                 } 
               }else if(media){
@@ -948,7 +975,7 @@ export class game extends Phaser.Scene{
     //funcion que muestra la explosion en la posicion determinada
     function hitted(x, y){
       //self.explotion2 = self.add.sprite(x,y,'explot').setDisplaySize(100, 100).setDepth(5);
-      self.explotion2 = self.add.sprite(x,y,DEF.SPRITES.EXPLOSION).setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
+      self.explotion2 = self.add.sprite(x,y,'explot').setDisplaySize(120, 120).setDepth(5);  //se crea el sprite de explosiones
       self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
       key: 'explot2',
       frames: [
@@ -964,7 +991,7 @@ export class game extends Phaser.Scene{
     //funcion que muestra y destruye un jugador
     function destroyed(playerIMG){
       //self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y ,'explot').setDisplaySize(100, 100).setDepth(5);
-      self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y, DEF.SPRITES.EXPLOSION).setDisplaySize(100, 100).setDepth(5);  //se crea el sprite de explosiones
+      self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y, 'explot').setDisplaySize(200, 200).setDepth(5);  //se crea el sprite de explosiones
       self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
       key: 'explot3',
       frames: [
@@ -1137,6 +1164,25 @@ export class game extends Phaser.Scene{
       else{
         self.physics.world.removeCollider(self.colliderSub);
       }
+    }); 
+
+    this.socket.on('FinalizoPartida', function(data){      
+      console.log("entro al socket");
+        if(data.resultado === 1){
+          var envio2={
+            socket: self.socket,
+            resultado: 2,
+            equipo: self.equipo,
+          }
+          self.scene.start(DEF.SCENES.FinScene, envio2);
+        }else if(data.resultado === 2){
+          var envio2={
+            socket: self.socket,
+            resultado: 1,
+            equipo: self.equipo,
+          }
+          self.scene.start(DEF.SCENES.FinScene, envio2);  
+        }  
     }); 
 
     // Método que cambia de camara con el carguero central de la formacion

@@ -118,6 +118,11 @@ io.on('connection', function (socket) {
       socket.broadcast.emit('playerHitted', players[socket.id])
     })
 
+    socket.on('Finalizo', function(data){
+
+      socket.broadcast.emit('FinalizoPartida', data)
+    })
+
     socket.on('playerProf', function(data){
       players[socket.id].deep = data.Pr;
       socket.broadcast.emit('playerUnder', players[socket.id])

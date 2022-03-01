@@ -48,6 +48,10 @@ header {
 }
 
 #game {
-   display: none; 
-   margin-top: 30px;
+    width: 1024px;
+    height: 768px;
+    display: none; 
+    text-align: center;
+    margin:auto;
+    margin-top: 30px;
 }
