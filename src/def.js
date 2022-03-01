@@ -50,6 +50,7 @@ export const DEF = {
         LOADS: "load.png",
         TXTESP: "txtespera.png",
         TXTESP2: "txtespera2.png",
+        TXTESP3: "textespera3.png",
         INITPART: "iniciarpart.png",
         CARGARPART: "cargarpart.png",
         CONTROLS: "controls.png",
