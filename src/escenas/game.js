@@ -496,9 +496,14 @@ export class game extends Phaser.Scene{
       self.carguero4.imagen = self.physics.add.image(self.carguero4.posX, self.carguero4.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
       self.carguero5.imagen = self.physics.add.image(self.carguero5.posX, self.carguero5.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
       self.carguero6.imagen = self.physics.add.image(self.carguero6.posX, self.carguero6.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
-
+      
+      // Colisiones cargueros con el submarino
       self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
-      self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen);
+      self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
+      self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
+      self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
+      self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
+      self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
     };
 
     function collisionCargoIsland(carguero, isla)
