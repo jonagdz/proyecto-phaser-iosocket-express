@@ -31,7 +31,15 @@ export const DEF = {
         HOME: "home.png",
         INFO: "information.png",
         INFOTXT: "infotext.png",
-        CLOSE: "close.png"    
+        CLOSE: "close.png",
+      //  BOTONUP: "UP.png", 
+      //  BOTONRIGHT: "RIGHT.png",
+      //  BOTONLEFT: "LEFT.png",
+       // BOTONDOWN: "DOWN.png",   
+     //   BOTONUPDR: "diagonalr.png",
+    //    BOTONDOWNDR: "diagonalrdown.png",
+        //  BOTONUPDI: "diagonaliup.png",
+        BOTONDOWNDI: "diagonalidown.png"
 
     },
 
@@ -50,6 +58,7 @@ export const DEF = {
         LOADS: "load.png",
         TXTESP: "txtespera.png",
         TXTESP2: "txtespera2.png",
+        TXTESP3: "textespera3.png",
         INITPART: "iniciarpart.png",
         CARGARPART: "cargarpart.png",
         CONTROLS: "controls.png",
