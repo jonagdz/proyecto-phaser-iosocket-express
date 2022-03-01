@@ -2,7 +2,7 @@ import { Bullets } from '../logica/bullet.js';
 
 export class Submarino{
 
-    constructor(nom,velocidad,profundidad,vida,posX,posY,rotacion,cod,sonar,imagen,bullet,armas,reticula,largavista){
+    constructor(nom,velocidad,profundidad,vida,posX,posY,rotacion,cod,sonar,imagen,bullet,armas,reticula, ammoCann, ammoTor){
 
         // Atributos propios
         this.nom = nom;
@@ -18,7 +18,8 @@ export class Submarino{
         this.bullet = bullet;
         this.armas = armas;
         this.reticula = reticula;
-        this.largavista = largavista;
+        this.ammoCanion = ammoCann;
+        this.ammoTorpedo = ammoTor;
     };
 
     // Metodos
@@ -61,10 +62,6 @@ export class Submarino{
         return this.armas;
     };
 
-    getLargaVista() {
-        return this.largavista;
-    };
-
     // Setters
     setNom(nuevoNom) {
         this.nom = nuevoNom;
@@ -100,10 +97,6 @@ export class Submarino{
 
     setArmas(nuevaArmas) {
         this.armas = nuevaArmas;
-    };
-
-    setLargaVistas(nuevoLargaVistas) {
-        this.largavista = nuevoLargaVistas;
     };
 
    /* manejoMira(X, Y, miraX, miraY){

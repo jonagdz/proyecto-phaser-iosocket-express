@@ -3,7 +3,7 @@ import { Bullets } from '../logica/bullet.js';
 
 export class Destructor { // extends Bote
     // se saca el astributo armas del destructor, ya que hay que importar y agregar la clase armas
-    constructor(nom,velocidad,vida,posX,posY,rotacion,cod,imagen,bullet,armas,reticula, cargas){
+    constructor(nom,velocidad,vida,posX,posY,rotacion,cod,imagen,bullet,armas,reticula, cargas, ammoCar, ammoCan){
         //super(nom,velocidad,vida,posX,posY,rotacion);
 
         // Atributos propios
@@ -19,6 +19,8 @@ export class Destructor { // extends Bote
         this.armas = armas;
         this.reticula = reticula;
         this.cargas = cargas;
+        this.ammoCargas = ammoCar;
+        this.ammoCanion = ammoCan
     };
 
     // Metodos

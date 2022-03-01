@@ -62,7 +62,8 @@ io.on('connection', function (socket) {
         damage: 0,
         equipo: 1,
         deep: 0,
-        carguero: 0
+        carguero: 0,
+        numerocarguero: 0
       }
       // Seteo esta variable para saber que el primer jugador ya se conectó
       JugadorUnoEsperando = 1;
@@ -79,7 +80,8 @@ io.on('connection', function (socket) {
         damage: 0,
         equipo: otroEquipo,
         deep: 0,
-        carguero: 0
+        carguero: 0,
+        numerocarguero: 0
       }
 
       // Notifico al jugador 1 que el jugador 2 ya ingreso, para que vaya al juego, y mando directo al jugador 2 al juego
@@ -140,7 +142,8 @@ io.on('connection', function (socket) {
   })
 
   socket.on('playerHit', function(data){
-    players[socket.id].damage = data.Dam;
+    players[socket.id].damage = data.danio;
+    players[socket.id].numerocarguero = data.carguero;
     socket.broadcast.emit('playerHitted', players[socket.id])
   })
 

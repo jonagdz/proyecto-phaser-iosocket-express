@@ -16,9 +16,9 @@ export class game extends Phaser.Scene{
     // Seteo las velocidades que se utilizaran en el juego
     this.velocidadMedia = 600; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
     this.velocidadBaja = 500;
-    this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0,0,0,0,0); // Creo el objeto destructor 
+    this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0,0,0,0,0,30,20); // Creo el objeto destructor 
     this.submarino = new Submarino()
-    this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,180,2,3,0,0,0,0,false); // Creo el objeto submarino 
+    this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,180,2,3,0,0,0,0,20,20); // Creo el objeto submarino 
     this.carguero1 = new Carguero('Carguero1',this.velocidadBaja,8,0,0,0,3); // Creo el objeto carguero1 
     this.carguero2 = new Carguero('Carguero2',this.velocidadBaja,8,0,0,0,4); // Creo el objeto carguero2
     this.carguero3 = new Carguero('Carguero3',this.velocidadBaja,8,0,0,0,5); // Creo el objeto carguero3
@@ -29,6 +29,7 @@ export class game extends Phaser.Scene{
     this.mar;
     this.distMax = 300;
     this.statusSonar;
+    this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
   }
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
@@ -41,8 +42,7 @@ export class game extends Phaser.Scene{
     let cuentaSonar;
     let resetSonar;
     let contadorS=0;
-    let usoSonar = false;
-    let siguiendoDes = true;
+    let largavist = false;
     self.socket.emit('listarPartidas', {id: 2});
     let carguerosMuertos = 0;
 
@@ -53,13 +53,14 @@ export class game extends Phaser.Scene{
 
     // Cargo la imagen de fondo del mapa
     this.mar = this.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1).setDepth(0);
+    //this.mar = this.add.image(0, 0, 'mar').setOrigin(0).setScrollFactor(1).setDepth(0); 
     const backgroundW = this.mar.width;
     const backgroundH = this.mar.height;
- 
+
     // Defino los limites de las dimensiones del mapa para el posicionamiento inicial de los barcos
-    var frameW = backgroundW;
-    var frameH = backgroundH;
-    var margenCostaX = 689;
+    var frameW = 6416;
+    var frameH = 2156;
+    var margenCostaX = 810;
     var margenCostaY = 300;
 
     // Defino variables para las posiciones X e Y de los barcos
@@ -110,16 +111,10 @@ export class game extends Phaser.Scene{
     // Ajusto cámaras
     this.cameras.main.setMask(mask);
     this.physics.world.setBounds(0, 0, backgroundW, backgroundH);
-  
-    // Ajusto audio
-    this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
-    let soundBackground = this.sound.add(DEF.AUDIO.JUEGO,{loop: true});
-    let audioActivado = true;
-    //soundBackground.play();
-
+    
     // Islas
     this.isla1 = self.physics.add.image(2100,900,DEF.IMAGENES.ISLA).setDepth(5);
-    // this.isla1 = self.physics.add.image(2100,900,'island1').setDepth(1);
+   // this.isla1 = self.physics.add.image(2100,900,'island1').setDepth(1);
     this.isla1.setImmovable(true);
     this.isla1.setDisplaySize(400, 400);
     this.isla2 = self.physics.add.image(2460,1600,DEF.IMAGENES.ISLA).setDepth(5);
@@ -145,66 +140,32 @@ export class game extends Phaser.Scene{
 
     // Introduzco cursores y teclas utilizables
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.KeyCamera = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
+    this.KeyMute = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+    this.KeyUnmute = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U);
     this.up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-    // Se crea el evento de cambio de mute de audio
-    self.input.keyboard.on('keydown-' + 'M', function (event){
-      if(audioActivado === true){
-        soundBackground.mute = true;
-        audioActivado=false;
-      }else{
-        soundBackground.mute = false;
-        audioActivado=true;
-      }
-    });
 
-    // Se crea el evento de pausa
-    self.input.keyboard.on('keydown-' + 'P', function (event){
-      
-    });
-
-   // this.destroy.setInteractive().on('pointerover', () => ElegirDestroy(1));
-   // this.destroy.setInteractive().on('pointerout', () => ElegirDestroy(2));
-    
-   //////////////////////////////////////////////////////////////////////
     // INICIO DE LA LÖGICA DEL COMPORTAMIENTO DEL JUEGO -----------------------------------------------------------------------------------------------------------------------------------
 
     // Segun el equipo del jugador actual, genero todos elementos del equipo correspondiente
     if(self.equipo === 1){ // Genero el equipo 1 que son el destructor y los cargueros, aunque tambien debo generar al submarino (Pero sin su camara ni colisiones) para ir actualizando su posicion en este cliente con el movimiento del otro jugador      
       generarEquipo1();
-      //this.botonDOWNDI = self.physics.add.image(700, 900, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
-      //this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
+
+      // Habilito el boton para cambiar de camara con los cargueros
+      const btnCamaraCarguero = this.add.text(600, 600, 'BOTON PARA CAMBIAR DE CAMARA CON LOS CARGUEROS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(1));
+      const btnCamaraDestructor = this.add.text(600, 650, 'BOTON PARA CAMBIAR DE CAMARA CON EL DESTRUCTOR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(0));
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
-      this.botonDOWNDI = self.physics.add.image(700, 800, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
-      this.botonDOWNDI.setDisplaySize(80,80);
-      this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
-
-      this.botonSUBE = self.physics.add.image(800, 800, DEF.IMAGENES.BOTONSUBIR).setOrigin(0).setScrollFactor(0).setDepth(10)
-      this.botonSUBE.setDisplaySize(80,80);
-
-      this.botonSONAR = self.physics.add.image(900, 800, DEF.IMAGENES.BOTONSONAR).setOrigin(0).setScrollFactor(0).setDepth(10)
-      this.botonSONAR.setDisplaySize(80,80);
-
-      this.botonCAMBIARARMA = self.physics.add.image(1000, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10)
-      this.botonCAMBIARARMA.setDisplaySize(80,80);
-
-      this.botonLARGAVISTA = self.physics.add.image(1100, 800, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10)
-      this.botonLARGAVISTA.setDisplaySize(80,80);
-    } 
-    
-    function ClickDOWN(val){
-      if(val===1){
-        console.log('baja');
-        prof(1);
-      } 
-      else{
-        prof(0);
-      }
-    }
+      
+      // Habilito el boton para acceder a la funcion de largavistas
+      const btnActivarLargaVista = this.add.text(900, 600, 'ACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(1));
+      const btnDesactivarLargaVista = this.add.text(900, 650, 'DESACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(0));
+      const btnActivarSonar = this.add.text(900, 700, 'ACTIVAR SONAR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => activarSonar());
+    }    
 
     function generarEquipo1(){     
       // Genero los objetos cargueros, con sus imagenes, colisiones, etc
@@ -264,8 +225,6 @@ export class game extends Phaser.Scene{
       
       // Se indica que la camara siga al destructor
       self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
-      self.siguiendoDes = true;
-
       // Zoom de la cámara
       self.cameras.main.setZoom(0.9);
       // Se crea una colision del destructor con las islas
@@ -296,30 +255,6 @@ export class game extends Phaser.Scene{
         }else{
           self.destructor.armas = 0;
           console.log('cambio a canon');
-        }
-      });
-      
-      // Se crea el evento de cambio cámaras entre destructor y cargueros
-      self.input.keyboard.on('keydown-' + 'C', function (event){
-        if(self.siguiendoDes === true){
-          self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
-          self.cameras.main.setZoom(1.4);
-          self.siguiendoDes = false;
-        }else{
-          self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
-          self.cameras.main.setZoom(0.9);
-          self.siguiendoDes = true;
-        }
-      });
-
-      // Funcion que al precionar la tecla V, cambia la profundidad de las cargas de profundidad del destructor
-      self.input.keyboard.on('keydown-' + 'V', function (event){
-        if(self.destructor.cargas === 1){
-          self.destructor.cargas = 2;
-          console.log('detonador para mucha profundidad');
-        }else{
-          self.destructor.cargas = 1;
-          console.log('detonador para poca profundidad');
         }
       });
     }
@@ -396,7 +331,7 @@ export class game extends Phaser.Scene{
       self.physics.add.collider(self.submarino.imagen, self.costa2);
       // Si el submarino se encuentra en la superficie, que colisione con el destructor
       self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
- 
+
       // Se crea el evento de cambio de armas
       self.input.keyboard.on('keydown-' + 'Z', function (event){
         //si esta en superficie, que cambie de armas tranquilamente
@@ -424,169 +359,6 @@ export class game extends Phaser.Scene{
         self.submarino.reticula.x = self.submarino.imagen.x + (Math.cos((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
         self.submarino.reticula.y = self.submarino.imagen.y + (Math.sin((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
       });
-
-      // Se crea el evento de cambio de largavistas
-      self.input.keyboard.on('keydown-' + 'L', function (event){
-        if(self.submarino.largavista === false && (self.submarino.profundidad === 0)){
-          self.submarino.largavista = true;
-          self.largaVistas.angle=self.submarino.imagen.angle+270;
-          self.cameras.main.setMask(self.mar.masklv);
-          self.cameras.main.setZoom(0.9);
-        }else if(self.submarino.largavista === true && (self.submarino.profundidad === 0)){
-          self.submarino.largavista = false;
-          self.cameras.main.setMask(self.mask);
-          self.cameras.main.setZoom(1.4);
-        }
-      });
-      // Se crea el evento de activar sonar
-      self.input.keyboard.on('keydown-' + 'F', function (event){
-        // Activo sonar si hay sonares disponibles
-        if(self.submarino.sonar>0){
-          if (self.usoSonar !== true){
-            // Texto de aviso
-            self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
-            
-            self.usoSonar = true;
-
-            // Activo sonido de sonar
-            self.soundSonar.play();
-
-            // Cambio de cámaras
-            self.cameras.main.setMask(self.mask);
-            self.cameras.main.setZoom(0.9);
-            
-            // Activo cuenta regresiva
-            self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
-            
-            // Vuelvo a vista normal y elimino aviso
-            self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
-            
-            function camaraSonar(){
-              // Restablezco las cámaras
-              self.cameras.main.setMask(self.mask);
-              self.cameras.main.setZoom(1.4);
-              self.usoSonar = false;
-              console.log("USO SONAR:"+self.usoSonar);
-              // Elimino texto de tiempo restante
-              removeText();
-              self.soundSonar.stop();
-              contadorS=0;
-            }
-            function actualizarContSonar(){
-              contadorS++;
-              self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS) + '\nSONARES RESTANTES: '+(self.submarino.sonar));
-              if (contadorS === 10){
-                self.cuentaSonar.remove(true);
-              }
-            }
-            function removeText() {
-              self.statusSonar.destroy();
-            }
-            self.submarino.sonar--;
-          }
-        }else{
-          if (self.usoSonar !== true){
-            // Texto de aviso
-            self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
-
-            self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
-            self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
-            
-            function eliminoAvisoNHS(){
-              // Elimino texto de aviso no hay sonar
-              removeText();
-              contadorS=0;
-            }
-            function avisoNoHaySonar(){
-              contadorS++;
-              self.statusSonar.setText('¡SONAR AGOTADO!');
-              if (contadorS === 5){
-                self.cuentaSonar.remove(true);
-              }
-            }
-            function removeText() {
-              self.statusSonar.destroy();
-            }
-          }
-        }
-      });
-      // funcion que al presionar la tecla Q, el submarino baja, si bajas a nivel 1 podes disparar solo torpedos, en nivel 2 nada
-      self.input.keyboard.on('keydown-' + 'Q', function (event){
-          // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
-          // vea mi cambio de profundidad
-          if (self.submarino.profundidad === 0 ){
-            // VERVER - Setear velocidad del submarino cuando se sumerge y emerge
-            self.submarino.profundidad = 1;
-            //self.submarino.imagen.setTexture('UbootProfundidad1');
-            self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
-            self.submarino.armas = 4;
-            console.log('baje a poca profundidad');
-            self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-            // Cambio de cámara
-            if (self.lvactivado === true){
-              self.cameras.main.setMask(self.mask);
-              self.cameras.main.setZoom(1.4);
-            }
-          }else if (self.submarino.profundidad === 1){
-            // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
-            // vea mi cambio de profundidad
-            self.submarino.profundidad = 2;
-            self.submarino.armas = -1;
-            //self.submarino.imagen.setTexture('UbootProfundidad2');
-            self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
-            console.log('baje al mucha profundidad');
-            self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-          }
-          self.physics.world.removeCollider(self.colliderSub); 
-        
-          // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
-          if (self.submarino.profundidad === 0){
-            // Si me encuentro en la superficie la velocidad va a ser lenta
-            self.submarino.velocidad = self.velocidadMedia; 
-          }else if(self.submarino.profundidad === 1){
-            // Si me encuentro a baja profundidad la velocidad va a ser media
-            self.submarino.velocidad = self.velocidadMedia; 
-          }else if(self.submarino.profundidad === 2){
-            // Si me encuentro a mucha profundidad la velocidad va a ser lenta
-            self.submarino.velocidad = self.velocidadBaja; 
-          }
-      });
-
-      //funcion que al precionar la tecla E, el submarino sube
-      self.input.keyboard.on('keydown-' + 'E', function (event){
-        // Idem anteriores pero subiendo de 1 a 0
-        if (self.submarino.profundidad == 1){
-          self.submarino.profundidad = 0;
-          self.submarino.armas = 0;
-          console.log('subi a la superficie');
-          //self.submarino.imagen.setTexture('uboot');
-          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
-          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-        } else if (self.submarino.profundidad == 2){
-          // Idem anteriores pero subiendo de 0 a 1
-          self.submarino.profundidad = 1;
-          self.submarino.armas = 4;
-          //self.submarino.imagen.setTexture('UbootProfundidad1');
-          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
-          console.log('subi a poca profundidad');
-          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-        }
-        if(self.submarino.profundidad === 0){
-          self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
-        }
-
-        // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
-        if (self.submarino.profundidad == 0){
-          // Si me encuentro en la superficie la velocidad va a ser lenta
-          self.submarino.velocidad = self.velocidadBaja; 
-        }else if(self.submarino.profundidad == 1){
-          // Si me encuentro a baja profundidad la velocidad va a ser media
-          self.submarino.velocidad = self.velocidadMedia; 
-        }else if(self.submarino.profundidad == 2){
-        // Si me encuentro a mucha profundidad la velocidad va a ser lenta
-          self.submarino.velocidad = self.velocidadBaja; 
-        }
-      });
     }
     
     // Genero todo lo relacionado a la imagen del submarino del equipo enemigo y sus propiedades (Tamaño, profundidad y que sea empujable)
@@ -610,22 +382,22 @@ export class game extends Phaser.Scene{
     // Funcion para generarle las imagenes y las particulas a cada barco
     function generarCargueros(){
       // Genero las posiciones X e Y para el primer carguero principal
-      posX = Math.floor((Math.random()*((frameW*0.2)- margenCostaX))+margenCostaX); // El margen x para generarse los cargueros sera desde la costa (689) hasta el 20% del total del mapa
+      posX = Math.floor((Math.random()*((frameW*0.2)- margenCostaX))+margenCostaX); // El margen x para generarse los cargueros sera desde la costa (810) hasta el 20% del total del mapa
       posY = Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY); // El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa    
 
       // Actualizo la posicion x e de todos los cargueros en base a la posicion inicial del carguero principal
       self.carguero1.posX = posX;
       self.carguero1.posY = posY;
-      self.carguero2.posX = posX+200;
-      self.carguero2.posY = posY+200;
-      self.carguero3.posX = posX+200;
-      self.carguero3.posY = posY-200;
-      self.carguero4.posX = posX+350;
-      self.carguero4.posY = posY;
-      self.carguero5.posX = posX+500;
-      self.carguero5.posY = posY+250;
-      self.carguero6.posX = posX+500;
-      self.carguero6.posY = posY-250;
+      self.carguero2.posX = posX+600;
+      self.carguero2.posY = posY+240
+      self.carguero3.posX = posX+50
+      self.carguero3.posY = posY+370;
+      self.carguero4.posX = posX-270;
+      self.carguero4.posY = posY+150;
+      self.carguero5.posX = posX+300;
+      self.carguero5.posY = posY-150;
+      self.carguero6.posX = posX+180;
+      self.carguero6.posY = posY+150;
 
       // Inserto los objetos cargueros en un array de cargueros para poder crear sus imagenes en un for
       arrayCargueros[0] = self.carguero1;
@@ -668,6 +440,7 @@ export class game extends Phaser.Scene{
         self.physics.add.collider(self.carguero1.imagen, self.destructor.imagen);
         self.physics.add.collider(self.carguero1.imagen, self.submarino.imagen);
       })
+      
     };
 
     // Funcion para generarle las imagenes y las particulas a cada carguero estando en el equipo del submarino
@@ -693,14 +466,9 @@ export class game extends Phaser.Scene{
       self.carguero4.imagen = self.physics.add.image(self.carguero4.posX, self.carguero4.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
       self.carguero5.imagen = self.physics.add.image(self.carguero5.posX, self.carguero5.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
       self.carguero6.imagen = self.physics.add.image(self.carguero6.posX, self.carguero6.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
-      
-      // Colisiones cargueros con el submarino
+
       self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
-      self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
-      self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
-      self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
-      self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
-      self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
+      self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen);
     };
 
     function collisionCargoIsland(carguero, isla)
@@ -751,64 +519,130 @@ export class game extends Phaser.Scene{
       const velCY = Math.sin((carguero.angle - 360) * 0.01745)
       carguero.setVelocityX(self.velocidadBaja * velCX)
       carguero.setVelocityY(self.velocidadBaja * velCY)
-    } 
-   
-    // SETEOS DE PROFUNDIDAD: 
-    function prof(v){
-        if(v===1){
-          if(self.equipo === 2){
-            // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
-            // vea mi cambio de profundidad
-            if (self.submarino.profundidad === 0 ){
-              // VERVER - Setear velocidad del submarino cuando se sumerge y emerge
-              self.submarino.profundidad = 1;
-              //self.submarino.imagen.setTexture('UbootProfundidad1');
-              self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
-              self.submarino.armas = 4;
-              console.log('baje a poca profundidad');
-              self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-              // Cambio de cámara
-              if (self.lvactivado === true){
-                self.cameras.main.setMask(self.mask);
-                self.cameras.main.setZoom(1.4);
-              }
-            }else if (self.submarino.profundidad === 1){
-              // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
-              // vea mi cambio de profundidad
-              self.submarino.profundidad = 2;
-              self.submarino.armas = -1;
-              //self.submarino.imagen.setTexture('UbootProfundidad2');
-              self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
-              console.log('baje al mucha profundidad');
-              self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-            }
-            self.physics.world.removeCollider(self.colliderSub); 
-          }
-
-          // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
-          if (self.submarino.profundidad === 0){
-            // Si me encuentro en la superficie la velocidad va a ser lenta
-            self.submarino.velocidad = self.velocidadMedia; 
-          }else if(self.submarino.profundidad === 1){
-            // Si me encuentro a baja profundidad la velocidad va a ser media
-            self.submarino.velocidad = self.velocidadMedia; 
-          }else if(self.submarino.profundidad === 2){
-            // Si me encuentro a mucha profundidad la velocidad va a ser lenta
-            self.submarino.velocidad = self.velocidadBaja; 
-          }
-      }
     }
+
+    // SETEOS DE PROFUNDIDAD:
+    // funcion que al presionar la tecla Q, el submarino baja, si bajas a nivel 1 podes disparar solo torpedos, en nivel 2 nada
+    self.input.keyboard.on('keydown-' + 'Q', function (event){
+      if(self.equipo === 2){
+        // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
+        // vea mi cambio de profundidad
+        if (self.submarino.profundidad === 0){
+          // VERVER - Setear velocidad del submarino cuando se sumerge y emerge
+          self.submarino.profundidad = 1;
+          //self.submarino.imagen.setTexture('UbootProfundidad1');
+          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
+          self.submarino.armas = 4;
+          console.log('baje a poca profundidad');
+          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+          // Cambio de cámara
+          if (self.lvactivado === true){
+            self.cameras.main.setMask(self.mask);
+            self.cameras.main.setZoom(1.4);
+          }
+        }else if (self.submarino.profundidad === 1){
+          // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
+          // vea mi cambio de profundidad
+          self.submarino.profundidad = 2;
+          self.submarino.armas = -1;
+          //self.submarino.imagen.setTexture('UbootProfundidad2');
+          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
+          console.log('baje al mucha profundidad');
+          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        }
+        self.physics.world.removeCollider(self.colliderSub); 
+      }
+
+      // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
+      if (self.submarino.profundidad === 0){
+        // Si me encuentro en la superficie la velocidad va a ser lenta
+        self.submarino.velocidad = self.velocidadMedia; 
+      }else if(self.submarino.profundidad === 1){
+        // Si me encuentro a baja profundidad la velocidad va a ser media
+        self.submarino.velocidad = self.velocidadMedia; 
+      }else if(self.submarino.profundidad === 2){
+        // Si me encuentro a mucha profundidad la velocidad va a ser lenta
+        self.submarino.velocidad = self.velocidadBaja; 
+      }
+    });
+
+    //funcion que al precionar la tecla E, el submarino sube
+    self.input.keyboard.on('keydown-' + 'E', function (event){
+      if (self.equipo === 2){
+        // Idem anteriores pero subiendo de 1 a 0
+        if (self.submarino.profundidad == 1){
+          self.submarino.profundidad = 0;
+          self.submarino.armas = 0;
+          console.log('subi a la superficie');
+          //self.submarino.imagen.setTexture('uboot');
+          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
+          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        } else if (self.submarino.profundidad == 2){
+          // Idem anteriores pero subiendo de 0 a 1
+          self.submarino.profundidad = 1;
+          self.submarino.armas = 4;
+          //self.submarino.imagen.setTexture('UbootProfundidad1');
+          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
+          console.log('subi a poca profundidad');
+          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        }
+        if(self.submarino.profundidad === 0){
+          self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+        }
+      }
+
+      // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
+      if (self.submarino.profundidad == 0){
+        // Si me encuentro en la superficie la velocidad va a ser lenta
+        self.submarino.velocidad = self.velocidadBaja; 
+      }else if(self.submarino.profundidad == 1){
+        // Si me encuentro a baja profundidad la velocidad va a ser media
+        self.submarino.velocidad = self.velocidadMedia; 
+      }else if(self.submarino.profundidad == 2){
+       // Si me encuentro a mucha profundidad la velocidad va a ser lenta
+        self.submarino.velocidad = self.velocidadBaja; 
+      }
+    });
+
+    // Funcion que al precionar la tecla V, cambia la profundidad de las cargas de profundidad del destructor
+    self.input.keyboard.on('keydown-' + 'V', function (event){
+      if (self.equipo === 1){
+        if(self.destructor.cargas === 1){
+          self.destructor.cargas = 2;
+          console.log('detonador para mucha profundidad');
+        }else{
+          self.destructor.cargas = 1;
+          console.log('detonador para poca profundidad');
+        }
+      }  
+    });
 
     //funcion que recibe un click y ejecuta el evento disparo, el cual activa una bala del set de balas de la clase
     this.input.on('pointerdown', function (pointer, time) {
       if(self.equipo === 1){
         //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.destructor.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
+        // descuenta las balas del pool de municiones por cada disparo efectuado, sea impacto o no
+        if(self.destructor.armas === 0){
+          self.destructor.ammoCanion--;
+          console.log("municion canion restante", self.destructor.ammoCanion);
+        }else if(self.destructor.armas === 1){
+          self.destructor.ammoCargas--;
+          console.log("municion cargas restante", self.destructor.ammoCargas);
+        }
         //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
         Disparo(self.destructor.imagen, bullet, self.destructor.reticula, self.submarino.imagen, self.submarino);
       }else{
         //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
+        // descuenta las balas del pool de municiones por cada disparo efectuado, sea impacto o no
+        if(self.submarino.armas === 0){
+          self.submarino.ammoCanion--;
+          console.log("municion canion restante", self.submarino.ammoCanion);
+        }else if(self.submarino.armas === 1 || self.submarino.armas === 4){
+          self.submarino.ammoTorpedo--;
+          console.log("municion torpedos restante", self.submarino.ammoTorpedo);
+        }
         //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
         Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.destructor.imagen, self.destructor);
         Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero1.imagen, self.carguero1);
@@ -832,6 +666,7 @@ export class game extends Phaser.Scene{
         bullet.destroy();
       }
     }, this);
+
 
     // FUNCION DE DISPARO DEL JUGADOR
     function Disparo(player, bullet, reticula, enemyImag, enemy){
@@ -1543,7 +1378,8 @@ export class game extends Phaser.Scene{
               }     
             }
             
-          } 
+          }
+           
     }
     //funcion que muestra la explosion en la posicion determinada
     function hitted(x, y){
@@ -1719,18 +1555,18 @@ export class game extends Phaser.Scene{
     //escucho el tiro que me dieron desde el otro jugador y lo proceso
     this.socket.on('playerHitted', function(playerInfo){       
         if(self.equipo===1){
-          console.log("carguero golpeado numero", playerInfo.carguero);
-          if(playerInfo.carguero === 1){
+          console.log("carguero golpeado numero", playerInfo.numerocarguero);
+          if(playerInfo.numerocarguero === 1){
             RecibeHit(self.carguero1, self.carguero1.imagen, playerInfo.damage, true);
-          }else if(playerInfo.carguero === 2){
+          }else if(playerInfo.numerocarguero === 2){
             RecibeHit(self.carguero2, self.carguero2.imagen, playerInfo.damage, true);
-          }else if(playerInfo.carguero === 3){
+          }else if(playerInfo.numerocarguero === 3){
             RecibeHit(self.carguero3, self.carguero3.imagen, playerInfo.damage, true);
-          }else if(playerInfo.carguero === 4){
+          }else if(playerInfo.numerocarguero === 4){
             RecibeHit(self.carguero4, self.carguero4.imagen, playerInfo.damage, true);
-          }else if(playerInfo.carguero === 5){
+          }else if(playerInfo.numerocarguero === 5){
             RecibeHit(self.carguero5, self.carguero5.imagen, playerInfo.damage, true);
-          }else if(playerInfo.carguero === 6){
+          }else if(playerInfo.numerocarguero === 6){
             RecibeHit(self.carguero6, self.carguero6.imagen, playerInfo.damage, true);
           }else{
             RecibeHit(self.destructor, self.destructor.imagen, playerInfo.damage, false);
@@ -1744,7 +1580,7 @@ export class game extends Phaser.Scene{
       self.submarino.profundidad = playerInfo.deep;
       //if(self.socket.id == playerInfo.id){
         if(self.equipo===1){
-          if (self.submarino.profundidad === 1 ){
+          if (self.submarino.profundidad === 1){
             //self.submarino.imagen.setTexture('UbootProfundidad2').setVisible(true);
             self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2).setVisible(true);
             console.log('bajo a poca profundidad');
@@ -1782,6 +1618,95 @@ export class game extends Phaser.Scene{
           self.scene.start(DEF.SCENES.FinScene, envio2);  
       }    
     }); 
+
+    // Método que cambia de camara con el carguero central de la formacion
+    function cambioCamaraCargueros(camara){
+      if(camara==0){
+        self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(0.9);
+      }else if(camara==1){
+        self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+      }
+    }
+
+    // Método para activar el larga vistas
+    function cambioLargaVistas(lv){
+      if(lv === 1 && (self.submarino.profundidad === 0)){
+        console.log("LARGAVISTAS ACTIVADO");
+        self.largavist = true;
+        self.largaVistas.angle=self.submarino.imagen.angle+270;
+        self.cameras.main.setMask(self.mar.masklv);
+        self.cameras.main.setZoom(0.9);
+      }else if(lv === 0 && (self.submarino.profundidad === 0)){
+        console.log("LARGAVISTAS DESACTIVADO");
+        self.largavist = false;
+        self.cameras.main.setMask(self.mask);
+        self.cameras.main.setZoom(1.4);
+      }
+    }
+
+    // Método para activar la función de sonar
+    function activarSonar(){
+      
+      // Texto de aviso
+      self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
+
+      // Activo sonar si hay sonares disponibles
+      if(self.submarino.sonar>0){
+        self.soundSonar.play();
+        // Cambio de cámaras
+        self.cameras.main.setMask(self.mask);
+        self.cameras.main.setZoom(0.9);
+        
+        // Activo cuenta regresiva
+        self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
+        
+        // Vuelvo a vista normal y elimino aviso
+        self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
+        
+        function camaraSonar(){
+          // Restablezco las cámaras
+          self.cameras.main.setMask(self.mask);
+          self.cameras.main.setZoom(1.4);
+
+          // Elimino texto de tiempo restante
+          removeText();
+          self.soundSonar.stop();
+          contadorS=0;
+        }
+        
+        function actualizarContSonar(){
+          contadorS++;
+          self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS) + '\nSONARES RESTANTES: '+(self.submarino.sonar));
+          if (contadorS === 10){
+            self.cuentaSonar.remove(true);
+          }
+        }
+        self.submarino.sonar--;
+      }else{
+
+        self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
+        self.resetSonar = self.time.addEvent({ delay: 10000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
+        
+        function eliminoAvisoNHS(){
+          // Elimino texto de aviso no hay sonar
+          removeText();
+          contadorS=0;
+        }
+
+        function avisoNoHaySonar(){
+          contadorS++;
+          self.statusSonar.setText('¡SONAR AGOTADO!');
+          if (contadorS === 10){
+            self.cuentaSonar.remove(true);
+          }
+        }
+      }
+    }
+    function removeText() {
+      self.statusSonar.destroy();
+    }
   }
 
   // Función update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje graficamente
@@ -1789,9 +1714,9 @@ export class game extends Phaser.Scene{
     if(this.equipo === 1){
       // Agregamos el movimiento de los barcos con las flechas de direccion y seteamos la velocidad de rotacion de giro del destructor
       if (this.destructor){
-        if (this.left.isDown && (this.up.isDown || this.down.isDown) || this.UPDI==1 ) {
+        if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
           this.destructor.imagen.setAngularVelocity(-100)
-        } else if (this.right.isDown && (this.up.isDown || this.down.isDown)) {
+        } else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
           this.destructor.imagen.setAngularVelocity(100)
         } else {
           this.destructor.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
@@ -1801,10 +1726,10 @@ export class game extends Phaser.Scene{
         const velX = Math.cos((this.destructor.imagen.angle - 360) * 0.01745)
         const velY = Math.sin((this.destructor.imagen.angle - 360) * 0.01745)
         // Seteo la velocidad de movimiento
-        if (this.up.isDown  || this.UP===1) {
+        if (this.cursors.up.isDown) {
           this.destructor.imagen.setVelocityX(this.destructor.velocidad * velX)
           this.destructor.imagen.setVelocityY(this.destructor.velocidad  * velY)
-        } else if (this.down.isDown) {
+        } else if (this.cursors.down.isDown) {
           this.destructor.imagen.setVelocityX(-(this.destructor.velocidad/2) * velX)
           this.destructor.imagen.setVelocityY(-(this.destructor.velocidad/2) * velY)
         } else {
@@ -1839,14 +1764,14 @@ export class game extends Phaser.Scene{
 
       // Agregamos el movimiento de los cargueros con las teclas WASD y seteamos la velocidad de rotacion de giro del barco
       if (this.carguero1 || this.carguero2 || this.carguero3 || this.carguero4 || this.carguero5 || this.carguero6 ){
-        if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
+        if (this.left.isDown && (this.up.isDown || this.down.isDown)) {
           this.carguero1.imagen.setAngularVelocity(-100)
           this.carguero2.imagen.setAngularVelocity(-100)
           this.carguero3.imagen.setAngularVelocity(-100)
           this.carguero4.imagen.setAngularVelocity(-100)
           this.carguero5.imagen.setAngularVelocity(-100)
           this.carguero6.imagen.setAngularVelocity(-100)
-        } else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
+        } else if (this.right.isDown && (this.up.isDown || this.down.isDown)) {
           this.carguero1.imagen.setAngularVelocity(100)
           this.carguero2.imagen.setAngularVelocity(100)
           this.carguero3.imagen.setAngularVelocity(100)
@@ -1865,7 +1790,7 @@ export class game extends Phaser.Scene{
         // Calculo y seteo la velocidad de los barcos y el angulo de rotacion como una constante
         const velCX = Math.cos((this.carguero1.imagen.angle - 360) * 0.01745)
         const velCY = Math.sin((this.carguero1.imagen.angle - 360) * 0.01745)
-        if (this.cursors.up.isDown) {
+        if (this.up.isDown) {
           this.carguero1.imagen.setVelocityX(this.carguero1.velocidad * velCX)
           this.carguero1.imagen.setVelocityY(this.carguero1.velocidad * velCY)
           this.carguero2.imagen.setVelocityX(this.carguero2.velocidad * velCX)
@@ -1878,7 +1803,7 @@ export class game extends Phaser.Scene{
           this.carguero5.imagen.setVelocityY(this.carguero5.velocidad * velCY)
           this.carguero6.imagen.setVelocityX(this.carguero6.velocidad * velCX)
           this.carguero6.imagen.setVelocityY(this.carguero6.velocidad * velCY)
-        } else if (this.cursors.down.isDown) {
+        } else if (this.down.isDown) {
           this.carguero1.imagen.setVelocityX(-(this.carguero1.velocidad/2) * velCX)
           this.carguero1.imagen.setVelocityY(-(this.carguero1.velocidad/2) * velCY)
           this.carguero2.imagen.setVelocityX(-(this.carguero2.velocidad/2) * velCX)
@@ -2035,21 +1960,19 @@ export class game extends Phaser.Scene{
       
     }else{
       if (this.submarino){
-        if(this.submarino.largavista === true){
-          if(this.left.isDown){
-            this.submarino.imagen.setAngularVelocity(0);
+        if(this.largavist === true){
+          if(this.cursors.left.isDown){
             this.submarino.imagen.rotation-=0.05;
             this.largaVistas.angle=this.submarino.imagen.angle+270;
-          }else if(this.right.isDown){
-            this.submarino.imagen.setAngularVelocity(0);
+          }else if(this.cursors.right.isDown){
             this.submarino.imagen.rotation+=0.05;
             this.largaVistas.angle=this.submarino.imagen.angle-90;
           }
         }else{
           // Seteo velocidad de rotacion y giro
-          if (this.left.isDown && (this.up.isDown || this.down.isDown)) {
+          if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
             this.submarino.imagen.setAngularVelocity(-100)
-          } else if (this.right.isDown && (this.up.isDown || this.down.isDown)) {
+          } else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
             this.submarino.imagen.setAngularVelocity(100)
           } else {
             this.submarino.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
@@ -2061,12 +1984,12 @@ export class game extends Phaser.Scene{
           const velX = Math.cos((this.submarino.imagen.angle - 360) * 0.01745)
           const velY = Math.sin((this.submarino.imagen.angle - 360) * 0.01745)
           // Seteo velocidad de movimiento
-          if (this.up.isDown || this.UP===1) {
+          if (this.cursors.up.isDown) {
             this.submarino.imagen.setVelocityX(this.submarino.velocidad  * velX)
             //this.submarino.reticula.setVelocityX(this.submarino.velocidad * (velX))
             this.submarino.imagen.setVelocityY(this.submarino.velocidad * velY)
             //this.submarino.reticula.setVelocityY(this.submarino.velocidad * (velY))
-          } else if (this.down.isDown) {
+          } else if (this.cursors.down.isDown) {
             this.submarino.imagen.setVelocityX(-(this.submarino.velocidad/2) * velX)
             //this.submarino.reticula.setVelocityX(-(this.submarino.velocidad/2) * (velX))
             this.submarino.imagen.setVelocityY(-(this.submarino.velocidad/2) * velY)
@@ -2101,6 +2024,17 @@ export class game extends Phaser.Scene{
           }
         }
       }
+    }
+    
+    // Se intentan leer por teclado las letras M y U para mutear y desmutear la musica
+    if (this.KeyMute.isDown){
+      console.log('Muteo audio')
+      //this.sound.stop();
+    }
+    if (this.KeyUnmute.isDown){
+      console.log('Desmuteo audio')
+      //this.sound.play();
+      //this.sound.add('Music').play();
     }
   }
 }
