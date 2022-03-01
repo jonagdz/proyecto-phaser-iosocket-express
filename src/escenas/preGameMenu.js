@@ -11,7 +11,7 @@ export class preGameMenu extends Phaser.Scene{
     this.socket = io();
     this.otroEquipo = 0;
 
-    console.log("Dentro de preGameMenu.js");
+    //console.log("Dentro de preGameMenu.js");
 
     self.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
     //////////////////////////////////////////////////CARGO INTERACCIONES Y SPRITE DE DESTROY/////////////////////////////////////////////////////////////////
@@ -79,6 +79,17 @@ export class preGameMenu extends Phaser.Scene{
       var data = {
         socket: self.socket,
         opcion: 2,
+        equipo: 2 // Mando cualquier equipo solo porque lo requiere el init de salaEspera, pero este dato no importa en este caso
+      }
+      self.scene.start(DEF.SCENES.LOBBY,data);
+    });
+    
+    // Manejo el error de que se conecto otro jugador habiendo una partida en curso
+    self.socket.on('SalaEsperaPartidaEnCurso', function(){
+      console.log("Inicio SalaEsperaPartidaEnCurso");
+      var data = {
+        socket: self.socket,
+        opcion: 3,
         equipo: 2 // Mando cualquier equipo solo porque lo requiere el init de salaEspera, pero este dato no importa en este caso
       }
       self.scene.start(DEF.SCENES.LOBBY,data);

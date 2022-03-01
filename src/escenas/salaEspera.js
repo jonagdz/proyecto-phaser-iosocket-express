@@ -72,9 +72,9 @@ export class salaEspera extends Phaser.Scene{
         hideOnComplete: true,
         });
       self.txt.play('animintxt');
-    }else{
+    }else if (self.opcion == 2){
       self.txt2.setActive(true).setVisible(true);
-      self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
+      self.anims.create({  // Se crea la animacion para el load
         key: 'animintxt2',
         frames: [
             { key: 'txtesp2',frame:"TXT.png" },
@@ -90,6 +90,22 @@ export class salaEspera extends Phaser.Scene{
       // self.add.text(450, 450, "Estás en la sala de espera debido a que la", {fill: '#000000', fontSize: '40px', fontFamily: 'Arial black',})
       // self.add.text(450, 500, "cantidad de maximos jugadores se alcanzó", {fill: '#000000', fontSize: '40px', fontFamily: 'Arial black',})
       // self.add.text(450, 550, "intente nuevamente en unos minutos.", {fill: '#000000', fontSize: '40px', fontFamily: 'Arial black',})
+    }else{
+      console.log("SALA DE ESPERA OPCION 3, PARTIDA EN CURSO")
+      self.txt2.setActive(true).setVisible(true);
+      self.anims.create({  // Se crea la animacion para el load
+        key: 'animintxt2',
+        frames: [
+            { key: 'txtesp2',frame:"TXT.png" },
+            { key: 'txtesp2',frame:"TXT1.png" },
+            { key: 'txtesp2',frame:"TXT2.png" },
+            { key: 'txtesp2',frame:"TXT3.png" }       
+        ],
+        frameRate: 5,
+        repeat:-1,
+        hideOnComplete: true,
+      });
+      self.txt2.play('animintxt2');
     }
 
     self.socket.on('JugadoresListosPlayer1', function(){
