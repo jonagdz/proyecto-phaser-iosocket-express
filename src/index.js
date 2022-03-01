@@ -1,6 +1,7 @@
 import { bootGame } from './escenas/bootGame.js';
 import { preGameMenu } from './escenas/preGameMenu.js';
 import { game } from './escenas/game.js';
+import { GameMenu} from './escenas/GameMenu.js';
 import { salaEspera } from './escenas/salaEspera.js';
 import { gameOver } from './escenas/gameOver.js';
 
@@ -23,7 +24,7 @@ var config = {
       gravity: { y: 0 }
     }
   },
-  scene: [bootGame, preGameMenu, salaEspera, game, gameOver]
+  scene: [bootGame, preGameMenu, salaEspera, game, GameMenu, gameOver]
 }
 
 window.onload = () =>{

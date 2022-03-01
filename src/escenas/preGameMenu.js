@@ -109,6 +109,7 @@ export class preGameMenu extends Phaser.Scene{
     ////////////////////////////////////////////////////////////////////////
     function ClickHome () {
       console.log("Vuelve a inicio");
+      self.scene.start(DEF.SCENES.MENUPRINCIPAL);
   
     }
 

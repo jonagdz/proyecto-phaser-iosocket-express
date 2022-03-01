@@ -1,0 +1,28 @@
+{"frames": {
+
+"botonIniciarPartida1barco.png":
+{
+	"frame": {"x":0,"y":0,"w":380,"h":150},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":380,"h":150},
+	"sourceSize": {"w":380,"h":150}
+},
+"botonIniciarPartida1barco2.png":
+{
+	"frame": {"x":380,"y":0,"w":380,"h":150},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":380,"h":150},
+	"sourceSize": {"w":380,"h":150}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "iniciarpart.png",
+	"format": "RGBA8888",
+	"size": {"w":760,"h":150},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:6e743fda9433e568d3e7fcdd30c6c073:3a50887ed3c04c776485d9941efe26ee:881d238cbfa8316bbff6f6895b1ae6fd$"
+}
+}

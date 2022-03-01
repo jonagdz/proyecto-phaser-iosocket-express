@@ -6,6 +6,7 @@ export const DEF = {
         LOBBY: "salaEspera",
         LateralScene: "lateralView",
         FinScene: "gameOver",
+        MENUPRINCIPAL: "GameMenu"
     },
 
     IMAGENES: {
@@ -30,8 +31,7 @@ export const DEF = {
         HOME: "home.png",
         INFO: "information.png",
         INFOTXT: "infotext.png",
-        CLOSE: "close.png"
-        
+        CLOSE: "close.png"    
 
     },
 
@@ -49,6 +49,10 @@ export const DEF = {
         HOMES: "homejj.png",
         LOADS: "load.png",
         TXTESP: "txtespera.png",
-        TXTESP2: "txtespera2.png"
+        TXTESP2: "txtespera2.png",
+        INITPART: "iniciarpart.png",
+        CARGARPART: "cargarpart.png",
+        CONTROLS: "controls.png",
+        CREDITS:"credits.png"
     },
 };

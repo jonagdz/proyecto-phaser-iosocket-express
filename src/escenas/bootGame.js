@@ -55,6 +55,18 @@ export class bootGame extends Phaser.Scene{
             if(sprite.includes("TXTESP2")){
                 this.load.atlas('txtesp2', DEF.SPRITES[sprite],'./txtespera2.json');
             }
+            if(sprite.includes("INITPART")){
+                this.load.atlas('initpart', DEF.SPRITES[sprite],'./iniciarpart.json');
+            }
+            if(sprite.includes("CARGARPART")){
+                this.load.atlas('cargarpart', DEF.SPRITES[sprite],'./cargarpart.json');
+            }
+            if(sprite.includes("CONTROLS")){
+                this.load.atlas('controls', DEF.SPRITES[sprite],'./controls.json');
+            }
+            if(sprite.includes("CREDITS")){
+                this.load.atlas('credits', DEF.SPRITES[sprite],'./credits.json');
+            }
             else
             {
                 this.load.image(DEF.SPRITES[sprite], DEF.SPRITES[sprite]);
@@ -72,6 +84,6 @@ export class bootGame extends Phaser.Scene{
 
     create()
     {
-        this.scene.start(DEF.SCENES.MENU);
+        this.scene.start(DEF.SCENES.MENUPRINCIPAL);
     }
 }

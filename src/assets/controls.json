@@ -1,0 +1,28 @@
+{"frames": {
+
+"botonControles1.png":
+{
+	"frame": {"x":0,"y":0,"w":380,"h":150},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":380,"h":150},
+	"sourceSize": {"w":380,"h":150}
+},
+"botonControles2.png":
+{
+	"frame": {"x":380,"y":0,"w":380,"h":150},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":380,"h":150},
+	"sourceSize": {"w":380,"h":150}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "controls.png",
+	"format": "RGBA8888",
+	"size": {"w":760,"h":150},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:e4ee8d2b812ab55730e38159ee044e6c:549d3c75e623c7d8ac1ccdecee5b18f0:13db50ae431b1c60d076cd518d6333b1$"
+}
+}
