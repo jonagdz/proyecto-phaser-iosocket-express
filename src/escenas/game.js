@@ -175,8 +175,6 @@ export class game extends Phaser.Scene{
       generarEquipo2();
       this.botonDOWNDI = self.physics.add.image(700, 700, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
       this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
-      //
-      const btnActivarSonar = this.add.text(900, 700, 'ACTIVAR SONAR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => activarSonar());
     } 
     
     function ClickDOWN(val){
@@ -393,6 +391,78 @@ export class game extends Phaser.Scene{
           self.submarino.largavista = false;
           self.cameras.main.setMask(self.mask);
           self.cameras.main.setZoom(1.4);
+        }
+      });
+      // Se crea el evento de activar sonar
+      self.input.keyboard.on('keydown-' + 'S', function (event){
+        // Activo sonar si hay sonares disponibles
+        if(self.submarino.sonar>0){
+          if (self.usoSonar !== true){
+            // Texto de aviso
+            self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
+            
+            self.usoSonar = true;
+
+            // Activo sonido de sonar
+            self.soundSonar.play();
+
+            // Cambio de cámaras
+            self.cameras.main.setMask(self.mask);
+            self.cameras.main.setZoom(0.9);
+            
+            // Activo cuenta regresiva
+            self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
+            
+            // Vuelvo a vista normal y elimino aviso
+            self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
+            
+            function camaraSonar(){
+              // Restablezco las cámaras
+              self.cameras.main.setMask(self.mask);
+              self.cameras.main.setZoom(1.4);
+              self.usoSonar = false;
+              console.log("USO SONAR:"+self.usoSonar);
+              // Elimino texto de tiempo restante
+              removeText();
+              self.soundSonar.stop();
+              contadorS=0;
+            }
+            function actualizarContSonar(){
+              contadorS++;
+              self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS) + '\nSONARES RESTANTES: '+(self.submarino.sonar));
+              if (contadorS === 10){
+                self.cuentaSonar.remove(true);
+              }
+            }
+            function removeText() {
+              self.statusSonar.destroy();
+            }
+            self.submarino.sonar--;
+          }
+        }else{
+          if (self.usoSonar !== true){
+            // Texto de aviso
+            self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
+
+            self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
+            self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
+            
+            function eliminoAvisoNHS(){
+              // Elimino texto de aviso no hay sonar
+              removeText();
+              contadorS=0;
+            }
+            function avisoNoHaySonar(){
+              contadorS++;
+              self.statusSonar.setText('¡SONAR AGOTADO!');
+              if (contadorS === 5){
+                self.cuentaSonar.remove(true);
+              }
+            }
+            function removeText() {
+              self.statusSonar.destroy();
+            }
+          }
         }
       });
     }
@@ -1697,78 +1767,6 @@ export class game extends Phaser.Scene{
       }else if(camara==1){
         self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
-      }
-    }
-
-    // Método para activar la función de sonar
-    function activarSonar(){
-      // Activo sonar si hay sonares disponibles
-      if(self.submarino.sonar>0){
-        if (self.usoSonar !== true){
-          // Texto de aviso
-          self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
-          
-          self.usoSonar = true;
-          console.log("USO SONAR:"+self.usoSonar);
-          self.soundSonar.play();
-
-          // Cambio de cámaras
-          self.cameras.main.setMask(self.mask);
-          self.cameras.main.setZoom(0.9);
-          
-          // Activo cuenta regresiva
-          self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
-          
-          // Vuelvo a vista normal y elimino aviso
-          self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
-          
-          function camaraSonar(){
-            // Restablezco las cámaras
-            self.cameras.main.setMask(self.mask);
-            self.cameras.main.setZoom(1.4);
-            self.usoSonar = false;
-            console.log("USO SONAR:"+self.usoSonar);
-            // Elimino texto de tiempo restante
-            removeText();
-            self.soundSonar.stop();
-            contadorS=0;
-          }
-          function actualizarContSonar(){
-            contadorS++;
-            self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS) + '\nSONARES RESTANTES: '+(self.submarino.sonar));
-            if (contadorS === 10){
-              self.cuentaSonar.remove(true);
-            }
-          }
-          function removeText() {
-            self.statusSonar.destroy();
-          }
-          self.submarino.sonar--;
-        }
-      }else{
-        if (self.usoSonar !== true){
-          // Texto de aviso
-          self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
-
-          self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
-          self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
-          
-          function eliminoAvisoNHS(){
-            // Elimino texto de aviso no hay sonar
-            removeText();
-            contadorS=0;
-          }
-          function avisoNoHaySonar(){
-            contadorS++;
-            self.statusSonar.setText('¡SONAR AGOTADO!');
-            if (contadorS === 5){
-              self.cuentaSonar.remove(true);
-            }
-          }
-          function removeText() {
-            self.statusSonar.destroy();
-          }
-        }
       }
     }
   }
