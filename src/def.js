@@ -35,11 +35,11 @@ export const DEF = {
       //  BOTONUP: "UP.png", 
       //  BOTONRIGHT: "RIGHT.png",
       //  BOTONLEFT: "LEFT.png",
-        BOTONDOWN: "DOWN.png",   
+       // BOTONDOWN: "DOWN.png",   
      //   BOTONUPDR: "diagonalr.png",
     //    BOTONDOWNDR: "diagonalrdown.png",
-     //   BOTONUPDI: "diagonaliup.png",
-      //  BOTONDOWNDI: "diagonalidown.png"
+        //  BOTONUPDI: "diagonaliup.png",
+        BOTONDOWNDI: "diagonalidown.png"
 
     },
 

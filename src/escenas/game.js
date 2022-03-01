@@ -154,30 +154,10 @@ export class game extends Phaser.Scene{
     this.down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-    ////////////////////////////////BOTONES////////////////////////////
-    this.botonUP = self.physics.add.image(500, 500, DEF.IMAGENES.BOTONUP).setOrigin(0).setScrollFactor(1).setDepth(10).setInteractive().on('pointerdown', () => ClickUP(1));
-    this.botonUP.setInteractive().on('pointerout', () => ClickUP(2));
-    
-    this.botonUPDI = self.physics.add.image(350, 500, DEF.IMAGENES.BOTONUPDI).setOrigin(0).setScrollFactor(1).setDepth(10);
-    this.botonUPDI.setInteractive().on('pointerout', () => ClickUPDI(2));
+   
     
     this.botonDOWNDI = self.physics.add.image(350, 700, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(1).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
     this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
-
-    this.botonDOWN = self.physics.add.image(500, 700, DEF.IMAGENES.BOTONDOWN).setOrigin(0).setScrollFactor(1).setDepth(10);
-   
-
-    this.botonDOWNDR = self.physics.add.image(750, 700, DEF.IMAGENES.BOTONDOWNDR).setOrigin(0).setScrollFactor(1).setDepth(10);
-   
-    
-    this.botonRIGHT = self.physics.add.image(750, 500, DEF.IMAGENES.BOTONRIGHT).setOrigin(0).setScrollFactor(1).setDepth(10);
-   
-
-    this.botonuUPDR = self.physics.add.image(900, 500, DEF.IMAGENES.BOTONUPDR).setOrigin(0).setScrollFactor(1).setDepth(10);
-   
-    this.botonlEFT = self.physics.add.image(230, 600, DEF.IMAGENES.BOTONLEFT).setOrigin(0).setScrollFactor(1).setDepth(10);
-
-   
 
 
    // this.destroy.setInteractive().on('pointerover', () => ElegirDestroy(1));
@@ -203,34 +183,13 @@ export class game extends Phaser.Scene{
       const btnActivarSonar = this.add.text(900, 700, 'ACTIVAR SONAR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => activarSonar());
     } 
     
-    function ClickUP(v){
-      if(v===1){
-        console.log('avanzaa');
-        self.UP=1;
-      }
-      else{
-        self.UP=0;
-      }
-    }
-
-    function ClickUPDI(vv){
-      if(vv===1){
-        console.log('avanzaa');
-        self.UPDI=1;
-  
-      }
-      else{
-        self.UPDI=0;
-      }
-    }
     function ClickDOWN(val){
       if(val===1){
         console.log('baja');
-        self.DW=1;
         prof(1);
       } 
       else{
-        self.DW=0;
+        prof(0);
       }
     }
 
@@ -508,6 +467,8 @@ export class game extends Phaser.Scene{
         // Se crea la colision con el submarino y el destructor
         self.physics.add.collider(self.carguero1.imagen, self.destructor.imagen);
         self.physics.add.collider(self.carguero1.imagen, self.submarino.imagen);
+
+        
       })
       
     };
