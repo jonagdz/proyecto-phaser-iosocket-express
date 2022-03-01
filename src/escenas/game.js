@@ -30,6 +30,8 @@ export class game extends Phaser.Scene{
     this.distMax = 300;
     this.statusSonar;
     this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
+    // Para que el audio se escuche fuera del navegador
+    this.soundSonar.pauseOnBlur = false;
   }
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
@@ -43,8 +45,11 @@ export class game extends Phaser.Scene{
     let resetSonar;
     let contadorS=0;
     let largavist = false;
+    let usoSonar = false;
     self.socket.emit('listarPartidas', {id: 2});
     let carguerosMuertos = 0;
+
+
 
     // Grupo para los cargueros y balas
     var arrayCargueros = [];
@@ -56,11 +61,11 @@ export class game extends Phaser.Scene{
     //this.mar = this.add.image(0, 0, 'mar').setOrigin(0).setScrollFactor(1).setDepth(0); 
     const backgroundW = this.mar.width;
     const backgroundH = this.mar.height;
-
+ 
     // Defino los limites de las dimensiones del mapa para el posicionamiento inicial de los barcos
-    var frameW = 6416;
-    var frameH = 2156;
-    var margenCostaX = 810;
+    var frameW = backgroundW;
+    var frameH = backgroundH;
+    var margenCostaX = 689;
     var margenCostaY = 300;
 
     // Defino variables para las posiciones X e Y de los barcos
@@ -382,22 +387,22 @@ export class game extends Phaser.Scene{
     // Funcion para generarle las imagenes y las particulas a cada barco
     function generarCargueros(){
       // Genero las posiciones X e Y para el primer carguero principal
-      posX = Math.floor((Math.random()*((frameW*0.2)- margenCostaX))+margenCostaX); // El margen x para generarse los cargueros sera desde la costa (810) hasta el 20% del total del mapa
+      posX = Math.floor((Math.random()*((frameW*0.2)- margenCostaX))+margenCostaX); // El margen x para generarse los cargueros sera desde la costa (689) hasta el 20% del total del mapa
       posY = Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY); // El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa    
 
       // Actualizo la posicion x e de todos los cargueros en base a la posicion inicial del carguero principal
       self.carguero1.posX = posX;
       self.carguero1.posY = posY;
-      self.carguero2.posX = posX+600;
-      self.carguero2.posY = posY+240
-      self.carguero3.posX = posX+50
-      self.carguero3.posY = posY+370;
-      self.carguero4.posX = posX-270;
-      self.carguero4.posY = posY+150;
-      self.carguero5.posX = posX+300;
-      self.carguero5.posY = posY-150;
-      self.carguero6.posX = posX+180;
-      self.carguero6.posY = posY+150;
+      self.carguero2.posX = posX+200;
+      self.carguero2.posY = posY+200;
+      self.carguero3.posX = posX+200;
+      self.carguero3.posY = posY-200;
+      self.carguero4.posX = posX+350;
+      self.carguero4.posY = posY;
+      self.carguero5.posX = posX+500;
+      self.carguero5.posY = posY+250;
+      self.carguero6.posX = posX+500;
+      self.carguero6.posY = posY-250;
 
       // Inserto los objetos cargueros en un array de cargueros para poder crear sus imagenes en un for
       arrayCargueros[0] = self.carguero1;
@@ -1632,64 +1637,74 @@ export class game extends Phaser.Scene{
 
     // Método para activar la función de sonar
     function activarSonar(){
-      
-      // Texto de aviso
-      self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
-
       // Activo sonar si hay sonares disponibles
       if(self.submarino.sonar>0){
-        self.soundSonar.play();
-        // Cambio de cámaras
-        self.cameras.main.setMask(self.mask);
-        self.cameras.main.setZoom(0.9);
-        
-        // Activo cuenta regresiva
-        self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
-        
-        // Vuelvo a vista normal y elimino aviso
-        self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
-        
-        function camaraSonar(){
-          // Restablezco las cámaras
+        if (self.usoSonar !== true){
+          // Texto de aviso
+          self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
+          
+          self.usoSonar = true;
+          console.log("USO SONAR:"+self.usoSonar);
+          self.soundSonar.play();
+
+          // Cambio de cámaras
           self.cameras.main.setMask(self.mask);
-          self.cameras.main.setZoom(1.4);
-
-          // Elimino texto de tiempo restante
-          removeText();
-          self.soundSonar.stop();
-          contadorS=0;
-        }
-        
-        function actualizarContSonar(){
-          contadorS++;
-          self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS) + '\nSONARES RESTANTES: '+(self.submarino.sonar));
-          if (contadorS === 10){
-            self.cuentaSonar.remove(true);
+          self.cameras.main.setZoom(0.9);
+          
+          // Activo cuenta regresiva
+          self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
+          
+          // Vuelvo a vista normal y elimino aviso
+          self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
+          
+          function camaraSonar(){
+            // Restablezco las cámaras
+            self.cameras.main.setMask(self.mask);
+            self.cameras.main.setZoom(1.4);
+            self.usoSonar = false;
+            console.log("USO SONAR:"+self.usoSonar);
+            // Elimino texto de tiempo restante
+            removeText();
+            self.soundSonar.stop();
+            contadorS=0;
           }
+          function actualizarContSonar(){
+            contadorS++;
+            self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS) + '\nSONARES RESTANTES: '+(self.submarino.sonar));
+            if (contadorS === 10){
+              self.cuentaSonar.remove(true);
+            }
+          }
+          function removeText() {
+            self.statusSonar.destroy();
+          }
+          self.submarino.sonar--;
         }
-        self.submarino.sonar--;
       }else{
+        if (self.usoSonar !== true){
+          // Texto de aviso
+          self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
 
-        self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
-        self.resetSonar = self.time.addEvent({ delay: 10000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
-        
-        function eliminoAvisoNHS(){
-          // Elimino texto de aviso no hay sonar
-          removeText();
-          contadorS=0;
-        }
-
-        function avisoNoHaySonar(){
-          contadorS++;
-          self.statusSonar.setText('¡SONAR AGOTADO!');
-          if (contadorS === 10){
-            self.cuentaSonar.remove(true);
+          self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
+          self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
+          
+          function eliminoAvisoNHS(){
+            // Elimino texto de aviso no hay sonar
+            removeText();
+            contadorS=0;
+          }
+          function avisoNoHaySonar(){
+            contadorS++;
+            self.statusSonar.setText('¡SONAR AGOTADO!');
+            if (contadorS === 5){
+              self.cuentaSonar.remove(true);
+            }
+          }
+          function removeText() {
+            self.statusSonar.destroy();
           }
         }
       }
-    }
-    function removeText() {
-      self.statusSonar.destroy();
     }
   }
 
