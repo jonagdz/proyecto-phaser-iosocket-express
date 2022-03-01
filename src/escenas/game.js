@@ -44,6 +44,7 @@ export class game extends Phaser.Scene{
     let contadorS=0;
     let largavist = false;
     self.socket.emit('listarPartidas', {id: 2});
+    let carguerosMuertos = 0;
 
     // Grupo para los cargueros y balas
     var arrayCargueros = [];
@@ -68,6 +69,12 @@ export class game extends Phaser.Scene{
     let distMaxima = 50;
     let damAcuD = 0;
     let damAcuS = 0;
+    let damCar1 = 0;
+    let damCar2 = 0;
+    let damCar3 = 0;
+    let damCar4 = 0;
+    let damCar5 = 0;
+    let damCar6 = 0;
     let distCorta = 0;
     let distMedia = 0;
     let corta = false;
@@ -921,31 +928,70 @@ export class game extends Phaser.Scene{
                   console.log("entro al if del danio sub corto");
                   hitted(enemy.x, enemy.y); 
                   danio = 1;
-                  damAcuS = damAcuS + danio;
+                  
                   console.log('danio al enemigo', danio);
                   if(enemyobj === self.carguero1){ 
-                    Escarguero = 1;  
+                    Escarguero = 1;
+                    damCar1 = damCar1 + danio;
+                    if(damCar1 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }    
                   }else if(enemyobj === self.carguero2){
                     Escarguero = 2;
+                    damCar2 = damCar2 + danio;
+                    if(damCar2 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
                   }else if(enemyobj === self.carguero3){
                     Escarguero = 3;
+                    damCar3 = damCar3 + danio;
+                    if(damCar3 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
                   }else if(enemyobj === self.carguero4){
                     Escarguero = 4;
+                    damCar4 = damCar4 + danio;
+                    if(damCar4 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }else if(enemyobj === self.carguero5){
                     Escarguero = 5;
+                    damCar5 = damCar5 + danio;
+                    if(damCar5 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }else if(enemyobj === self.carguero6){
                     Escarguero = 6;
-                  }  
+                    damCar6 = damCar6 + danio;
+                    if(damCar6 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else{
+                    damAcuS = damAcuS + danio;
+                    if(damAcuS >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }
                   pack ={
                     danio: danio,
                     carguero: Escarguero
                   }              
                   self.socket.emit('playerHit', pack);
-                  if(damAcuS >= enemyobj.vida){
-                    destroyed(enemy);
-                    enemy.setActive(false);
-                    enemy.setVisible(false);
-                  }
+                  
                 } 
               }else if(media){
                   probExtra = Math.floor(Math.random() * (3));
@@ -956,31 +1002,69 @@ export class game extends Phaser.Scene{
                     console.log("entro al if del danio sub medio");
                     hitted(enemy.x, enemy.y); 
                     danio = 1;
-                    damAcuS = damAcuS + danio;
+                    
                     console.log('danio al enemigo', danio);              
                     if(enemyobj === self.carguero1){ 
-                      Escarguero = 1;  
+                      Escarguero = 1;
+                      damCar1 = damCar1 + danio;
+                      if(damCar1 >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }    
                     }else if(enemyobj === self.carguero2){
                       Escarguero = 2;
+                      damCar2 = damCar2 + danio;
+                      if(damCar2 >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }  
                     }else if(enemyobj === self.carguero3){
                       Escarguero = 3;
+                      damCar3 = damCar3 + danio;
+                      if(damCar3 >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }  
                     }else if(enemyobj === self.carguero4){
                       Escarguero = 4;
+                      damCar4 = damCar4 + danio;
+                      if(damCar4 >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }
                     }else if(enemyobj === self.carguero5){
                       Escarguero = 5;
+                      damCar5 = damCar5 + danio;
+                      if(damCar5 >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }
                     }else if(enemyobj === self.carguero6){
                       Escarguero = 6;
+                      damCar6 = damCar6 + danio;
+                      if(damCar6 >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }
+                    }else{
+                      damAcuS = damAcuS + danio;
+                      if(damAcuS >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }
                     }
                     pack ={
                       danio: danio,
                       carguero: Escarguero
                     }              
                     self.socket.emit('playerHit', pack);
-                    if(damAcuS >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
                   }  
               }else if(larga){
                     probExtra = Math.floor(Math.random() * (3));
@@ -991,31 +1075,68 @@ export class game extends Phaser.Scene{
                       console.log("entro al if del danio sub largo");
                       hitted(enemy.x, enemy.y); 
                       danio = 1;
-                      damAcuS = damAcuS + danio;
                       console.log('danio al enemigo', danio);              
                       if(enemyobj === self.carguero1){ 
-                        Escarguero = 1;  
+                        Escarguero = 1;
+                        damCar1 = damCar1 + danio;
+                        if(damCar1 >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }    
                       }else if(enemyobj === self.carguero2){
                         Escarguero = 2;
+                        damCar2 = damCar2 + danio;
+                        if(damCar2 >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }  
                       }else if(enemyobj === self.carguero3){
                         Escarguero = 3;
+                        damCar3 = damCar3 + danio;
+                        if(damCar3 >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }  
                       }else if(enemyobj === self.carguero4){
                         Escarguero = 4;
+                        damCar4 = damCar4 + danio;
+                        if(damCar4 >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }
                       }else if(enemyobj === self.carguero5){
                         Escarguero = 5;
+                        damCar5 = damCar5 + danio;
+                        if(damCar5 >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }
                       }else if(enemyobj === self.carguero6){
                         Escarguero = 6;
+                        damCar6 = damCar6 + danio;
+                        if(damCar6 >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }
+                      }else{
+                        damAcuS = damAcuS + danio;
+                        if(damAcuS >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }
                       }
                       pack ={
                         danio: danio,
                         carguero: Escarguero
                       }              
                       self.socket.emit('playerHit', pack);
-                      if(damAcuS >= enemyobj.vida){
-                        destroyed(enemy);
-                        enemy.setActive(false);
-                        enemy.setVisible(false);
-                      }
                     }
                   }
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -1031,31 +1152,69 @@ export class game extends Phaser.Scene{
                   console.log("entro al if del danio sub corto torpedo");
                   hitted(enemy.x, enemy.y); 
                   danio = 4;
-                  damAcuS = damAcuS + danio;
+                  
                   console.log('danio al enemigo', danio);                            
                   if(enemyobj === self.carguero1){ 
-                    Escarguero = 1;  
+                    Escarguero = 1;
+                    damCar1 = damCar1 + danio;
+                    if(damCar1 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }    
                   }else if(enemyobj === self.carguero2){
                     Escarguero = 2;
+                    damCar2 = damCar2 + danio;
+                    if(damCar2 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
                   }else if(enemyobj === self.carguero3){
                     Escarguero = 3;
+                    damCar3 = damCar3 + danio;
+                    if(damCar3 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
                   }else if(enemyobj === self.carguero4){
                     Escarguero = 4;
+                    damCar4 = damCar4 + danio;
+                    if(damCar4 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }else if(enemyobj === self.carguero5){
                     Escarguero = 5;
+                    damCar5 = damCar5 + danio;
+                    if(damCar5 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }else if(enemyobj === self.carguero6){
                     Escarguero = 6;
+                    damCar6 = damCar6 + danio;
+                    if(damCar6 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else{
+                    damAcuS = damAcuS + danio;
+                    if(damAcuS >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }
                   pack ={
                     danio: danio,
                     carguero: Escarguero
                   }              
                   self.socket.emit('playerHit', pack);
-                  if(damAcuS >= enemyobj.vida){
-                    destroyed(enemy);
-                    enemy.setActive(false);
-                    enemy.setVisible(false);
-                  }
                 }
               }else if(media){
                 probExtra = Math.floor(Math.random() * (3));
@@ -1065,32 +1224,70 @@ export class game extends Phaser.Scene{
                 if((probabilidad + probExtra) > 3){
                   hitted(enemy.x, enemy.y); 
                   danio = 4;
-                  damAcuS = damAcuS + danio;
+                  
                   console.log('danio al enemigo', danio);                            
                   if(enemyobj === self.carguero1){ 
-                    Escarguero = 1;  
+                    Escarguero = 1;
+                    damCar1 = damCar1 + danio;
+                    if(damCar1 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }    
                   }else if(enemyobj === self.carguero2){
                     Escarguero = 2;
+                    damCar2 = damCar2 + danio;
+                    if(damCar2 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
                   }else if(enemyobj === self.carguero3){
                     Escarguero = 3;
+                    damCar3 = damCar3 + danio;
+                    if(damCar3 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
                   }else if(enemyobj === self.carguero4){
                     Escarguero = 4;
+                    damCar4 = damCar4 + danio;
+                    if(damCar4 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }else if(enemyobj === self.carguero5){
                     Escarguero = 5;
+                    damCar5 = damCar5 + danio;
+                    if(damCar5 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }else if(enemyobj === self.carguero6){
                     Escarguero = 6;
+                    damCar6 = damCar6 + danio;
+                    if(damCar6 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else{
+                    damAcuS = damAcuS + danio;
+                    if(damAcuS >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }
                   pack ={
                     danio: danio,
                     carguero: Escarguero
                   }              
                   self.socket.emit('playerHit', pack);
-                  if(damAcuS >= enemyobj.vida){
-                    destroyed(enemy);
-                    enemy.setActive(false);
-                    enemy.setVisible(false);
-                  }
-                }
+                }  
               }else if(larga){
                 probExtra = Math.floor(Math.random() * (3));
                 console.log('la probabilidad extra del canion es %', probExtra, '0');
@@ -1099,31 +1296,68 @@ export class game extends Phaser.Scene{
                 if((probabilidad + probExtra) > 5){
                   hitted(enemy.x, enemy.y); 
                   danio = 4;
-                  damAcuS = damAcuS + danio;
                   console.log('danio al enemigo', danio);                            
                   if(enemyobj === self.carguero1){ 
-                    Escarguero = 1;  
+                    Escarguero = 1;
+                    damCar1 = damCar1 + danio;
+                    if(damCar1 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }    
                   }else if(enemyobj === self.carguero2){
                     Escarguero = 2;
+                    damCar2 = damCar2 + danio;
+                    if(damCar2 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
                   }else if(enemyobj === self.carguero3){
                     Escarguero = 3;
+                    damCar3 = damCar3 + danio;
+                    if(damCar3 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
                   }else if(enemyobj === self.carguero4){
                     Escarguero = 4;
+                    damCar4 = damCar4 + danio;
+                    if(damCar4 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }else if(enemyobj === self.carguero5){
                     Escarguero = 5;
+                    damCar5 = damCar5 + danio;
+                    if(damCar5 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }else if(enemyobj === self.carguero6){
                     Escarguero = 6;
+                    damCar6 = damCar6 + danio;
+                    if(damCar6 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else{
+                    damAcuS = damAcuS + danio;
+                    if(damAcuS >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }
                   pack ={
                     danio: danio,
                     carguero: Escarguero
                   }              
                   self.socket.emit('playerHit', pack);
-                  if(damAcuS >= enemyobj.vida){
-                    destroyed(enemy);
-                    enemy.setActive(false);
-                    enemy.setVisible(false);
-                  }
                 }
               }     
             }
@@ -1167,9 +1401,9 @@ export class game extends Phaser.Scene{
       self.explotion3.play('explot3');
     }
     //funcion que procesa el dano y el porcentaje de acierto
-    function RecibeHit(player, playerIMG, damage){
+    function RecibeHit(player, playerIMG, damage, escar){
       hitted(playerIMG.x, playerIMG.y);
-      //aca van las funciones de acierto
+      
       if(player.vida > 0){
         console.log('Vida Restante', player.vida);
         player.vida = player.vida - damage; 
@@ -1180,6 +1414,22 @@ export class game extends Phaser.Scene{
         destroyed(playerIMG);
         playerIMG.setActive(false);
         playerIMG.setVisible(false);
+        if(escar){
+          carguerosMuertos++;
+        }
+      }
+      if(carguerosMuertos > 3){
+        let envio={
+          socket: self.socket,
+          resultado: 1,
+          equipo: 2
+        }
+        let envioSocket= {
+          resultado: 2,
+          equipo: 1
+        }
+        self.socket.emit('Finalizo', envioSocket);
+        self.scene.start(DEF.SCENES.FinScene, envio);
       }
     }
     //funcion que convierte el cursor en una mira
@@ -1287,25 +1537,26 @@ export class game extends Phaser.Scene{
     });
 
     //escucho el tiro que me dieron desde el otro jugador y lo proceso
-    this.socket.on('playerHitted', function(playerInfo){      
+    this.socket.on('playerHitted', function(playerInfo){       
         if(self.equipo===1){
+          console.log("carguero golpeado numero", playerInfo.carguero);
           if(playerInfo.carguero === 1){
-            RecibeHit(self.carguero1, self.carguero1.imagen, playerInfo.damage);
+            RecibeHit(self.carguero1, self.carguero1.imagen, playerInfo.damage, true);
           }else if(playerInfo.carguero === 2){
-            RecibeHit(self.carguero2, self.carguero2.imagen, playerInfo.damage);
+            RecibeHit(self.carguero2, self.carguero2.imagen, playerInfo.damage, true);
           }else if(playerInfo.carguero === 3){
-            RecibeHit(self.carguero3, self.carguero3.imagen, playerInfo.damage);
+            RecibeHit(self.carguero3, self.carguero3.imagen, playerInfo.damage, true);
           }else if(playerInfo.carguero === 4){
-            RecibeHit(self.carguero4, self.carguero4.imagen, playerInfo.damage);
+            RecibeHit(self.carguero4, self.carguero4.imagen, playerInfo.damage, true);
           }else if(playerInfo.carguero === 5){
-            RecibeHit(self.carguero5, self.carguero5.imagen, playerInfo.damage);
+            RecibeHit(self.carguero5, self.carguero5.imagen, playerInfo.damage, true);
           }else if(playerInfo.carguero === 6){
-            RecibeHit(self.carguero6, self.carguero6.imagen, playerInfo.damage);
+            RecibeHit(self.carguero6, self.carguero6.imagen, playerInfo.damage, true);
           }else{
-            RecibeHit(self.destructor, self.destructor.imagen, playerInfo.damage);
+            RecibeHit(self.destructor, self.destructor.imagen, playerInfo.damage, false);
           }
         }else{
-            RecibeHit(self.submarino, self.submarino.imagen, playerInfo.damage);
+            RecibeHit(self.submarino, self.submarino.imagen, playerInfo.damage, false);
         }
     }); 
 
@@ -1335,7 +1586,6 @@ export class game extends Phaser.Scene{
     }); 
 
     this.socket.on('FinalizoPartida', function(data){      
-      console.log("entro al socket");
         if(data.resultado === 1){
           var envio2={
             socket: self.socket,
@@ -1350,7 +1600,7 @@ export class game extends Phaser.Scene{
             equipo: self.equipo,
           }
           self.scene.start(DEF.SCENES.FinScene, envio2);  
-        }  
+      }    
     }); 
 
     // Método que cambia de camara con el carguero central de la formacion
