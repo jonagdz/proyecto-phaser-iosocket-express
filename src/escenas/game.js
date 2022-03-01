@@ -175,9 +175,7 @@ export class game extends Phaser.Scene{
       generarEquipo2();
       this.botonDOWNDI = self.physics.add.image(700, 700, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
       this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
-      // Habilito el boton para acceder a la funcion de largavistas
-      const btnActivarLargaVista = this.add.text(900, 600, 'ACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(1));
-      const btnDesactivarLargaVista = this.add.text(900, 650, 'DESACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(0));
+      //
       const btnActivarSonar = this.add.text(900, 700, 'ACTIVAR SONAR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => activarSonar());
     } 
     
@@ -190,8 +188,6 @@ export class game extends Phaser.Scene{
         prof(0);
       }
     }
-
-    
 
     function generarEquipo1(){     
       // Genero los objetos cargueros, con sus imagenes, colisiones, etc
