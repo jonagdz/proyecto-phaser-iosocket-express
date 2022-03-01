@@ -183,32 +183,29 @@ export class game extends Phaser.Scene{
 
     // Generar destructor
     function generarDestructor(){
-      // Genero las posiciones X e Y para el destructor
-      posX = Math.floor((Math.random()*((frameW*0.25)- margenCostaX))+margenCostaX), // El margen x para generarse los cargueros sera desde la costa (810) hasta el 25% del total del mapa
-      posY = Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY), // El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa
-      
-      // Actualizo la posicion del objeto destructor creado previamente
-      self.destructor.posX = posX;
-      self.destructor.posY = posY;
+      // Genero las posiciones X e Y para el destructor, iniciara el juego aleatoriamente arriba, abajo o adelante del grupo de cargueros.
+      let random = Math.random();
+      if (random <0.3){
+        self.destructor.posX = self.carguero1.posX + 700;
+        self.destructor.posY = self.carguero1.posY + 100;
+      }else if(random <0.7){
+        self.destructor.posX = self.carguero1.posX + 300;
+        self.destructor.posY = self.carguero1.posY - 500;
+      }else{
+        self.destructor.posX = self.carguero1.posX + 300;
+        self.destructor.posY = self.carguero1.posY + 600;
+      }
 
-      // Generamos la imagen del destructor al objeto destructor
-      //self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, 'destroyer')
-      self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, DEF.IMAGENES.DESTRUCTOR)
-      .setDisplaySize(200, 100)
-      .setRotation(0)
-      .setDepth(5)
-      .setPushable(false);
-
+      // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+      self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
       self.destructor.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
       self.destructor.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
 
       //guardo la reticula y el set de balas en variables propias de la clase destructor
-      //self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, 'crosshair').setCollideWorldBounds(true);
       self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, DEF.SPRITES.RETICULA).setCollideWorldBounds(true);
       self.destructor.bullet = self.playerBullets;
       self.destructor.cargas = 1;
       // Particulas
-      //const particles = self.add.particles("Blue").setDepth(2) // Imagen Blue como particula
       const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
         speed: 10, // Velocidad con la que se mueven
@@ -222,26 +219,24 @@ export class game extends Phaser.Scene{
       self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
       // Zoom de la cámara
       self.cameras.main.setZoom(0.9);
-      // Se crea una colision del barco con las islas
+      // Se crea una colision del destructor con las islas
       self.physics.add.collider(self.destructor.imagen, self.isla1); 
       self.physics.add.collider(self.destructor.imagen, self.isla2); 
       self.physics.add.collider(self.destructor.imagen, self.isla3); 
       self.physics.add.collider(self.destructor.imagen, self.isla4); 
-      // Se crea una colision del barco con la bomba
+      // Se crea una colision del destructor con la bomba
       self.physics.add.collider(self.destructor.imagen, self.bomb);
-      // Se crea una colision del barco con los cargueros
-      //self.physics.add.collider(self.destructor.imagen, self.grupoCargueros);
+      // Se crea una colision del destructor con los cargueros
       self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen);
       self.physics.add.collider(self.destructor.imagen, self.carguero2.imagen);
       self.physics.add.collider(self.destructor.imagen, self.carguero3.imagen);
       self.physics.add.collider(self.destructor.imagen, self.carguero4.imagen);
       self.physics.add.collider(self.destructor.imagen, self.carguero5.imagen);
       self.physics.add.collider(self.destructor.imagen, self.carguero6.imagen);
-      // Se crea una colision del barco con la costa1
+      // Se crea una colision del barco con las costas
       self.physics.add.collider(self.destructor.imagen, self.costa1);
-      // Se crea una colision del barco con la costa2
       self.physics.add.collider(self.destructor.imagen, self.costa2);
-
+      // Se crea colision con el submarino
       self.colliderSub = self.physics.add.collider(self.destructor.imagen, self.submarino.imagen);
 
       // Se crea el evento de cambio de armas para el destructor, 0 es para canion, 1 para cargas de profundidad
@@ -258,16 +253,10 @@ export class game extends Phaser.Scene{
 
     // Generar destructor
     function generarDestructorEnemigo(){
-      // Generamos la imagen del destructor al objeto destructor
-      //self.destructor.imagen = self.physics.add.image(0,0, 'destroyer')
-      self.destructor.imagen = self.physics.add.image(0,0, DEF.IMAGENES.DESTRUCTOR)
-      .setDisplaySize(200, 100)
-      .setRotation(0)
-      .setDepth(5)
-      .setPushable(false);
+      // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+      self.destructor.imagen = self.physics.add.image(0,0, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
     
       // Particulas
-      //const particles = self.add.particles("Blue").setDepth(2)
       const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
         speed: 10, // Velocidad con la que se mueven
@@ -280,7 +269,7 @@ export class game extends Phaser.Scene{
       self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
     }
 
-    // Genero todo lo relacionado a la imagen del submarino del jugador actual
+    // Genero todo lo relacionado a la imagen del submarino del jugador actual y sus propiedades (Posicion X e Y, tamaño, profundidad y que sea empujable)
     function generarSubmarino(){
       // Genero las posiciones X e Y para el submarino
       posX = Math.floor((Math.random()*((frameW-800)-(frameW*0.75)))+(frameW*0.75)), // El margen x para generarse el submarino sera desde el 70% del mapa hasta el final - 800 del lado derecho
@@ -290,11 +279,7 @@ export class game extends Phaser.Scene{
       self.submarino.posX = posX;
       self.submarino.posY = posY;
 
-      //self.submarino.imagen = self.physics.add.image(self.submarino.posX, self.submarino.posY, 'uboot')
-      self.submarino.imagen = self.physics.add.image(self.submarino.posX, self.submarino.posY, DEF.IMAGENES.UBOATP0)
-      .setDisplaySize(100,50)
-      .setDepth(5) // Seteo tamaño y profundidad de la imagen
-      .setPushable(false);
+      self.submarino.imagen = self.physics.add.image(self.submarino.posX, self.submarino.posY, DEF.IMAGENES.UBOATP0).setDisplaySize(100,50).setDepth(5).setPushable(false);
 
       self.submarino.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
       self.submarino.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
@@ -341,41 +326,37 @@ export class game extends Phaser.Scene{
 
       // Se crea el evento de cambio de armas
       self.input.keyboard.on('keydown-' + 'Z', function (event){
-      //si esta en superficie, que cambie de armas tranquilamente
-      if(self.submarino.profundidad === 0){
-        if (self.submarino.armas === 0){
-          self.submarino.armas = 1;
-          console.log('Cambio a Torpedos');
-        }else{
-          self.submarino.armas = 0;
-          console.log('cambio a canon');
+        //si esta en superficie, que cambie de armas tranquilamente
+        if(self.submarino.profundidad === 0){
+          if (self.submarino.armas === 0){
+            self.submarino.armas = 1;
+            console.log('Cambio a Torpedos');
+          }else{
+            self.submarino.armas = 0;
+            console.log('cambio a canon');
+          }
+        }else if(self.submarino.profundidad === 1){
+          //si esta a profundidad 1 que solo pueda usar el arma 1, torpedos
+            self.submarino.armas = 4;
+            console.log('Solo Torpedos a esta profundidad');  
+        }else if(self.submarino.profundidad === 2){
+          //si esta en profundidad 2 que no pueda disparar
+          self.submarino.armas = -1;
         }
-      }else if(self.submarino.profundidad === 1){
-        //si esta a profundidad 1 que solo pueda usar el arma 1, torpedos
-          self.submarino.armas = 4;
-          console.log('Solo Torpedos a esta profundidad');  
-      }else if(self.submarino.profundidad === 2){
-        //si esta en profundidad 2 que no pueda disparar
-        self.submarino.armas = -1;
-      }
-      if(self.submarino.armas === 0){
-        self.distMax = 300;
-      }else if(self.submarino.armas === 1 || self.submarino.armas === 4){
-        self.distMax = 500;
-      }   
-      self.submarino.reticula.x = self.submarino.imagen.x + (Math.cos((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
-      self.submarino.reticula.y = self.submarino.imagen.y + (Math.sin((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
-    });
-      
+        if(self.submarino.armas === 0){
+          self.distMax = 300;
+        }else if(self.submarino.armas === 1 || self.submarino.armas === 4){
+          self.distMax = 500;
+        }   
+        self.submarino.reticula.x = self.submarino.imagen.x + (Math.cos((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
+        self.submarino.reticula.y = self.submarino.imagen.y + (Math.sin((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
+      });
     }
     
-    // Genero todo lo relacionado a la imagen del submarino del equipo enemigo
+    // Genero todo lo relacionado a la imagen del submarino del equipo enemigo y sus propiedades (Tamaño, profundidad y que sea empujable)
     function generarSubmarinoEnemigo(){
       //self.submarino.imagen = self.physics.add.image(0,0, 'uboot')
-      self.submarino.imagen = self.physics.add.image(0,0, DEF.IMAGENES.UBOATP0)
-      .setDisplaySize(100,50)
-      .setDepth(5) // Seteo tamaño y profundidad de la imagen
-      .setPushable(false)
+      self.submarino.imagen = self.physics.add.image(0,0, DEF.IMAGENES.UBOATP0).setDisplaySize(100,50).setDepth(5).setPushable(false)
       
       // Particulas
       //const particles = self.add.particles("Blue").setDepth(2)

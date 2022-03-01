@@ -34,19 +34,16 @@ server.listen(5000, function () {
 // Variables: {} se declaran como un objeto, [] se declaran como un array.
 let players = {};
 let limiteConexiones = 2; // Establezco el limite de clientes que pueden conectarse
-
-// Se declara esta variable para que el 2do jugador ingrese directo al juego sin elegir equipo
-let primerJugadorConectado = 0; 
+let primerJugadorConectado = 0; // Se declara esta variable para que el 2do jugador ingrese directo al juego sin elegir equipo
 let otroEquipo;
 
 io.on('connection', function (socket) {
-  //console.log("INICIO NUEVO SOCKET, ya se conecto el primer jugador?: " + primerJugadorConectado + " (0 no, 1 si)")
   console.log("Conexiones actuales:" +io.engine.clientsCount)
 
   if (io.engine.clientsCount > limiteConexiones){
     socket.emit('errorConexion'); // Se emite al cliente que se alcanzo la cantidad maxima de conexiones
-    socket.disconnect();
-    console.log('Se deconecto al nuevo cliente debido a que se alcanzo el limite de conexiones activas ('+limiteConexiones+').');
+    // socket.disconnect();
+    console.log('Se envia al jugador [' + socket.id + '] a sala de espera debido a que se alcanzo el limite de conexiones activas ('+limiteConexiones+').');
     return
   }else{
     console.log('Jugador [' + socket.id + '] conectado');
