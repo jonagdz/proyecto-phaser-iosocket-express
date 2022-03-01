@@ -426,7 +426,7 @@ export class game extends Phaser.Scene{
         }
       });
       // Se crea el evento de activar sonar
-      self.input.keyboard.on('keydown-' + 'S', function (event){
+      self.input.keyboard.on('keydown-' + 'F', function (event){
         // Activo sonar si hay sonares disponibles
         if(self.submarino.sonar>0){
           if (self.usoSonar !== true){
@@ -1776,9 +1776,9 @@ export class game extends Phaser.Scene{
     if(this.equipo === 1){
       // Agregamos el movimiento de los barcos con las flechas de direccion y seteamos la velocidad de rotacion de giro del destructor
       if (this.destructor){
-        if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown) || this.UPDI==1 ) {
+        if (this.left.isDown && (this.up.isDown || this.down.isDown) || this.UPDI==1 ) {
           this.destructor.imagen.setAngularVelocity(-100)
-        } else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
+        } else if (this.right.isDown && (this.up.isDown || this.down.isDown)) {
           this.destructor.imagen.setAngularVelocity(100)
         } else {
           this.destructor.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
@@ -1788,10 +1788,10 @@ export class game extends Phaser.Scene{
         const velX = Math.cos((this.destructor.imagen.angle - 360) * 0.01745)
         const velY = Math.sin((this.destructor.imagen.angle - 360) * 0.01745)
         // Seteo la velocidad de movimiento
-        if (this.cursors.up.isDown  || this.UP===1) {
+        if (this.up.isDown  || this.UP===1) {
           this.destructor.imagen.setVelocityX(this.destructor.velocidad * velX)
           this.destructor.imagen.setVelocityY(this.destructor.velocidad  * velY)
-        } else if (this.cursors.down.isDown) {
+        } else if (this.down.isDown) {
           this.destructor.imagen.setVelocityX(-(this.destructor.velocidad/2) * velX)
           this.destructor.imagen.setVelocityY(-(this.destructor.velocidad/2) * velY)
         } else {
@@ -1826,14 +1826,14 @@ export class game extends Phaser.Scene{
 
       // Agregamos el movimiento de los cargueros con las teclas WASD y seteamos la velocidad de rotacion de giro del barco
       if (this.carguero1 || this.carguero2 || this.carguero3 || this.carguero4 || this.carguero5 || this.carguero6 ){
-        if (this.left.isDown && (this.up.isDown || this.down.isDown)) {
+        if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
           this.carguero1.imagen.setAngularVelocity(-100)
           this.carguero2.imagen.setAngularVelocity(-100)
           this.carguero3.imagen.setAngularVelocity(-100)
           this.carguero4.imagen.setAngularVelocity(-100)
           this.carguero5.imagen.setAngularVelocity(-100)
           this.carguero6.imagen.setAngularVelocity(-100)
-        } else if (this.right.isDown && (this.up.isDown || this.down.isDown)) {
+        } else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
           this.carguero1.imagen.setAngularVelocity(100)
           this.carguero2.imagen.setAngularVelocity(100)
           this.carguero3.imagen.setAngularVelocity(100)
@@ -1852,7 +1852,7 @@ export class game extends Phaser.Scene{
         // Calculo y seteo la velocidad de los barcos y el angulo de rotacion como una constante
         const velCX = Math.cos((this.carguero1.imagen.angle - 360) * 0.01745)
         const velCY = Math.sin((this.carguero1.imagen.angle - 360) * 0.01745)
-        if (this.up.isDown) {
+        if (this.cursors.up.isDown) {
           this.carguero1.imagen.setVelocityX(this.carguero1.velocidad * velCX)
           this.carguero1.imagen.setVelocityY(this.carguero1.velocidad * velCY)
           this.carguero2.imagen.setVelocityX(this.carguero2.velocidad * velCX)
@@ -1865,7 +1865,7 @@ export class game extends Phaser.Scene{
           this.carguero5.imagen.setVelocityY(this.carguero5.velocidad * velCY)
           this.carguero6.imagen.setVelocityX(this.carguero6.velocidad * velCX)
           this.carguero6.imagen.setVelocityY(this.carguero6.velocidad * velCY)
-        } else if (this.down.isDown) {
+        } else if (this.cursors.down.isDown) {
           this.carguero1.imagen.setVelocityX(-(this.carguero1.velocidad/2) * velCX)
           this.carguero1.imagen.setVelocityY(-(this.carguero1.velocidad/2) * velCY)
           this.carguero2.imagen.setVelocityX(-(this.carguero2.velocidad/2) * velCX)
@@ -2023,18 +2023,20 @@ export class game extends Phaser.Scene{
     }else{
       if (this.submarino){
         if(this.submarino.largavista === true){
-          if(this.cursors.left.isDown){
+          if(this.left.isDown){
+            this.submarino.imagen.setAngularVelocity(0);
             this.submarino.imagen.rotation-=0.05;
             this.largaVistas.angle=this.submarino.imagen.angle+270;
-          }else if(this.cursors.right.isDown){
+          }else if(this.right.isDown){
+            this.submarino.imagen.setAngularVelocity(0);
             this.submarino.imagen.rotation+=0.05;
             this.largaVistas.angle=this.submarino.imagen.angle-90;
           }
         }else{
           // Seteo velocidad de rotacion y giro
-          if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
+          if (this.left.isDown && (this.up.isDown || this.down.isDown)) {
             this.submarino.imagen.setAngularVelocity(-100)
-          } else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
+          } else if (this.right.isDown && (this.up.isDown || this.down.isDown)) {
             this.submarino.imagen.setAngularVelocity(100)
           } else {
             this.submarino.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
@@ -2046,12 +2048,12 @@ export class game extends Phaser.Scene{
           const velX = Math.cos((this.submarino.imagen.angle - 360) * 0.01745)
           const velY = Math.sin((this.submarino.imagen.angle - 360) * 0.01745)
           // Seteo velocidad de movimiento
-          if (this.cursors.up.isDown || this.UP===1) {
+          if (this.up.isDown || this.UP===1) {
             this.submarino.imagen.setVelocityX(this.submarino.velocidad  * velX)
             //this.submarino.reticula.setVelocityX(this.submarino.velocidad * (velX))
             this.submarino.imagen.setVelocityY(this.submarino.velocidad * velY)
             //this.submarino.reticula.setVelocityY(this.submarino.velocidad * (velY))
-          } else if (this.cursors.down.isDown) {
+          } else if (this.down.isDown) {
             this.submarino.imagen.setVelocityX(-(this.submarino.velocidad/2) * velX)
             //this.submarino.reticula.setVelocityX(-(this.submarino.velocidad/2) * (velX))
             this.submarino.imagen.setVelocityY(-(this.submarino.velocidad/2) * velY)
