@@ -278,7 +278,7 @@ export class game extends Phaser.Scene{
         }
       });
       
-      // Se crea el evento de cambio cámaras con los cargueros
+      // Se crea el evento de cambio cámaras entre destructor y cargueros
       self.input.keyboard.on('keydown-' + 'C', function (event){
         if(self.siguiendoDes === true){
           self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
@@ -288,6 +288,17 @@ export class game extends Phaser.Scene{
           self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
           self.cameras.main.setZoom(0.9);
           self.siguiendoDes = true;
+        }
+      });
+
+      // Funcion que al precionar la tecla V, cambia la profundidad de las cargas de profundidad del destructor
+      self.input.keyboard.on('keydown-' + 'V', function (event){
+        if(self.destructor.cargas === 1){
+          self.destructor.cargas = 2;
+          console.log('detonador para mucha profundidad');
+        }else{
+          self.destructor.cargas = 1;
+          console.log('detonador para poca profundidad');
         }
       });
     }
@@ -476,6 +487,83 @@ export class game extends Phaser.Scene{
               self.statusSonar.destroy();
             }
           }
+        }
+      });
+      // funcion que al presionar la tecla Q, el submarino baja, si bajas a nivel 1 podes disparar solo torpedos, en nivel 2 nada
+      self.input.keyboard.on('keydown-' + 'Q', function (event){
+          // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
+          // vea mi cambio de profundidad
+          if (self.submarino.profundidad === 0 ){
+            // VERVER - Setear velocidad del submarino cuando se sumerge y emerge
+            self.submarino.profundidad = 1;
+            //self.submarino.imagen.setTexture('UbootProfundidad1');
+            self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
+            self.submarino.armas = 4;
+            console.log('baje a poca profundidad');
+            self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+            // Cambio de cámara
+            if (self.lvactivado === true){
+              self.cameras.main.setMask(self.mask);
+              self.cameras.main.setZoom(1.4);
+            }
+          }else if (self.submarino.profundidad === 1){
+            // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
+            // vea mi cambio de profundidad
+            self.submarino.profundidad = 2;
+            self.submarino.armas = -1;
+            //self.submarino.imagen.setTexture('UbootProfundidad2');
+            self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
+            console.log('baje al mucha profundidad');
+            self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+          }
+          self.physics.world.removeCollider(self.colliderSub); 
+        
+          // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
+          if (self.submarino.profundidad === 0){
+            // Si me encuentro en la superficie la velocidad va a ser lenta
+            self.submarino.velocidad = self.velocidadMedia; 
+          }else if(self.submarino.profundidad === 1){
+            // Si me encuentro a baja profundidad la velocidad va a ser media
+            self.submarino.velocidad = self.velocidadMedia; 
+          }else if(self.submarino.profundidad === 2){
+            // Si me encuentro a mucha profundidad la velocidad va a ser lenta
+            self.submarino.velocidad = self.velocidadBaja; 
+          }
+      });
+
+      //funcion que al precionar la tecla E, el submarino sube
+      self.input.keyboard.on('keydown-' + 'E', function (event){
+        // Idem anteriores pero subiendo de 1 a 0
+        if (self.submarino.profundidad == 1){
+          self.submarino.profundidad = 0;
+          self.submarino.armas = 0;
+          console.log('subi a la superficie');
+          //self.submarino.imagen.setTexture('uboot');
+          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
+          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        } else if (self.submarino.profundidad == 2){
+          // Idem anteriores pero subiendo de 0 a 1
+          self.submarino.profundidad = 1;
+          self.submarino.armas = 4;
+          //self.submarino.imagen.setTexture('UbootProfundidad1');
+          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
+          console.log('subi a poca profundidad');
+          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        }
+        if(self.submarino.profundidad === 0){
+          self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+        }
+
+        // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
+        if (self.submarino.profundidad == 0){
+          // Si me encuentro en la superficie la velocidad va a ser lenta
+          self.submarino.velocidad = self.velocidadBaja; 
+        }else if(self.submarino.profundidad == 1){
+          // Si me encuentro a baja profundidad la velocidad va a ser media
+          self.submarino.velocidad = self.velocidadMedia; 
+        }else if(self.submarino.profundidad == 2){
+        // Si me encuentro a mucha profundidad la velocidad va a ser lenta
+          self.submarino.velocidad = self.velocidadBaja; 
         }
       });
     }
@@ -689,100 +777,6 @@ export class game extends Phaser.Scene{
           }
       }
     }
-    // funcion que al presionar la tecla Q, el submarino baja, si bajas a nivel 1 podes disparar solo torpedos, en nivel 2 nada
-    self.input.keyboard.on('keydown-' + 'Q', function (event){
-      if(self.equipo === 2){
-        // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
-        // vea mi cambio de profundidad
-        if (self.submarino.profundidad === 0 ){
-          // VERVER - Setear velocidad del submarino cuando se sumerge y emerge
-          self.submarino.profundidad = 1;
-          //self.submarino.imagen.setTexture('UbootProfundidad1');
-          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
-          self.submarino.armas = 4;
-          console.log('baje a poca profundidad');
-          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-          // Cambio de cámara
-          if (self.lvactivado === true){
-            self.cameras.main.setMask(self.mask);
-            self.cameras.main.setZoom(1.4);
-          }
-        }else if (self.submarino.profundidad === 1){
-          // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
-          // vea mi cambio de profundidad
-          self.submarino.profundidad = 2;
-          self.submarino.armas = -1;
-          //self.submarino.imagen.setTexture('UbootProfundidad2');
-          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
-          console.log('baje al mucha profundidad');
-          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-        }
-        self.physics.world.removeCollider(self.colliderSub); 
-      }
-
-      // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
-      if (self.submarino.profundidad === 0){
-        // Si me encuentro en la superficie la velocidad va a ser lenta
-        self.submarino.velocidad = self.velocidadMedia; 
-      }else if(self.submarino.profundidad === 1){
-        // Si me encuentro a baja profundidad la velocidad va a ser media
-        self.submarino.velocidad = self.velocidadMedia; 
-      }else if(self.submarino.profundidad === 2){
-        // Si me encuentro a mucha profundidad la velocidad va a ser lenta
-        self.submarino.velocidad = self.velocidadBaja; 
-      }
-    });
-
-    //funcion que al precionar la tecla E, el submarino sube
-    self.input.keyboard.on('keydown-' + 'E', function (event){
-      if (self.equipo === 2){
-        // Idem anteriores pero subiendo de 1 a 0
-        if (self.submarino.profundidad == 1){
-          self.submarino.profundidad = 0;
-          self.submarino.armas = 0;
-          console.log('subi a la superficie');
-          //self.submarino.imagen.setTexture('uboot');
-          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
-          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-        } else if (self.submarino.profundidad == 2){
-          // Idem anteriores pero subiendo de 0 a 1
-          self.submarino.profundidad = 1;
-          self.submarino.armas = 4;
-          //self.submarino.imagen.setTexture('UbootProfundidad1');
-          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
-          console.log('subi a poca profundidad');
-          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-        }
-        if(self.submarino.profundidad === 0){
-          self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
-        }
-      }
-
-      // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
-      if (self.submarino.profundidad == 0){
-        // Si me encuentro en la superficie la velocidad va a ser lenta
-        self.submarino.velocidad = self.velocidadBaja; 
-      }else if(self.submarino.profundidad == 1){
-        // Si me encuentro a baja profundidad la velocidad va a ser media
-        self.submarino.velocidad = self.velocidadMedia; 
-      }else if(self.submarino.profundidad == 2){
-       // Si me encuentro a mucha profundidad la velocidad va a ser lenta
-        self.submarino.velocidad = self.velocidadBaja; 
-      }
-    });
-
-    // Funcion que al precionar la tecla V, cambia la profundidad de las cargas de profundidad del destructor
-    self.input.keyboard.on('keydown-' + 'V', function (event){
-      if (self.equipo === 1){
-        if(self.destructor.cargas === 1){
-          self.destructor.cargas = 2;
-          console.log('detonador para mucha profundidad');
-        }else{
-          self.destructor.cargas = 1;
-          console.log('detonador para poca profundidad');
-        }
-      }  
-    });
 
     //funcion que recibe un click y ejecuta el evento disparo, el cual activa una bala del set de balas de la clase
     this.input.on('pointerdown', function (pointer, time) {
