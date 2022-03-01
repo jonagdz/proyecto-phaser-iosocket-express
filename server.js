@@ -34,27 +34,25 @@ server.listen(5000, function () {
 // Variables: {} se declaran como un objeto, [] se declaran como un array.
 let players = {};
 let limiteConexiones = 2; // Establezco el limite de clientes que pueden conectarse
-let primerJugadorConectado = 0; // Se declara esta variable para que el 2do jugador ingrese directo al juego sin elegir equipo
+let JugadorUnoEsperando = 0; // Se declara esta variable para que el 2do jugador ingrese directo al juego sin elegir equipo
 let otroEquipo;
+let jugadoresDesconectados = 0;
 
 io.on('connection', function (socket) {
-  console.log("Conexiones actuales:" +io.engine.clientsCount)
+  //console.log("Conexiones actuales: " +io.engine.clientsCount + " - Jugadores desconectados: "+ jugadoresDesconectados);
+  console.log('Jugador [' + socket.id + '] conectado');
 
-  if (io.engine.clientsCount > limiteConexiones){
+  if (io.engine.clientsCount > limiteConexiones){ // Si hay mas de 2 jugadores conectados, a los siguientes los envio a sala de espera
     socket.emit('errorConexion'); // Se emite al cliente que se alcanzo la cantidad maxima de conexiones
-    // socket.disconnect();
     console.log('Se envia al jugador [' + socket.id + '] a sala de espera debido a que se alcanzo el limite de conexiones activas ('+limiteConexiones+').');
     return
-  }else{
-    console.log('Jugador [' + socket.id + '] conectado');
-
+  }else if(io.engine.clientsCount == 1){ // Si hay 1 conexion activa, significa que es esta propia y es la primera, asi que se puede unir a la partida y elegir bando
     socket.on('JugadorUnoEligeEquipo', function(equipoElegido){
       if (equipoElegido === 1){
         otroEquipo = 2;
       }else{
         otroEquipo = 1;
       }
-
       // Genero el objeto player para el primer jugador
       players[socket.id] = {
         rotation: 0,
@@ -63,13 +61,39 @@ io.on('connection', function (socket) {
         playerId: socket.id,
         damage: 0,
         equipo: 1,
-        deep: 0
+        deep: 0,
+        carguero: 0
       }
       // Seteo esta variable para saber que el primer jugador ya se conectó
-      primerJugadorConectado = 1;
+      JugadorUnoEsperando = 1;
+      jugadoresDesconectados = 0;
     });
 
-    if (primerJugadorConectado===1){ // Entra a este if solo cuando se conecta el 2do jugador, e informo que ya estan listos ambos jugadores
+    if (JugadorUnoEsperando === 1){ // Entra a este if solo cuando se conecta el 2do jugador, e informo que ya estan listos ambos jugadores
+      // Genero el objeto player para el 2do jugador
+      players[socket.id] = {
+        rotation: 0,
+        x: 0,
+        y: 0,
+        playerId: socket.id,
+        damage: 0,
+        equipo: otroEquipo,
+        deep: 0,
+        carguero: 0
+      }
+
+      // Notifico al jugador 1 que el jugador 2 ya ingreso, para que vaya al juego, y mando directo al jugador 2 al juego
+      socket.broadcast.emit('JugadoresListosPlayer1');
+      socket.emit('JugadoresListosPlayer2', otroEquipo);
+      JugadorUnoEsperando = 0;
+      jugadoresDesconectados = 0;
+    }
+  }else if(io.engine.clientsCount == 2){ // Significa que esta es la 2da conexion de un jugador al juego, eso quiere decir que ya hay 1 conectado, esperando a iniciar partida o porque se desconecto el otro jugador
+    if(jugadoresDesconectados == 1){ // Si es la opcion de que se desconecto el otro jugador de la partida, debo enviar a esta nueva conexion a sala de espera con mensaje partida en curso
+      //socket.broadcast.emit('SalaEsperaPartidaEnCurso', socket);
+      socket.emit('SalaEsperaPartidaEnCurso');
+      jugadoresDesconectados = 0;
+    }else if(jugadoresDesconectados == 0){ // Si es la opcion que esta esperando al 2do jugador lo mando directo al game a ambos
       // Genero el objeto player para el 2do jugador
       players[socket.id] = {
         rotation: 0,
@@ -81,68 +105,69 @@ io.on('connection', function (socket) {
         deep: 0
       }
 
-      // Notifico al jugador 1 que el jugador ya ingreso, para que vaya al juego, y mando directo al jugador 2 al juego
+      // Notifico al jugador 1 que el jugador 2 ya ingreso, para que vaya al juego, y mando directo al jugador 2 al juego
       socket.broadcast.emit('JugadoresListosPlayer1');
       socket.emit('JugadoresListosPlayer2', otroEquipo);
+      JugadorUnoEsperando = 0;
+      jugadoresDesconectados = 0;
     }
-
-    // Si el jugador se desconecta logueo en consola y llamo al io.emit para que comunique a todos los clientes
-    socket.on('disconnect', function () {
-      console.log('Jugador [' + socket.id + '] desconectado')
-      delete players[socket.id] // Elimino al jugador de nuestro objeto jugadores (players)
-      io.emit('playerDisconnected', socket.id)
-    })
-
-    // Estoy escuchando el "evento" playerMovement de los sockets para cuando suceda comunicarselo a todos los demas clientes (broadcast)
-    socket.on('playerMovement', function (movementData) {
-      players[socket.id].x = movementData.x;
-      players[socket.id].y = movementData.y;
-      players[socket.id].rotation = movementData.rotation;
-      socket.broadcast.emit('playerMoved', players[socket.id])
-    })
-
-    // Estoy escuchando el "evento" cargueroMovement de los sockets para cuando suceda comunicarselo al submarino
-    socket.on('carguerosMovement', function (movementData) {
-      players[socket.id].x = movementData.x;
-      players[socket.id].y = movementData.y;
-      players[socket.id].rotation = movementData.rotation;
-      players[socket.id].carguero = movementData.carguero;
-      socket.broadcast.emit('carguerosMoved', players[socket.id])
-    })
-
-    socket.on('playerHit', function(data){
-      players[socket.id].damage = data.Dam;
-      socket.broadcast.emit('playerHitted', players[socket.id])
-    })
-
-    socket.on('Finalizo', function(data){
-
-      socket.broadcast.emit('FinalizoPartida', data)
-    })
-
-    socket.on('playerProf', function(data){
-      players[socket.id].deep = data.Pr;
-      socket.broadcast.emit('playerUnder', players[socket.id])
-    })
-    // api url
-    const api_url = "http://localhost:8080/getPartidas";
-
-    // Defining async function
-    async function getapi(url) 
-    {
-      try 
-      {
-       const response = await fetch(url)
-       const data =  await response.json()
-       console.log(data)
-     } catch (e) {
-      //console.log(e)
-       console.log("Error de conexion al BackEnd")
-     }
-   }
-
-   socket.on('listarPartidas', function (data) {
-         getapi(api_url);
-   })
   }
+  // SACO PARA AFUERA DEL IF los eventos que son comunes a todos los jugadores que esten conectados (MOVIMIENTOS, DISPAROS, DESCONEXION, ETC)
+
+  // Si el jugador se desconecta logueo en consola y llamo al io.emit para que comunique a todos los clientes
+  socket.on('disconnect', function () {
+    console.log('Jugador [' + socket.id + '] desconectado')
+    delete players[socket.id] // Elimino al jugador de nuestro objeto jugadores (players)
+    io.emit('playerDisconnected', socket.id)
+    jugadoresDesconectados++;
+  })
+
+  // Estoy escuchando el "evento" playerMovement de los sockets para cuando suceda comunicarselo a todos los demas clientes (broadcast)
+  socket.on('playerMovement', function (movementData) {
+    players[socket.id].x = movementData.x;
+    players[socket.id].y = movementData.y;
+    players[socket.id].rotation = movementData.rotation;
+    socket.broadcast.emit('playerMoved', players[socket.id])
+  })
+
+  // Estoy escuchando el "evento" cargueroMovement de los sockets para cuando suceda comunicarselo al submarino
+  socket.on('carguerosMovement', function (movementData) {
+    players[socket.id].x = movementData.x;
+    players[socket.id].y = movementData.y;
+    players[socket.id].rotation = movementData.rotation;
+    players[socket.id].carguero = movementData.carguero;
+    socket.broadcast.emit('carguerosMoved', players[socket.id])
+  })
+
+  socket.on('playerHit', function(data){
+    players[socket.id].damage = data.Dam;
+    socket.broadcast.emit('playerHitted', players[socket.id])
+  })
+
+  socket.on('Finalizo', function(data){
+    socket.broadcast.emit('FinalizoPartida', data)
+  })
+
+  socket.on('playerProf', function(data){
+    players[socket.id].deep = data.Pr;
+    socket.broadcast.emit('playerUnder', players[socket.id])
+  })
+
+  // api url
+  const api_url = "http://localhost:8080/getPartidas";
+  // Defining async function
+  async function getapi(url){
+    try {
+      const response = await fetch(url)
+      const data =  await response.json()
+      console.log(data)
+    } catch (e) {
+      //console.log(e)
+      console.log("Error de conexion al BackEnd")
+    }
+  }
+
+  socket.on('listarPartidas', function (data) {
+      getapi(api_url);
+  })
 }); //EOF

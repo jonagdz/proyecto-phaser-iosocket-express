@@ -29,6 +29,10 @@ export class salaEspera extends Phaser.Scene{
     this.txt2 = self.add.sprite(480, 400, 'txtesp2').setOrigin(0).setScrollFactor(1).setDepth(3);
     this.txt2.setDisplaySize(1000, 1000);
     this.txt2.setActive(false).setVisible(false);
+
+    this.txt3 = self.add.sprite(480, 400, 'txtesp3').setOrigin(0).setScrollFactor(1).setDepth(3);
+    this.txt3.setDisplaySize(1000, 1000);
+    this.txt3.setActive(false).setVisible(false);
     
     self.anims.create({  // Se crea la animacion para el load
       key: 'animinload',
@@ -72,9 +76,9 @@ export class salaEspera extends Phaser.Scene{
         hideOnComplete: true,
         });
       self.txt.play('animintxt');
-    }else{
+    }else if (self.opcion == 2){
       self.txt2.setActive(true).setVisible(true);
-      self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
+      self.anims.create({  // Se crea la animacion para el load
         key: 'animintxt2',
         frames: [
             { key: 'txtesp2',frame:"TXT.png" },
@@ -87,9 +91,22 @@ export class salaEspera extends Phaser.Scene{
         hideOnComplete: true,
       });
       self.txt2.play('animintxt2');
-      // self.add.text(450, 450, "Estás en la sala de espera debido a que la", {fill: '#000000', fontSize: '40px', fontFamily: 'Arial black',})
-      // self.add.text(450, 500, "cantidad de maximos jugadores se alcanzó", {fill: '#000000', fontSize: '40px', fontFamily: 'Arial black',})
-      // self.add.text(450, 550, "intente nuevamente en unos minutos.", {fill: '#000000', fontSize: '40px', fontFamily: 'Arial black',})
+    }else if(self.opcion == 3){
+      console.log("SALA DE ESPERA OPCION 3, PARTIDA EN CURSO")
+      self.txt3.setActive(true).setVisible(true);
+      self.anims.create({  // Se crea la animacion para el load
+        key: 'animintxt3',
+        frames: [
+            { key: 'txtesp3',frame:"textesp1.png" },
+            { key: 'txtesp3',frame:"textesp2.png" },
+            { key: 'txtesp3',frame:"textesp3.png" },
+            { key: 'txtesp3',frame:"textesp4.png" }       
+        ],
+        frameRate: 5,
+        repeat:-1,
+        hideOnComplete: true,
+      });
+      self.txt3.play('animintxt3');
     }
 
     self.socket.on('JugadoresListosPlayer1', function(){

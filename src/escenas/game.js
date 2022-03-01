@@ -30,6 +30,8 @@ export class game extends Phaser.Scene{
     this.distMax = 300;
     this.statusSonar;
     this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
+    // Para que el audio se escuche fuera del navegador
+    this.soundSonar.pauseOnBlur = false;
   }
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
@@ -43,7 +45,11 @@ export class game extends Phaser.Scene{
     let resetSonar;
     let contadorS=0;
     let largavist = false;
+    let usoSonar = false;
     self.socket.emit('listarPartidas', {id: 2});
+    let carguerosMuertos = 0;
+
+
 
     // Grupo para los cargueros y balas
     var arrayCargueros = [];
@@ -55,11 +61,11 @@ export class game extends Phaser.Scene{
     //this.mar = this.add.image(0, 0, 'mar').setOrigin(0).setScrollFactor(1).setDepth(0); 
     const backgroundW = this.mar.width;
     const backgroundH = this.mar.height;
-
+ 
     // Defino los limites de las dimensiones del mapa para el posicionamiento inicial de los barcos
-    var frameW = 6416;
-    var frameH = 2156;
-    var margenCostaX = 810;
+    var frameW = backgroundW;
+    var frameH = backgroundH;
+    var margenCostaX = 689;
     var margenCostaY = 300;
 
     // Defino variables para las posiciones X e Y de los barcos
@@ -68,6 +74,12 @@ export class game extends Phaser.Scene{
     let distMaxima = 50;
     let damAcuD = 0;
     let damAcuS = 0;
+    let damCar1 = 0;
+    let damCar2 = 0;
+    let damCar3 = 0;
+    let damCar4 = 0;
+    let damCar5 = 0;
+    let damCar6 = 0;
     let distCorta = 0;
     let distMedia = 0;
     let corta = false;
@@ -76,6 +88,7 @@ export class game extends Phaser.Scene{
     let probabilidad = 0;
     let probExtra = 0;
     let carguerosAsalvo = 0;
+    let pack;
 
 
     // Obtengo el centro del canvas para la máscara
@@ -438,22 +451,22 @@ export class game extends Phaser.Scene{
     // Funcion para generarle las imagenes y las particulas a cada barco
     function generarCargueros(){
       // Genero las posiciones X e Y para el primer carguero principal
-      posX = Math.floor((Math.random()*((frameW*0.2)- margenCostaX))+margenCostaX); // El margen x para generarse los cargueros sera desde la costa (810) hasta el 20% del total del mapa
+      posX = Math.floor((Math.random()*((frameW*0.2)- margenCostaX))+margenCostaX); // El margen x para generarse los cargueros sera desde la costa (689) hasta el 20% del total del mapa
       posY = Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY); // El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa    
 
       // Actualizo la posicion x e de todos los cargueros en base a la posicion inicial del carguero principal
       self.carguero1.posX = posX;
       self.carguero1.posY = posY;
-      self.carguero2.posX = posX+600;
-      self.carguero2.posY = posY+240
-      self.carguero3.posX = posX+50
-      self.carguero3.posY = posY+370;
-      self.carguero4.posX = posX-270;
-      self.carguero4.posY = posY+150;
-      self.carguero5.posX = posX+300;
-      self.carguero5.posY = posY-150;
-      self.carguero6.posX = posX+180;
-      self.carguero6.posY = posY+150;
+      self.carguero2.posX = posX+200;
+      self.carguero2.posY = posY+200;
+      self.carguero3.posX = posX+200;
+      self.carguero3.posY = posY-200;
+      self.carguero4.posX = posX+350;
+      self.carguero4.posY = posY;
+      self.carguero5.posX = posX+500;
+      self.carguero5.posY = posY+250;
+      self.carguero6.posX = posX+500;
+      self.carguero6.posY = posY-250;
 
       // Inserto los objetos cargueros en un array de cargueros para poder crear sus imagenes en un for
       arrayCargueros[0] = self.carguero1;
@@ -561,7 +574,6 @@ export class game extends Phaser.Scene{
         }
         self.socket.emit('Finalizo', envioSocket);
         self.scene.start(DEF.SCENES.FinScene, envio);
-        
       }
     }
     
@@ -724,18 +736,18 @@ export class game extends Phaser.Scene{
         //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.destructor.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
         //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
-        Disparo(self.destructor.imagen, bullet, self.destructor.reticula, self.submarino.imagen);
+        Disparo(self.destructor.imagen, bullet, self.destructor.reticula, self.submarino.imagen, self.submarino);
       }else{
         //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
         //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.destructor.imagen);
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero1.imagen);
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero2.imagen);
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero3.imagen);
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero4.imagen);
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero5.imagen);
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero6.imagen);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.destructor.imagen, self.destructor);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero1.imagen, self.carguero1);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero2.imagen, self.carguero2);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero3.imagen, self.carguero3);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero4.imagen, self.carguero4);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero5.imagen, self.carguero5);
+        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero6.imagen, self.carguero6);
       }
       //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
       //dano al enemigo si el ya te gano
@@ -754,7 +766,7 @@ export class game extends Phaser.Scene{
 
 
     // FUNCION DE DISPARO DEL JUGADOR
-    function Disparo(player, bullet, reticula, enemyImag){
+    function Disparo(player, bullet, reticula, enemyImag, enemy){
       if (bullet){
           bullet.fire(player, reticula); //LLAMA AL METODO DISPARAR DE BULLET
           bullet.setCollideWorldBounds(true);
@@ -812,16 +824,17 @@ export class game extends Phaser.Scene{
             console.log("distiancia larga", larga);
             
             bullet.destroy();
-            handleHit(enemyImag, corta, media, larga);
+            handleHit(enemyImag, corta, media, larga, enemy);
           });
       }
     }
     //funcion que maneja el dano hecho por cada vez que se lanza el evento disparo del click, segun el tipo de arma es el dano hecho
     //el dano luego es enviado por socket al otro jugador. Tambien realiza la gestion de vida del oponente - danio para poder
     //mostrar que estamos haciendole danio al otro jugador y que muere.
-    function handleHit(enemy, corta, media, larga){
+    function handleHit(enemy, corta, media, larga, enemyobj){
       probabilidad = Math.floor(Math.random() * (11));
       console.log('la probabilidad base es %', probabilidad, '0');
+      let Escarguero;
       if(self.equipo === 1){
 //--------------------------------------------------------------------------------------------------------------------------------
 //                                                  CANON DEL DESTRUCTOR
@@ -836,12 +849,27 @@ export class game extends Phaser.Scene{
                 hitted(enemy.x, enemy.y); 
                 danio = 5;
                 damAcuD = damAcuD + danio;              
-                self.socket.emit('playerHit', {Dam: danio});
+                pack ={
+                  danio: danio,
+                  carguero: 0
+                }              
+                self.socket.emit('playerHit', pack);
                 console.log('danio al enemigo', danio);
-                if(damAcuD >= self.submarino.vida){
-                  destroyed(self.submarino.imagen);
-                  self.submarino.imagen.setActive(false);
-                  self.submarino.imagen.setVisible(false);
+                if(damAcuD >= enemyobj.vida){
+                  destroyed(enemy);
+                  enemy.setActive(false);
+                  enemy.setVisible(false);
+                  let envio={
+                    socket: self.socket,
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  let envioSocket= {
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  self.socket.emit('Finalizo', envioSocket);
+                  self.scene.start(DEF.SCENES.FinScene, envio);
                 }
               }  
             }else if(media){
@@ -853,12 +881,27 @@ export class game extends Phaser.Scene{
                 hitted(enemy.x, enemy.y); 
                 danio = 5;
                 damAcuD = damAcuD + danio;              
-                self.socket.emit('playerHit', {Dam: danio});
+                pack ={
+                  danio: danio,
+                  carguero: 0
+                }              
+                self.socket.emit('playerHit', pack);
                 console.log('danio al enemigo', danio);
-                if(damAcuD >= self.submarino.vida){
-                  destroyed(self.submarino.imagen);
-                  self.submarino.imagen.setActive(false);
-                  self.submarino.imagen.setVisible(false);
+                if(damAcuD >= enemyobj.vida){
+                  destroyed(enemy);
+                  enemy.setActive(false);
+                  enemy.setVisible(false);
+                  let envio={
+                    socket: self.socket,
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  let envioSocket= {
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  self.socket.emit('Finalizo', envioSocket);
+                  self.scene.start(DEF.SCENES.FinScene, envio);
                 }
               }  
             }else if(larga){
@@ -870,12 +913,27 @@ export class game extends Phaser.Scene{
                 hitted(enemy.x, enemy.y); 
                 danio = 5;
                 damAcuD = damAcuD + danio;              
-                self.socket.emit('playerHit', {Dam: danio});
+                pack ={
+                  danio: danio,
+                  carguero: 0
+                }              
+                self.socket.emit('playerHit', pack);
                 console.log('danio al enemigo', danio);
-                if(damAcuD >= self.submarino.vida){
-                  destroyed(self.submarino.imagen);
-                  self.submarino.imagen.setActive(false);
-                  self.submarino.imagen.setVisible(false);
+                if(damAcuD >= enemyobj.vida){
+                  destroyed(enemy);
+                  enemy.setActive(false);
+                  enemy.setVisible(false);
+                  let envio={
+                    socket: self.socket,
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  let envioSocket= {
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  self.socket.emit('Finalizo', envioSocket);
+                  self.scene.start(DEF.SCENES.FinScene, envio);
                 }
               } 
             }   
@@ -893,16 +951,31 @@ export class game extends Phaser.Scene{
                   danio = 3;
                   console.log('danio al enemigo', danio);
                   hitted(enemy.x, enemy.y); 
-                  self.socket.emit('playerHit', {Dam: danio});
+                  pack ={
+                    danio: danio,
+                    carguero: 0
+                  }              
+                  self.socket.emit('playerHit', pack);
                 }else{
                   danio = 0;
                   console.log('danio al enemigo', danio);
                 }  
                 damAcuD = damAcuD + danio;              
-                if(damAcuD >= self.submarino.vida){
-                  destroyed(self.submarino.imagen);
-                  self.submarino.imagen.setActive(false);
-                  self.submarino.imagen.setVisible(false);
+                if(damAcuD >= enemyobj.vida){
+                  destroyed(enemy);
+                  enemy.setActive(false);
+                  enemy.setVisible(false);
+                  let envio={
+                    socket: self.socket,
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  let envioSocket= {
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  self.socket.emit('Finalizo', envioSocket);
+                  self.scene.start(DEF.SCENES.FinScene, envio);
                 }
               }  
             }else if(media){
@@ -915,16 +988,31 @@ export class game extends Phaser.Scene{
                   danio = 3;
                   console.log('danio al enemigo', danio);
                   hitted(enemy.x, enemy.y); 
-                  self.socket.emit('playerHit', {Dam: danio});
+                  pack ={
+                    danio: danio,
+                    carguero: 0
+                  }              
+                  self.socket.emit('playerHit', pack);
                 }else{
                   danio = 0;
                   console.log('danio al enemigo', danio);
                 }  
                 damAcuD = damAcuD + danio;              
-                if(damAcuD >= self.submarino.vida){
-                  destroyed(self.submarino.imagen);
-                  self.submarino.imagen.setActive(false);
-                  self.submarino.imagen.setVisible(false);
+                if(damAcuD >= enemyobj.vida){
+                  destroyed(enemy);
+                  enemy.setActive(false);
+                  enemy.setVisible(false);
+                  let envio={
+                    socket: self.socket,
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  let envioSocket= {
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  self.socket.emit('Finalizo', envioSocket);
+                  self.scene.start(DEF.SCENES.FinScene, envio);
                 }
               }  
             }else if(larga){
@@ -932,17 +1020,17 @@ export class game extends Phaser.Scene{
                 danio = 0;
                 console.log('danio al enemigo', danio);
                 damAcuD = damAcuD + danio;              
-                if(damAcuD >= self.submarino.vida){
-                  destroyed(self.submarino.imagen);
-                  self.submarino.imagen.setActive(false);
-                  self.submarino.imagen.setVisible(false);
+                if(damAcuD >= enemyobj.vida){
+                  destroyed(enemy);
+                  enemy.setActive(false);
+                  enemy.setVisible(false);
                 }
               }
             }   
 //--------------------------------------------------------------------------------------------------------------------------------
 //                                                  CANON DEL SUBMARINO
 //--------------------------------------------------------------------------------------------------------------------------------            
-      }else if (self.equipo === 2){
+      }else if (self.equipo === 2){      
             if(self.submarino.armas === 0){
               if(corta){
                 probExtra = Math.floor(Math.random() * (2));
@@ -953,14 +1041,70 @@ export class game extends Phaser.Scene{
                   console.log("entro al if del danio sub corto");
                   hitted(enemy.x, enemy.y); 
                   danio = 1;
-                  damAcuS = damAcuS + danio;
-                  console.log('danio al enemigo', danio);              
-                  self.socket.emit('playerHit', {Dam: danio});
-                  if(damAcuS >= self.destructor.vida){
-                    destroyed(enemy);
-                    enemy.setActive(false);
-                    enemy.setVisible(false);
+                  
+                  console.log('danio al enemigo', danio);
+                  if(enemyobj === self.carguero1){ 
+                    Escarguero = 1;
+                    damCar1 = damCar1 + danio;
+                    if(damCar1 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }    
+                  }else if(enemyobj === self.carguero2){
+                    Escarguero = 2;
+                    damCar2 = damCar2 + danio;
+                    if(damCar2 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
+                  }else if(enemyobj === self.carguero3){
+                    Escarguero = 3;
+                    damCar3 = damCar3 + danio;
+                    if(damCar3 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
+                  }else if(enemyobj === self.carguero4){
+                    Escarguero = 4;
+                    damCar4 = damCar4 + danio;
+                    if(damCar4 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else if(enemyobj === self.carguero5){
+                    Escarguero = 5;
+                    damCar5 = damCar5 + danio;
+                    if(damCar5 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else if(enemyobj === self.carguero6){
+                    Escarguero = 6;
+                    damCar6 = damCar6 + danio;
+                    if(damCar6 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else{
+                    damAcuS = damAcuS + danio;
+                    if(damAcuS >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }
+                  pack ={
+                    danio: danio,
+                    carguero: Escarguero
+                  }              
+                  self.socket.emit('playerHit', pack);
+                  
                 } 
               }else if(media){
                   probExtra = Math.floor(Math.random() * (3));
@@ -971,14 +1115,69 @@ export class game extends Phaser.Scene{
                     console.log("entro al if del danio sub medio");
                     hitted(enemy.x, enemy.y); 
                     danio = 1;
-                    damAcuS = damAcuS + danio;
+                    
                     console.log('danio al enemigo', danio);              
-                    self.socket.emit('playerHit', {Dam: danio});
-                    if(damAcuS >= self.destructor.vida){
-                      destroyed(self.destructor.imagen);
-                      self.destructor.imagen.setActive(false);
-                      self.destructor.imagen.setVisible(false);
+                    if(enemyobj === self.carguero1){ 
+                      Escarguero = 1;
+                      damCar1 = damCar1 + danio;
+                      if(damCar1 >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }    
+                    }else if(enemyobj === self.carguero2){
+                      Escarguero = 2;
+                      damCar2 = damCar2 + danio;
+                      if(damCar2 >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }  
+                    }else if(enemyobj === self.carguero3){
+                      Escarguero = 3;
+                      damCar3 = damCar3 + danio;
+                      if(damCar3 >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }  
+                    }else if(enemyobj === self.carguero4){
+                      Escarguero = 4;
+                      damCar4 = damCar4 + danio;
+                      if(damCar4 >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }
+                    }else if(enemyobj === self.carguero5){
+                      Escarguero = 5;
+                      damCar5 = damCar5 + danio;
+                      if(damCar5 >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }
+                    }else if(enemyobj === self.carguero6){
+                      Escarguero = 6;
+                      damCar6 = damCar6 + danio;
+                      if(damCar6 >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }
+                    }else{
+                      damAcuS = damAcuS + danio;
+                      if(damAcuS >= enemyobj.vida){
+                        destroyed(enemy);
+                        enemy.setActive(false);
+                        enemy.setVisible(false);
+                      }
                     }
+                    pack ={
+                      danio: danio,
+                      carguero: Escarguero
+                    }              
+                    self.socket.emit('playerHit', pack);
                   }  
               }else if(larga){
                     probExtra = Math.floor(Math.random() * (3));
@@ -989,14 +1188,68 @@ export class game extends Phaser.Scene{
                       console.log("entro al if del danio sub largo");
                       hitted(enemy.x, enemy.y); 
                       danio = 1;
-                      damAcuS = damAcuS + danio;
                       console.log('danio al enemigo', danio);              
-                      self.socket.emit('playerHit', {Dam: danio});
-                      if(damAcuS >= self.destructor.vida){
-                        destroyed(self.destructor.imagen);
-                        self.destructor.imagen.setActive(false);
-                        self.destructor.imagen.setVisible(false);
+                      if(enemyobj === self.carguero1){ 
+                        Escarguero = 1;
+                        damCar1 = damCar1 + danio;
+                        if(damCar1 >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }    
+                      }else if(enemyobj === self.carguero2){
+                        Escarguero = 2;
+                        damCar2 = damCar2 + danio;
+                        if(damCar2 >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }  
+                      }else if(enemyobj === self.carguero3){
+                        Escarguero = 3;
+                        damCar3 = damCar3 + danio;
+                        if(damCar3 >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }  
+                      }else if(enemyobj === self.carguero4){
+                        Escarguero = 4;
+                        damCar4 = damCar4 + danio;
+                        if(damCar4 >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }
+                      }else if(enemyobj === self.carguero5){
+                        Escarguero = 5;
+                        damCar5 = damCar5 + danio;
+                        if(damCar5 >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }
+                      }else if(enemyobj === self.carguero6){
+                        Escarguero = 6;
+                        damCar6 = damCar6 + danio;
+                        if(damCar6 >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }
+                      }else{
+                        damAcuS = damAcuS + danio;
+                        if(damAcuS >= enemyobj.vida){
+                          destroyed(enemy);
+                          enemy.setActive(false);
+                          enemy.setVisible(false);
+                        }
                       }
+                      pack ={
+                        danio: danio,
+                        carguero: Escarguero
+                      }              
+                      self.socket.emit('playerHit', pack);
                     }
                   }
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -1012,14 +1265,69 @@ export class game extends Phaser.Scene{
                   console.log("entro al if del danio sub corto torpedo");
                   hitted(enemy.x, enemy.y); 
                   danio = 4;
-                  damAcuS = damAcuS + danio;
+                  
                   console.log('danio al enemigo', danio);                            
-                  self.socket.emit('playerHit', {Dam: danio});
-                  if(damAcuS >= self.destructor.vida){
-                    destroyed(self.destructor.imagen);
-                    self.destructor.imagen.setActive(false);
-                    self.destructor.imagen.setVisible(false);
+                  if(enemyobj === self.carguero1){ 
+                    Escarguero = 1;
+                    damCar1 = damCar1 + danio;
+                    if(damCar1 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }    
+                  }else if(enemyobj === self.carguero2){
+                    Escarguero = 2;
+                    damCar2 = damCar2 + danio;
+                    if(damCar2 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
+                  }else if(enemyobj === self.carguero3){
+                    Escarguero = 3;
+                    damCar3 = damCar3 + danio;
+                    if(damCar3 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
+                  }else if(enemyobj === self.carguero4){
+                    Escarguero = 4;
+                    damCar4 = damCar4 + danio;
+                    if(damCar4 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else if(enemyobj === self.carguero5){
+                    Escarguero = 5;
+                    damCar5 = damCar5 + danio;
+                    if(damCar5 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else if(enemyobj === self.carguero6){
+                    Escarguero = 6;
+                    damCar6 = damCar6 + danio;
+                    if(damCar6 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else{
+                    damAcuS = damAcuS + danio;
+                    if(damAcuS >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }
+                  pack ={
+                    danio: danio,
+                    carguero: Escarguero
+                  }              
+                  self.socket.emit('playerHit', pack);
                 }
               }else if(media){
                 probExtra = Math.floor(Math.random() * (3));
@@ -1029,15 +1337,70 @@ export class game extends Phaser.Scene{
                 if((probabilidad + probExtra) > 3){
                   hitted(enemy.x, enemy.y); 
                   danio = 4;
-                  damAcuS = damAcuS + danio;
+                  
                   console.log('danio al enemigo', danio);                            
-                  self.socket.emit('playerHit', {Dam: danio});
-                  if(damAcuS >= self.destructor.vida){
-                    destroyed(self.destructor.imagen);
-                    self.destructor.imagen.setActive(false);
-                    self.destructor.imagen.setVisible(false);
+                  if(enemyobj === self.carguero1){ 
+                    Escarguero = 1;
+                    damCar1 = damCar1 + danio;
+                    if(damCar1 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }    
+                  }else if(enemyobj === self.carguero2){
+                    Escarguero = 2;
+                    damCar2 = damCar2 + danio;
+                    if(damCar2 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
+                  }else if(enemyobj === self.carguero3){
+                    Escarguero = 3;
+                    damCar3 = damCar3 + danio;
+                    if(damCar3 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
+                  }else if(enemyobj === self.carguero4){
+                    Escarguero = 4;
+                    damCar4 = damCar4 + danio;
+                    if(damCar4 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else if(enemyobj === self.carguero5){
+                    Escarguero = 5;
+                    damCar5 = damCar5 + danio;
+                    if(damCar5 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else if(enemyobj === self.carguero6){
+                    Escarguero = 6;
+                    damCar6 = damCar6 + danio;
+                    if(damCar6 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else{
+                    damAcuS = damAcuS + danio;
+                    if(damAcuS >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }
-                }
+                  pack ={
+                    danio: danio,
+                    carguero: Escarguero
+                  }              
+                  self.socket.emit('playerHit', pack);
+                }  
               }else if(larga){
                 probExtra = Math.floor(Math.random() * (3));
                 console.log('la probabilidad extra del canion es %', probExtra, '0');
@@ -1046,14 +1409,68 @@ export class game extends Phaser.Scene{
                 if((probabilidad + probExtra) > 5){
                   hitted(enemy.x, enemy.y); 
                   danio = 4;
-                  damAcuS = damAcuS + danio;
                   console.log('danio al enemigo', danio);                            
-                  self.socket.emit('playerHit', {Dam: danio});
-                  if(damAcuS >= self.destructor.vida){
-                    destroyed(self.destructor.imagen);
-                    self.destructor.imagen.setActive(false);
-                    self.destructor.imagen.setVisible(false);
+                  if(enemyobj === self.carguero1){ 
+                    Escarguero = 1;
+                    damCar1 = damCar1 + danio;
+                    if(damCar1 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }    
+                  }else if(enemyobj === self.carguero2){
+                    Escarguero = 2;
+                    damCar2 = damCar2 + danio;
+                    if(damCar2 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
+                  }else if(enemyobj === self.carguero3){
+                    Escarguero = 3;
+                    damCar3 = damCar3 + danio;
+                    if(damCar3 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }  
+                  }else if(enemyobj === self.carguero4){
+                    Escarguero = 4;
+                    damCar4 = damCar4 + danio;
+                    if(damCar4 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else if(enemyobj === self.carguero5){
+                    Escarguero = 5;
+                    damCar5 = damCar5 + danio;
+                    if(damCar5 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else if(enemyobj === self.carguero6){
+                    Escarguero = 6;
+                    damCar6 = damCar6 + danio;
+                    if(damCar6 >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
+                  }else{
+                    damAcuS = damAcuS + danio;
+                    if(damAcuS >= enemyobj.vida){
+                      destroyed(enemy);
+                      enemy.setActive(false);
+                      enemy.setVisible(false);
+                    }
                   }
+                  pack ={
+                    danio: danio,
+                    carguero: Escarguero
+                  }              
+                  self.socket.emit('playerHit', pack);
                 }
               }     
             }
@@ -1097,13 +1514,12 @@ export class game extends Phaser.Scene{
       self.explotion3.play('explot3');
     }
     //funcion que procesa el dano y el porcentaje de acierto
-    function RecibeHit(player, playerIMG, damage){
+    function RecibeHit(player, playerIMG, damage, escar){
       hitted(playerIMG.x, playerIMG.y);
-      //aca van las funciones de acierto
+      
       if(player.vida > 0){
         console.log('Vida Restante', player.vida);
-        player.vida = player.vida - damage;
-        
+        player.vida = player.vida - damage; 
         console.log('Vida Restante', player.vida);
       }
       if(player.vida <= 0){
@@ -1111,6 +1527,22 @@ export class game extends Phaser.Scene{
         destroyed(playerIMG);
         playerIMG.setActive(false);
         playerIMG.setVisible(false);
+        if(escar){
+          carguerosMuertos++;
+        }
+      }
+      if(carguerosMuertos > 3){
+        let envio={
+          socket: self.socket,
+          resultado: 1,
+          equipo: 2
+        }
+        let envioSocket= {
+          resultado: 2,
+          equipo: 1
+        }
+        self.socket.emit('Finalizo', envioSocket);
+        self.scene.start(DEF.SCENES.FinScene, envio);
       }
     }
     //funcion que convierte el cursor en una mira
@@ -1218,16 +1650,27 @@ export class game extends Phaser.Scene{
     });
 
     //escucho el tiro que me dieron desde el otro jugador y lo proceso
-    this.socket.on('playerHitted', function(playerInfo){      
-      //if(self.socket.id === playerInfo.id){
+    this.socket.on('playerHitted', function(playerInfo){       
         if(self.equipo===1){
-            //hitted(self.destructor.imagen.x, self.destructor.imagen.x);
-            RecibeHit(self.destructor, self.destructor.imagen, playerInfo.damage);
+          console.log("carguero golpeado numero", playerInfo.carguero);
+          if(playerInfo.carguero === 1){
+            RecibeHit(self.carguero1, self.carguero1.imagen, playerInfo.damage, true);
+          }else if(playerInfo.carguero === 2){
+            RecibeHit(self.carguero2, self.carguero2.imagen, playerInfo.damage, true);
+          }else if(playerInfo.carguero === 3){
+            RecibeHit(self.carguero3, self.carguero3.imagen, playerInfo.damage, true);
+          }else if(playerInfo.carguero === 4){
+            RecibeHit(self.carguero4, self.carguero4.imagen, playerInfo.damage, true);
+          }else if(playerInfo.carguero === 5){
+            RecibeHit(self.carguero5, self.carguero5.imagen, playerInfo.damage, true);
+          }else if(playerInfo.carguero === 6){
+            RecibeHit(self.carguero6, self.carguero6.imagen, playerInfo.damage, true);
+          }else{
+            RecibeHit(self.destructor, self.destructor.imagen, playerInfo.damage, false);
+          }
         }else{
-            //hitted(self.submarino.imagen.x, self.submarino.imagen.y);
-            RecibeHit(self.submarino, self.submarino.imagen, playerInfo.damage);
+            RecibeHit(self.submarino, self.submarino.imagen, playerInfo.damage, false);
         }
-      //}
     }); 
 
     this.socket.on('playerUnder', function(playerInfo){      
@@ -1256,7 +1699,6 @@ export class game extends Phaser.Scene{
     }); 
 
     this.socket.on('FinalizoPartida', function(data){      
-      console.log("entro al socket");
         if(data.resultado === 1){
           var envio2={
             socket: self.socket,
@@ -1271,7 +1713,7 @@ export class game extends Phaser.Scene{
             equipo: self.equipo,
           }
           self.scene.start(DEF.SCENES.FinScene, envio2);  
-        }  
+      }    
     }); 
 
     // Método que cambia de camara con el carguero central de la formacion
@@ -1303,64 +1745,74 @@ export class game extends Phaser.Scene{
 
     // Método para activar la función de sonar
     function activarSonar(){
-      
-      // Texto de aviso
-      self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
-
       // Activo sonar si hay sonares disponibles
       if(self.submarino.sonar>0){
-        self.soundSonar.play();
-        // Cambio de cámaras
-        self.cameras.main.setMask(self.mask);
-        self.cameras.main.setZoom(0.9);
-        
-        // Activo cuenta regresiva
-        self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
-        
-        // Vuelvo a vista normal y elimino aviso
-        self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
-        
-        function camaraSonar(){
-          // Restablezco las cámaras
+        if (self.usoSonar !== true){
+          // Texto de aviso
+          self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
+          
+          self.usoSonar = true;
+          console.log("USO SONAR:"+self.usoSonar);
+          self.soundSonar.play();
+
+          // Cambio de cámaras
           self.cameras.main.setMask(self.mask);
-          self.cameras.main.setZoom(1.4);
-
-          // Elimino texto de tiempo restante
-          removeText();
-          self.soundSonar.stop();
-          contadorS=0;
-        }
-        
-        function actualizarContSonar(){
-          contadorS++;
-          self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS) + '\nSONARES RESTANTES: '+(self.submarino.sonar));
-          if (contadorS === 10){
-            self.cuentaSonar.remove(true);
+          self.cameras.main.setZoom(0.9);
+          
+          // Activo cuenta regresiva
+          self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
+          
+          // Vuelvo a vista normal y elimino aviso
+          self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
+          
+          function camaraSonar(){
+            // Restablezco las cámaras
+            self.cameras.main.setMask(self.mask);
+            self.cameras.main.setZoom(1.4);
+            self.usoSonar = false;
+            console.log("USO SONAR:"+self.usoSonar);
+            // Elimino texto de tiempo restante
+            removeText();
+            self.soundSonar.stop();
+            contadorS=0;
           }
+          function actualizarContSonar(){
+            contadorS++;
+            self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS) + '\nSONARES RESTANTES: '+(self.submarino.sonar));
+            if (contadorS === 10){
+              self.cuentaSonar.remove(true);
+            }
+          }
+          function removeText() {
+            self.statusSonar.destroy();
+          }
+          self.submarino.sonar--;
         }
-        self.submarino.sonar--;
       }else{
+        if (self.usoSonar !== true){
+          // Texto de aviso
+          self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
 
-        self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
-        self.resetSonar = self.time.addEvent({ delay: 10000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
-        
-        function eliminoAvisoNHS(){
-          // Elimino texto de aviso no hay sonar
-          removeText();
-          contadorS=0;
-        }
-
-        function avisoNoHaySonar(){
-          contadorS++;
-          self.statusSonar.setText('¡SONAR AGOTADO!');
-          if (contadorS === 10){
-            self.cuentaSonar.remove(true);
+          self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
+          self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
+          
+          function eliminoAvisoNHS(){
+            // Elimino texto de aviso no hay sonar
+            removeText();
+            contadorS=0;
+          }
+          function avisoNoHaySonar(){
+            contadorS++;
+            self.statusSonar.setText('¡SONAR AGOTADO!');
+            if (contadorS === 5){
+              self.cuentaSonar.remove(true);
+            }
+          }
+          function removeText() {
+            self.statusSonar.destroy();
           }
         }
       }
-    }
-    function removeText() {
-      self.statusSonar.destroy();
     }
   }
 
