@@ -45,6 +45,7 @@ export class game extends Phaser.Scene{
     let resetSonar;
     let contadorS=0;
     let usoSonar = false;
+    let siguiendoDes = true;
     self.socket.emit('listarPartidas', {id: 2});
     let carguerosMuertos = 0;
 
@@ -168,9 +169,6 @@ export class game extends Phaser.Scene{
       generarEquipo1();
       this.botonDOWNDI = self.physics.add.image(700, 900, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
       this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
-      // Habilito el boton para cambiar de camara con los cargueros
-      const btnCamaraCarguero = this.add.text(600, 600, 'BOTON PARA CAMBIAR DE CAMARA CON LOS CARGUEROS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(1));
-      const btnCamaraDestructor = this.add.text(600, 650, 'BOTON PARA CAMBIAR DE CAMARA CON EL DESTRUCTOR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(0));
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
       this.botonDOWNDI = self.physics.add.image(700, 700, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
@@ -245,6 +243,8 @@ export class game extends Phaser.Scene{
       
       // Se indica que la camara siga al destructor
       self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
+      self.siguiendoDes = true;
+
       // Zoom de la cámara
       self.cameras.main.setZoom(0.9);
       // Se crea una colision del destructor con las islas
@@ -275,6 +275,19 @@ export class game extends Phaser.Scene{
         }else{
           self.destructor.armas = 0;
           console.log('cambio a canon');
+        }
+      });
+      
+      // Se crea el evento de cambio cámaras con los cargueros
+      self.input.keyboard.on('keydown-' + 'C', function (event){
+        if(self.siguiendoDes === true){
+          self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
+          self.cameras.main.setZoom(1.4);
+          self.siguiendoDes = false;
+        }else{
+          self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
+          self.cameras.main.setZoom(0.9);
+          self.siguiendoDes = true;
         }
       });
     }
@@ -545,8 +558,6 @@ export class game extends Phaser.Scene{
         // Se crea la colision con el submarino y el destructor
         self.physics.add.collider(self.carguero1.imagen, self.destructor.imagen);
         self.physics.add.collider(self.carguero1.imagen, self.submarino.imagen);
-
-        
       })
     };
 
@@ -1758,17 +1769,6 @@ export class game extends Phaser.Scene{
           self.scene.start(DEF.SCENES.FinScene, envio2);  
       }    
     }); 
-
-    // Método que cambia de camara con el carguero central de la formacion
-    function cambioCamaraCargueros(camara){
-      if(camara==0){
-        self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
-        self.cameras.main.setZoom(0.9);
-      }else if(camara==1){
-        self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
-        self.cameras.main.setZoom(1.4);
-      }
-    }
   }
 
   // Función update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje graficamente
