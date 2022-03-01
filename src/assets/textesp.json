@@ -1,0 +1,44 @@
+{"frames": {
+
+"textesp1.png":
+{
+	"frame": {"x":0,"y":0,"w":883,"h":296},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":883,"h":296},
+	"sourceSize": {"w":883,"h":296}
+},
+"textesp2.png":
+{
+	"frame": {"x":883,"y":0,"w":883,"h":296},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":883,"h":296},
+	"sourceSize": {"w":883,"h":296}
+},
+"textesp3.png":
+{
+	"frame": {"x":0,"y":296,"w":883,"h":296},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":883,"h":296},
+	"sourceSize": {"w":883,"h":296}
+},
+"textesp4.png":
+{
+	"frame": {"x":883,"y":296,"w":883,"h":296},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":883,"h":296},
+	"sourceSize": {"w":883,"h":296}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "textesp.png",
+	"format": "RGBA8888",
+	"size": {"w":1766,"h":592},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:4572937642cfe4942cef661f8e9fbc2e:7b7f63f999e2ed5938e349fb7ef2fdcd:52b6573851673a2ad69ea0ee4f243bc1$"
+}
+}
