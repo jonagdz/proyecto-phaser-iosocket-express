@@ -18,7 +18,7 @@ export class game extends Phaser.Scene{
     this.velocidadBaja = 500;
     this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0,0,0,0,0); // Creo el objeto destructor 
     this.submarino = new Submarino()
-    this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,180,2,3,0,0,0,0); // Creo el objeto submarino 
+    this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,180,2,3,0,0,0,0,false); // Creo el objeto submarino 
     this.carguero1 = new Carguero('Carguero1',this.velocidadBaja,8,0,0,0,3); // Creo el objeto carguero1 
     this.carguero2 = new Carguero('Carguero2',this.velocidadBaja,8,0,0,0,4); // Creo el objeto carguero2
     this.carguero3 = new Carguero('Carguero3',this.velocidadBaja,8,0,0,0,5); // Creo el objeto carguero3
@@ -44,12 +44,9 @@ export class game extends Phaser.Scene{
     let cuentaSonar;
     let resetSonar;
     let contadorS=0;
-    let largavist = false;
     let usoSonar = false;
     self.socket.emit('listarPartidas', {id: 2});
     let carguerosMuertos = 0;
-
-
 
     // Grupo para los cargueros y balas
     var arrayCargueros = [];
@@ -119,7 +116,7 @@ export class game extends Phaser.Scene{
     
     // Islas
     this.isla1 = self.physics.add.image(2100,900,DEF.IMAGENES.ISLA).setDepth(5);
-   // this.isla1 = self.physics.add.image(2100,900,'island1').setDepth(1);
+    // this.isla1 = self.physics.add.image(2100,900,'island1').setDepth(1);
     this.isla1.setImmovable(true);
     this.isla1.setDisplaySize(400, 400);
     this.isla2 = self.physics.add.image(2460,1600,DEF.IMAGENES.ISLA).setDepth(5);
@@ -166,9 +163,7 @@ export class game extends Phaser.Scene{
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
       
-      // Habilito el boton para acceder a la funcion de largavistas
-      const btnActivarLargaVista = this.add.text(900, 600, 'ACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(1));
-      const btnDesactivarLargaVista = this.add.text(900, 650, 'DESACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(0));
+      //
       const btnActivarSonar = this.add.text(900, 700, 'ACTIVAR SONAR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => activarSonar());
     }    
 
@@ -364,6 +359,20 @@ export class game extends Phaser.Scene{
         self.submarino.reticula.x = self.submarino.imagen.x + (Math.cos((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
         self.submarino.reticula.y = self.submarino.imagen.y + (Math.sin((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
       });
+
+      // Se crea el evento de cambio de largavistas
+      self.input.keyboard.on('keydown-' + 'L', function (event){
+        if(self.submarino.largavista === false && (self.submarino.profundidad === 0)){
+          self.submarino.largavista = true;
+          self.largaVistas.angle=self.submarino.imagen.angle+270;
+          self.cameras.main.setMask(self.mar.masklv);
+          self.cameras.main.setZoom(0.9);
+        }else if(self.submarino.largavista === true && (self.submarino.profundidad === 0)){
+          self.submarino.largavista = false;
+          self.cameras.main.setMask(self.mask);
+          self.cameras.main.setZoom(1.4);
+        }
+      });
     }
     
     // Genero todo lo relacionado a la imagen del submarino del equipo enemigo y sus propiedades (Tamaño, profundidad y que sea empujable)
@@ -445,7 +454,6 @@ export class game extends Phaser.Scene{
         self.physics.add.collider(self.carguero1.imagen, self.destructor.imagen);
         self.physics.add.collider(self.carguero1.imagen, self.submarino.imagen);
       })
-      
     };
 
     // Funcion para generarle las imagenes y las particulas a cada carguero estando en el equipo del submarino
@@ -1619,22 +1627,6 @@ export class game extends Phaser.Scene{
       }
     }
 
-    // Método para activar el larga vistas
-    function cambioLargaVistas(lv){
-      if(lv === 1 && (self.submarino.profundidad === 0)){
-        console.log("LARGAVISTAS ACTIVADO");
-        self.largavist = true;
-        self.largaVistas.angle=self.submarino.imagen.angle+270;
-        self.cameras.main.setMask(self.mar.masklv);
-        self.cameras.main.setZoom(0.9);
-      }else if(lv === 0 && (self.submarino.profundidad === 0)){
-        console.log("LARGAVISTAS DESACTIVADO");
-        self.largavist = false;
-        self.cameras.main.setMask(self.mask);
-        self.cameras.main.setZoom(1.4);
-      }
-    }
-
     // Método para activar la función de sonar
     function activarSonar(){
       // Activo sonar si hay sonares disponibles
@@ -1959,7 +1951,7 @@ export class game extends Phaser.Scene{
       
     }else{
       if (this.submarino){
-        if(this.largavist === true){
+        if(this.submarino.largavista === true){
           if(this.cursors.left.isDown){
             this.submarino.imagen.rotation-=0.05;
             this.largaVistas.angle=this.submarino.imagen.angle+270;
