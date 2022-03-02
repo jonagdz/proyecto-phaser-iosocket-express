@@ -51,7 +51,7 @@ export class GameMenu extends Phaser.Scene{
         function ElegirIni(tru){
 
             if(tru===1){
-                console.log("entroalif");
+                //console.log("entroalif");
                 self.anims.create({  
                 key: 'animinini',
                 frames: [
@@ -66,7 +66,7 @@ export class GameMenu extends Phaser.Scene{
                 self.ini.play('animinini');
             }
             else{
-                console.log("entroalelse");
+                //console.log("entroalelse");
                 self.anims.create({  
                 key: 'animin',
                 frames: [
@@ -86,7 +86,7 @@ export class GameMenu extends Phaser.Scene{
         function ElegirCarg(v){
 
             if(v===1){
-                console.log("entroalif");
+                //console.log("entroalif");
                 self.anims.create({  
                 key: 'animinc',
                 frames: [
@@ -101,7 +101,7 @@ export class GameMenu extends Phaser.Scene{
                 self.carg.play('animinc');
             }
             else{
-                console.log("entroalelse");
+                //console.log("entroalelse");
                 self.anims.create({  
                 key: 'animincc',
                 frames: [
@@ -120,7 +120,7 @@ export class GameMenu extends Phaser.Scene{
         function ElegirCont(u){
 
             if(u===1){
-                console.log("entroalif");
+                //console.log("entroalif");
                 self.anims.create({  
                 key: 'anim',
                 frames: [
@@ -135,7 +135,7 @@ export class GameMenu extends Phaser.Scene{
                 self.cont.play('anim');
             }
             else{
-                console.log("entroalelse");
+                //console.log("entroalelse");
                 self.anims.create({  
                 key: 'animi',
                 frames: [
@@ -156,7 +156,7 @@ export class GameMenu extends Phaser.Scene{
         function ElegirCred(va){
 
             if(va===1){
-                console.log("entroalif");
+                //console.log("entroalif");
                 self.anims.create({  
                 key: 'an',
                 frames: [
@@ -171,7 +171,7 @@ export class GameMenu extends Phaser.Scene{
                 self.cr.play('an');
             }
             else{
-                console.log("entroalelse");
+                //console.log("entroalelse");
                 self.anims.create({  
                 key: 'anm',
                 frames: [

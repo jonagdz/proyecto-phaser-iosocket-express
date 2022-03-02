@@ -13,7 +13,7 @@ export class gameOver extends Phaser.Scene{
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
   create(){
-      console.log("estoy dentro de game over");
+    console.log("estoy dentro de game over");
     const self = this;
     this.boton= self.add.sprite(500, 500, 'uboots').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () => volverMenu());
 
@@ -34,10 +34,8 @@ export class gameOver extends Phaser.Scene{
         }
     }
     function volverMenu(){
-        var data = {
-            socket: self.socket,
-        }
-        self.scene.start(DEF.SCENES.MENU, data);
+        self.socket.disconnect();
+        self.scene.start(DEF.SCENES.MENUPRINCIPAL);
     }
   }
 }

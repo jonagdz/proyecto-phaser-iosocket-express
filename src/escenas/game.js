@@ -14,8 +14,8 @@ export class game extends Phaser.Scene{
     this.socket = data.socket;
     this.equipo = data.equipo;
     // Seteo las velocidades que se utilizaran en el juego
-    this.velocidadMedia = 600; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
-    this.velocidadBaja = 500;
+    this.velocidadMedia = 250; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
+    this.velocidadBaja = 120;
     this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0,0,0,0,0,12, 30); // Creo el objeto destructor 
     this.submarino = new Submarino()
     this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,180,2,3,0,0,0,0, false, 16, 20); // Creo el objeto submarino 
