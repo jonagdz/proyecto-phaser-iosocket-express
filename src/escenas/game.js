@@ -512,6 +512,12 @@ export class game extends Phaser.Scene{
       emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
       
       self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+      self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
+      self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
+      self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
+      self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
+      self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
+      self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
     }
 
     // Genero todo lo relacionado a la imagen del submarino del jugador actual y sus propiedades (Posicion X e Y, tamaño, profundidad y que sea empujable)
@@ -561,13 +567,19 @@ export class game extends Phaser.Scene{
       self.physics.add.collider(self.submarino.imagen, self.bomb);
       // Se crea una colision del barco con los cargueros
       //self.physics.add.collider(self.submarino.imagen, self.grupoCargueros);
-      self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
+      //self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
       // Se crea una colision del barco con la costa1
       self.physics.add.collider(self.submarino.imagen, self.costa1);
       // Se crea una colision del barco con la costa2
       self.physics.add.collider(self.submarino.imagen, self.costa2);
       // Si el submarino se encuentra en la superficie, que colisione con el destructor
       self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+      self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
+      self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
+      self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
+      self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
+      self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
+      self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
  
       // Se crea el evento de cambio de armas
       self.input.keyboard.on('keydown-' + 'Z', function (event){
@@ -711,6 +723,12 @@ export class game extends Phaser.Scene{
             self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
           }
           self.physics.world.removeCollider(self.colliderSub); 
+          self.physics.world.removeCollider(self.colliderCarg1);
+          self.physics.world.removeCollider(self.colliderCarg2);
+          self.physics.world.removeCollider(self.colliderCarg3);
+          self.physics.world.removeCollider(self.colliderCarg4);
+          self.physics.world.removeCollider(self.colliderCarg5);
+          self.physics.world.removeCollider(self.colliderCarg6); 
         
           // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
           if (self.submarino.profundidad === 0){
@@ -746,6 +764,12 @@ export class game extends Phaser.Scene{
         }
         if(self.submarino.profundidad === 0){
           self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+          self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
+          self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
+          self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
+          self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
+          self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
+          self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
         }
 
         // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
@@ -871,12 +895,12 @@ export class game extends Phaser.Scene{
       self.carguero6.imagen = self.physics.add.image(self.carguero6.posX, self.carguero6.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
       
       // Colisiones cargueros con el submarino
-      self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
-      self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
-      self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
-      self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
-      self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
-      self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
+      self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
+      self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
+      self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
+      self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
+      self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
+      self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
     };
 
     function collisionCargoIsland(carguero, isla)
@@ -958,7 +982,13 @@ export class game extends Phaser.Scene{
               console.log('baje al mucha profundidad');
               self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
             }
-            self.physics.world.removeCollider(self.colliderSub); 
+            self.physics.world.removeCollider(self.colliderSub);
+            self.physics.world.removeCollider(self.colliderCarg1);
+            self.physics.world.removeCollider(self.colliderCarg2);
+            self.physics.world.removeCollider(self.colliderCarg3);
+            self.physics.world.removeCollider(self.colliderCarg4);
+            self.physics.world.removeCollider(self.colliderCarg5);
+            self.physics.world.removeCollider(self.colliderCarg6); 
           }
 
           // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
@@ -996,6 +1026,12 @@ export class game extends Phaser.Scene{
         }
         if(self.submarino.profundidad === 0){
           self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+          self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
+          self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
+          self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
+          self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
+          self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
+          self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
         }
 
         // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
@@ -2158,9 +2194,21 @@ export class game extends Phaser.Scene{
         }
       if(self.submarino.profundidad === 0){
         self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+        self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
+        self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
+        self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
+        self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
+        self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
+        self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
       }
       else{
         self.physics.world.removeCollider(self.colliderSub);
+        self.physics.world.removeCollider(self.colliderCarg1);
+        self.physics.world.removeCollider(self.colliderCarg2);
+        self.physics.world.removeCollider(self.colliderCarg3);
+        self.physics.world.removeCollider(self.colliderCarg4);
+        self.physics.world.removeCollider(self.colliderCarg5);
+        self.physics.world.removeCollider(self.colliderCarg6); 
       }
     }); 
 
