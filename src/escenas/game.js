@@ -18,7 +18,7 @@ export class game extends Phaser.Scene{
     this.velocidadBaja = 120;
     this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0,0,0,0,0,12, 30); // Creo el objeto destructor 
     this.submarino = new Submarino()
-    this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,180,2,3,0,0,0,0, false, 16, 20); // Creo el objeto submarino 
+    this.submarino = new Submarino('Submarino',this.velocidadBaja,0,14,0,0,180,2,3,0,0,0,0, false, 16, 20); // Creo el objeto submarino 
     this.carguero1 = new Carguero('Carguero1',this.velocidadBaja,8,0,0,0,3); // Creo el objeto carguero1 
     this.carguero2 = new Carguero('Carguero2',this.velocidadBaja,8,0,0,0,4); // Creo el objeto carguero2
     this.carguero3 = new Carguero('Carguero3',this.velocidadBaja,8,0,0,0,5); // Creo el objeto carguero3
