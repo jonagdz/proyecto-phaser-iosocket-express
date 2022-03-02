@@ -274,7 +274,10 @@ export class game extends Phaser.Scene{
     // Segun el equipo del jugador actual, genero todos elementos del equipo correspondiente
     if(self.equipo === 1){ // Genero el equipo 1 que son el destructor y los cargueros, aunque tambien debo generar al submarino (Pero sin su camara ni colisiones) para ir actualizando su posicion en este cliente con el movimiento del otro jugador      
       generarEquipo1();
+      this.botonCAMBIARARMA = self.physics.add.image(1000, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCAMBIARARMADESTRU(1)).setDisplaySize(80,80);
 
+      this.botonCAMARA = self.physics.add.image(1100, 800, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCamara(1)).setDisplaySize(80,80);
+      
       self.input.on('pointerdown', function (pointer) {
           self.input.mouse.requestPointerLock();
         }, self);
@@ -339,6 +342,17 @@ export class game extends Phaser.Scene{
        cambiarArma(0);
       }
     }
+
+    function ClickCAMBIARARMADESTRU(VV){
+      if(VV===1){
+        console.log('armacambio');
+        CAMBIARARMADESTRU(1);
+
+      } 
+      else{
+       CAMBIARARMADESTRU(0);
+      }
+    }
     function ClickLARGAVISTA(val){
       if(val===1){
         console.log('larga viista');
@@ -347,6 +361,18 @@ export class game extends Phaser.Scene{
       } 
       else{
         largavista(0);
+      }
+    }
+
+    function ClickCamara(valu){
+     
+      if(valu===1){
+        console.log('larga viista');
+        CAMARADESTRUCARG(1);
+
+      } 
+      else{
+        CAMARADESTRUCARG(0);
       }
     }
     
@@ -1101,6 +1127,32 @@ export class game extends Phaser.Scene{
           self.submarino.largavista = false;
           self.cameras.main.setMask(self.mask);
           self.cameras.main.setZoom(1.4);
+        }
+      }
+    }
+
+    function CAMBIARARMADESTRU(V){
+      if(V===1){
+        if (self.destructor.armas == 0){
+          self.destructor.armas = 1;
+          console.log('Cambio a Cargas de Profundidad');
+        }else{
+          self.destructor.armas = 0;
+          console.log('cambio a canon');
+        }
+      }
+    }
+
+    function CAMARADESTRUCARG(VVV){
+      if(VVV===1){
+        if(self.siguiendoDes === true){
+          self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
+          self.cameras.main.setZoom(1.4);
+          self.siguiendoDes = false;
+        }else{
+          self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
+          self.cameras.main.setZoom(0.9);
+          self.siguiendoDes = true;
         }
       }
     }
