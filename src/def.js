@@ -43,6 +43,7 @@ export const DEF = {
         BOTONSUBIR: "botonsube.png",
         BOTONSONAR: "botonsonar.png",
         BOTONARMA: "botondisparo.png",
+        BOTONLARGAVISTA: "botonlargavista.png"
 
     },
 
