@@ -112,9 +112,9 @@ export class preGameMenu extends Phaser.Scene{
     }
 
     function ElegirHome (valhome) {
-      console.log("Selecciona");
+      //console.log("Selecciona");
       if(valhome===1){
-        console.log("entroalif");
+        //console.log("entroalif");
         self.anims.create({  
           key: 'animhome',
           frames: [
@@ -128,7 +128,7 @@ export class preGameMenu extends Phaser.Scene{
           self.home.play('animhome');
       }
       else{
-        console.log("entroalelse");
+        //console.log("entroalelse");
         self.anims.create({ 
           key: 'animhome2',
           frames: [
@@ -146,9 +146,9 @@ export class preGameMenu extends Phaser.Scene{
 
     ////////////////////////////////////////////////////////////////////////
     function ElegirInfo (tru) {
-      console.log("Selecciona");
+      //console.log("Selecciona");
       if(tru===1){
-        console.log("entroalif");
+        //console.log("entroalif");
         self.anims.create({  
           key: 'animinf1',
           frames: [
@@ -163,7 +163,7 @@ export class preGameMenu extends Phaser.Scene{
           self.inf.play('animinf1');
       }
       else{
-        console.log("entroalelse");
+        //console.log("entroalelse");
         self.anims.create({  
           key: 'animinf',
           frames: [
@@ -192,9 +192,9 @@ export class preGameMenu extends Phaser.Scene{
   
    ///////////////////////////////////////////////////////////////////////////////
     function ElegirDestroy (val) {
-      console.log("Selecciona");
+      //console.log("Selecciona");
       if(val===1){
-        console.log("entroalif");
+        //console.log("entroalif");
         self.anims.create({  
           key: 'animinDestroy',
           frames: [
@@ -208,7 +208,7 @@ export class preGameMenu extends Phaser.Scene{
           });
           self.destroy.play('animinDestroy');
       }else{
-        console.log("entroalelse");
+        //console.log("entroalelse");
         self.anims.create({ 
           key: 'animinDestroy2',
           frames: [
@@ -226,9 +226,9 @@ export class preGameMenu extends Phaser.Scene{
 
     ///////////////////////////////////////////////////////////////////////////////////
     function ElegirUboot (vall) {
-      console.log("Selecciona");
+      //console.log("Selecciona");
       if(vall===1){
-        console.log("entroalif");
+        //console.log("entroalif");
         self.anims.create({  
           key: 'animinBoot',
           frames: [
@@ -242,7 +242,7 @@ export class preGameMenu extends Phaser.Scene{
           self.uboot.play('animinBoot');
       }
       else{
-        console.log("entroalelse");
+        //console.log("entroalelse");
         self.anims.create({ 
           key: 'animinBoot2',
           frames: [
