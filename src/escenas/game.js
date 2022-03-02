@@ -256,8 +256,20 @@ export class game extends Phaser.Scene{
       this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
-      this.botonDOWNDI = self.physics.add.image(700, 700, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
+      this.botonDOWNDI = self.physics.add.image(800, 800, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
+      this.botonDOWNDI.setDisplaySize(80,80);
       this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
+
+      this.botonSUBE = self.physics.add.image(900, 800, DEF.IMAGENES.BOTONSUBIR).setOrigin(0).setScrollFactor(0).setDepth(10)
+      this.botonSUBE.setDisplaySize(80,80);
+
+      this.botonSONAR = self.physics.add.image(1000, 800, DEF.IMAGENES.BOTONSONAR).setOrigin(0).setScrollFactor(0).setDepth(10)
+      this.botonSONAR.setDisplaySize(80,80);
+
+      this.botonCAMBIARARMA = self.physics.add.image(1100, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10)
+      this.botonCAMBIARARMA.setDisplaySize(80,80);
+
+
     } 
     
     function ClickDOWN(val){

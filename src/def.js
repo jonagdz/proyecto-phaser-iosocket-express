@@ -39,7 +39,10 @@ export const DEF = {
      //   BOTONUPDR: "diagonalr.png",
     //    BOTONDOWNDR: "diagonalrdown.png",
         //  BOTONUPDI: "diagonaliup.png",
-        BOTONDOWNDI: "diagonalidown.png"
+        BOTONDOWNDI: "botonsumerge.png",
+        BOTONSUBIR: "botonsube.png",
+        BOTONSONAR: "botonsonar.png",
+        BOTONARMA: "botondisparo.png",
 
     },
 
