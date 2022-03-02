@@ -251,7 +251,6 @@ export class game extends Phaser.Scene{
 
     // Segun el equipo del jugador actual, genero todos elementos del equipo correspondiente
     if(self.equipo === 1){ // Genero el equipo 1 que son el destructor y los cargueros, aunque tambien debo generar al submarino (Pero sin su camara ni colisiones) para ir actualizando su posicion en este cliente con el movimiento del otro jugador      
-
       generarEquipo1();
 
       // Habilito el boton para cambiar de camara con los cargueros
