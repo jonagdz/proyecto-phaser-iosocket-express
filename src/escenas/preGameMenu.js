@@ -105,8 +105,10 @@ export class preGameMenu extends Phaser.Scene{
 
     ////////////////////////////////////////////////////////////////////////
     function ClickHome () {
+      self.socket.disconnect();
       console.log("Vuelve a inicio");
       self.scene.start(DEF.SCENES.MENUPRINCIPAL);
+  
     }
 
     function ElegirHome (valhome) {
