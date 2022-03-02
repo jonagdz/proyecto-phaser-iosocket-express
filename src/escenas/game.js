@@ -83,6 +83,7 @@ export class game extends Phaser.Scene{
     let probExtra = 0;
     let carguerosAsalvo = 0;
     let pack;
+    let playerIMG;
 
     // Obtengo el centro del canvas para la máscara
     const centroW = this.sys.game.config.width / 2;
@@ -876,46 +877,48 @@ export class game extends Phaser.Scene{
           self.physics.add.collider(bullet, reticula, function(bullet){
             bullet.destroy();
           });
-
+          //console.log(enemy.imagen.isActive());
           //MANEJO DE COLISION ENTRE LA BALA Y OTROS JUGADORES
-          self.physics.add.collider(bullet, enemyImag, function(bullet){
-            distCorta = 75;
-            distMedia = 200;
+          if(enemy.vida>0){
+            self.physics.add.collider(bullet, enemyImag, function(bullet){
+              distCorta = 75;
+              distMedia = 200;
 
-            corta = false;
-            media = false;
-            larga = false;  
-            let distancia = Math.sqrt((bullet.x - player.x)**2 + (bullet.y - player.y)**2);
-            //console.log((bullet.x - player.x)**2);
-            let dist;
-            if(distancia <= distCorta)
-            {
-              dist = "corta";
-              /*corta = true;
+              corta = false;
               media = false;
-              larga = false;*/
-            }
-            else if(distancia > distCorta && distancia<= distMedia)
-            {
-              dist = "media";
-              /*corta = false;
-              media = true;
-              larga = false;*/
-            }
-            else if(distancia > distMedia)
-            {
-              dist = "larga";
-              /*corta = false;
-              media = false;
-              larga = true; */ 
-            }
-           /*console.log("distancia corta", corta);
-            console.log("distancia media", media);
-            console.log("distiancia larga", larga);*/
-            
-            bullet.destroy();
-            handleHit(nave, dist, enemy);
-          });
+              larga = false;  
+              let distancia = Math.sqrt((bullet.x - player.x)**2 + (bullet.y - player.y)**2);
+              //console.log((bullet.x - player.x)**2);
+              let dist;
+              if(distancia <= distCorta)
+              {
+                dist = "corta";
+                /*corta = true;
+                media = false;
+                larga = false;*/
+              }
+              else if(distancia > distCorta && distancia<= distMedia)
+              {
+                dist = "media";
+                /*corta = false;
+                media = true;
+                larga = false;*/
+              }
+              else if(distancia > distMedia)
+              {
+                dist = "larga";
+                /*corta = false;
+                media = false;
+                larga = true; */ 
+              }
+            /*console.log("distancia corta", corta);
+              console.log("distancia media", media);
+              console.log("distiancia larga", larga);*/
+              
+              bullet.destroy();
+              handleHit(nave, dist, enemy);
+            });
+          }  
       }
     }
     //funcion que maneja el dano hecho por cada vez que se lanza el evento disparo del click, segun el tipo de arma es el dano hecho
@@ -941,8 +944,7 @@ export class game extends Phaser.Scene{
               if((probabilidad + probExtra) > 4)
               {
                 hitted(enemy.imagen.x, enemy.imagen.y); 
-                danio = 5;
-                enemy.vida = enemy.vida - danio;              
+                danio = 5;             
                 
                 pack ={
                   danio: danio,
@@ -989,7 +991,6 @@ export class game extends Phaser.Scene{
               if((probabilidad + probExtra) > 3){
                 hitted(enemy.imagen.x, enemy.imagen.y); 
                 danio = 5;
-                enemy.vida = enemy.vida - danio;              
                 
                 pack ={
                   danio: danio,
@@ -1035,7 +1036,6 @@ export class game extends Phaser.Scene{
               if((probabilidad + probExtra) > 6){
                 hitted(enemy.imagen.x, enemy.imagen.y); 
                 danio = 5;
-                enemy.vida = enemy.vida - danio;              
                 
                 pack ={
                   danio: danio,
@@ -1088,7 +1088,6 @@ export class game extends Phaser.Scene{
                 {
                   danio = 3;
                   hitted(enemy.imagen.x, enemy.imagen.y); 
-                  enemy.vida = enemy.vida - danio;              
                   
                   pack ={
                     danio: danio,
@@ -1138,7 +1137,6 @@ export class game extends Phaser.Scene{
                 {
                   danio = 3;
                   hitted(enemy.imagen.x, enemy.imagen.y); 
-                  enemy.vida = enemy.vida - danio;              
                   
                   pack ={
                     danio: danio,
@@ -1370,9 +1368,10 @@ export class game extends Phaser.Scene{
                   {
                     enemy.vida = 0;
                     destroyed(enemy.imagen);
+                    enemy.imagen.removeInteractive();
                     enemy.imagen.setActive(false);
                     enemy.imagen.setVisible(false);
-                    enemy.imagen.removeInteractive();
+                    self.textures.remove(enemy.imagen);
                   }
                   else
                     enemy.vida = enemy.vida - danio;
@@ -1424,9 +1423,10 @@ export class game extends Phaser.Scene{
                   {
                     enemy.vida = 0;
                     destroyed(enemy.imagen);
+                    enemy.imagen.removeInteractive();
                     enemy.imagen.setActive(false);
                     enemy.imagen.setVisible(false);
-                    enemy.imagen.removeInteractive();
+                    self.textures.remove(enemy.imagen);
                   }
                   else
                     enemy.vida = enemy.vida - danio;
@@ -1477,9 +1477,10 @@ export class game extends Phaser.Scene{
                   {
                     enemy.vida = 0;
                     destroyed(enemy.imagen);
+                    enemy.imagen.removeInteractive();
                     enemy.imagen.setActive(false);
                     enemy.imagen.setVisible(false);
-                    enemy.imagen.removeInteractive();
+                    self.textures.remove(enemy.imagen);
                   }
                   else
                     enemy.vida = enemy.vida - danio;
@@ -1559,23 +1560,22 @@ export class game extends Phaser.Scene{
     //funcion que procesa el dano y el porcentaje de acierto
     function RecibeHit(player, damage, escar)
     {
-      let playerIMG = player.imagen;
+      playerIMG = player.imagen;
       hitted(playerIMG.x, playerIMG.y);
-      
+      console.log(player);
       if(player.vida > 0)
       {
-        //console.log('Vida Restante', player.vida);
         player.vida = player.vida - damage; 
-        //console.log('Vida Restante', player.vida);
+        console.log('Vida Restante', player.vida);
       }
       if(player.vida <= 0)
       {
         console.log('vida menor que 0');
         destroyed(playerIMG);
+        playerIMG.removeInteractive();
         playerIMG.setActive(false);
         playerIMG.setVisible(false);
-        playerIMG.removeInteractive();
-
+        self.textures.remove(playerIMG);
         if(escar)
         {
           carguerosMuertos++;
@@ -1705,34 +1705,33 @@ export class game extends Phaser.Scene{
     {       
         if(self.equipo===1)
         {
-          console.log("carguero golpeado numero", playerInfo.carguero);
-          if(playerInfo.carguero === 1)
+          if (playerInfo.numerocarguero === 0)
+          {
+            RecibeHit(self.destructor, playerInfo.damage, false);
+          }
+          else if(playerInfo.numerocarguero === 1)
           {
             RecibeHit(self.carguero1, playerInfo.damage, true);
           }
-          else if(playerInfo.carguero === 2)
+          else if(playerInfo.numerocarguero === 2)
           {
             RecibeHit(self.carguero2, playerInfo.damage, true);
           }
-          else if(playerInfo.carguero === 3)
+          else if(playerInfo.numerocarguero === 3)
           {
             RecibeHit(self.carguero3, playerInfo.damage, true);
           }
-          else if(playerInfo.carguero === 4)
+          else if(playerInfo.numerocarguero === 4)
           {
             RecibeHit(self.carguero4, playerInfo.damage, true);
           }
-          else if(playerInfo.carguero === 5)
+          else if(playerInfo.numerocarguero === 5)
           {
             RecibeHit(self.carguero5, playerInfo.damage, true);
           }
-          else if(playerInfo.carguero === 6)
+          else if(playerInfo.numerocarguero === 6)
           {
             RecibeHit(self.carguero6, playerInfo.damage, true);
-          }
-          else
-          {
-            RecibeHit(self.destructor, playerInfo.damage, false);
           }
         }
         else
