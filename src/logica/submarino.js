@@ -2,7 +2,7 @@ import { Bullets } from '../logica/bullet.js';
 
 export class Submarino{
 
-    constructor(nom,velocidad,profundidad,vida,posX,posY,rotacion,cod,sonar,imagen,bullet,armas,reticula,largavista){
+    constructor(nom,velocidad,profundidad,vida,posX,posY,rotacion,cod,sonar,imagen,bullet,armas,reticula,largavista, ammoTor, ammoCan){
 
         // Atributos propios
         this.nom = nom;
@@ -19,6 +19,8 @@ export class Submarino{
         this.armas = armas;
         this.reticula = reticula;
         this.largavista = largavista;
+        this.ammoTorpedos = ammoTor;
+        this.ammoCanion = ammoCan;
     };
 
     // Metodos

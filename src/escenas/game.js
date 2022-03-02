@@ -16,9 +16,9 @@ export class game extends Phaser.Scene{
     // Seteo las velocidades que se utilizaran en el juego
     this.velocidadMedia = 600; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
     this.velocidadBaja = 500;
-    this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0,0,0,0,0); // Creo el objeto destructor 
+    this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0,0,0,0,0,12, 30); // Creo el objeto destructor 
     this.submarino = new Submarino()
-    this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,180,2,3,0,0,0,0,false); // Creo el objeto submarino 
+    this.submarino = new Submarino('Submarino',this.velocidadMedia,0,14,0,0,180,2,3,0,0,0,0, false, 16, 20); // Creo el objeto submarino 
     this.carguero1 = new Carguero('Carguero1',this.velocidadBaja,8,0,0,0,3); // Creo el objeto carguero1 
     this.carguero2 = new Carguero('Carguero2',this.velocidadBaja,8,0,0,0,4); // Creo el objeto carguero2
     this.carguero3 = new Carguero('Carguero3',this.velocidadBaja,8,0,0,0,5); // Creo el objeto carguero3
@@ -912,23 +912,61 @@ export class game extends Phaser.Scene{
       if(self.equipo === 1){
         //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.destructor.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
-        //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
-        Disparo(self.destructor, bullet, self.submarino);
+        
+        //manejo de la municion del destructor
+        if(self.destructor.armas === 0 && self.destructor.vida > 0 && self.destructor.ammoCanion > 0)
+        {
+          self.destructor.ammoCanion--;
+          console.log("Municion restante Canon", self.destructor.ammoCanion);
+ 
+          //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
+          Disparo(self.destructor, bullet, self.submarino);
 
+        }
+        if (self.destructor.armas === 1 && self.destructor.vida > 0 && self.destructor.ammoCargas > 0)
+        {
+          self.destructor.ammoCargas--;
+          console.log("Cargas de profundidad restantes", self.destructor.ammoCargas);
+      
+          //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
+          Disparo(self.destructor, bullet, self.submarino);
+        }
       }
       else
       {
 
         //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
-        //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
-        Disparo(self.submarino, bullet, self.destructor);
-        Disparo(self.submarino, bullet, self.carguero1);
-        Disparo(self.submarino, bullet, self.carguero2);
-        Disparo(self.submarino, bullet, self.carguero3);
-        Disparo(self.submarino, bullet, self.carguero4);
-        Disparo(self.submarino, bullet, self.carguero5);
-        Disparo(self.submarino, bullet, self.carguero6);
+        
+        //manejo de municion del submarino
+        if(self.submarino.armas === 0 && self.submarino.vida > 0 && self.submarino.ammoCanion > 0)
+        {
+          self.submarino.ammoCanion--;
+          console.log("Municion restante Canon", self.submarino.ammoCanion);
+
+          //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
+          Disparo(self.submarino, bullet, self.destructor);
+          Disparo(self.submarino, bullet, self.carguero1);
+          Disparo(self.submarino, bullet, self.carguero2);
+          Disparo(self.submarino, bullet, self.carguero3);
+          Disparo(self.submarino, bullet, self.carguero4);
+          Disparo(self.submarino, bullet, self.carguero5);
+          Disparo(self.submarino, bullet, self.carguero6);    
+        }
+        if ((self.submarino.armas === 1 || self.submarino.armas === 4) && self.submarino.vida > 0 && self.submarino.ammoTorpedos > 0)
+        {
+          self.submarino.ammoTorpedos--;
+          console.log("Torpedos restantes", self.submarino.ammoTorpedos);
+          
+          //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
+          Disparo(self.submarino, bullet, self.destructor);
+          Disparo(self.submarino, bullet, self.carguero1);
+          Disparo(self.submarino, bullet, self.carguero2);
+          Disparo(self.submarino, bullet, self.carguero3);
+          Disparo(self.submarino, bullet, self.carguero4);
+          Disparo(self.submarino, bullet, self.carguero5);
+          Disparo(self.submarino, bullet, self.carguero6);    
+        }
       }
       //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
       //dano al enemigo si el ya te gano
@@ -981,7 +1019,6 @@ export class game extends Phaser.Scene{
           self.physics.add.collider(bullet, reticula, function(bullet){
             bullet.destroy();
           });
-          //console.log(enemy.imagen.isActive());
           //MANEJO DE COLISION ENTRE LA BALA Y OTROS JUGADORES
           if(enemy.vida>0){
             self.physics.add.collider(bullet, enemyImag, function(bullet){
@@ -1298,18 +1335,8 @@ export class game extends Phaser.Scene{
                   //console.log("entro al if del danio sub corto");
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   
-                  danio = 1;
-                  if(enemy.vida <= danio)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen);
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    enemy.imagen.removeInteractive();
-                  }
-                  else
-                    enemy.vida = enemy.vida - danio;
-                  //console.log('danio al enemigo', danio);
+                  danio = 2;
+                  
                   switch(enemy)
                   {
                     case self.carguero1:
@@ -1331,6 +1358,7 @@ export class game extends Phaser.Scene{
                       Escarguero = 6;
                       break;
                     default:
+                      Escarguero = 0;
                       break;
                   }
                   
@@ -1339,7 +1367,16 @@ export class game extends Phaser.Scene{
                     carguero: Escarguero
                   }              
                   self.socket.emit('playerHit', pack);
-                  
+                  if(enemy.vida <= danio)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen);
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    enemy.imagen.removeInteractive();
+                  }
+                  else
+                    enemy.vida = enemy.vida - danio;
                 } 
               }
               else if(dist === "media")
@@ -1352,47 +1389,49 @@ export class game extends Phaser.Scene{
                     //console.log("entro al if del danio sub medio");
                     hitted(enemy.imagen.x, enemy.imagen.y); 
                   
-                  danio = 1;
-                  if(enemy.vida <= danio)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen);
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    enemy.imagen.removeInteractive();
-                  }
-                  else
-                    enemy.vida = enemy.vida - danio;
-                  //console.log('danio al enemigo', danio);
-                  switch(enemy)
-                  {
-                    case self.carguero1:
-                      Escarguero = 1;
-                      break;
-                    case self.carguero2:
-                      Escarguero = 2;
-                      break;
-                    case self.carguero3:
-                      Escarguero = 3;
-                      break;
-                    case self.carguero4:
-                      Escarguero = 4;
-                      break;
-                    case self.carguero5:
-                      Escarguero = 5;
-                      break;
-                    case self.carguero6:
-                      Escarguero = 6;
-                      break;
-                    default:
-                      break;
-                  }
+                    danio = 2;
                   
-                  pack ={
-                    danio: danio,
-                    carguero: Escarguero
-                  }              
-                  self.socket.emit('playerHit', pack);
+                    switch(enemy)
+                    {
+                      case self.carguero1:
+                        Escarguero = 1;
+                        break;
+                      case self.carguero2:
+                        Escarguero = 2;
+                        break;
+                      case self.carguero3:
+                        Escarguero = 3;
+                        break;
+                      case self.carguero4:
+                        Escarguero = 4;
+                        break;
+                      case self.carguero5:
+                        Escarguero = 5;
+                        break;
+                      case self.carguero6:
+                        Escarguero = 6;
+                        break;
+                      default:
+                        Escarguero = 0;
+                        break;
+                    }
+                  
+                    pack ={
+                      danio: danio,
+                      carguero: Escarguero
+                    }              
+                    self.socket.emit('playerHit', pack);
+
+                    if(enemy.vida <= danio)
+                    {
+                      enemy.vida = 0;
+                      destroyed(enemy.imagen);
+                      enemy.imagen.setActive(false);
+                      enemy.imagen.setVisible(false);
+                      enemy.imagen.removeInteractive();
+                    }
+                    else
+                      enemy.vida = enemy.vida - danio;
                 }  
               }
               else if(dist === "larga")
@@ -1406,18 +1445,8 @@ export class game extends Phaser.Scene{
                       //console.log("entro al if del danio sub largo");
                       hitted(enemy.imagen.x, enemy.imagen.y); 
                   
-                      danio = 1;
-                      if(enemy.vida <= danio)
-                      {
-                        enemy.vida = 0;
-                        destroyed(enemy.imagen);
-                        enemy.imagen.setActive(false);
-                        enemy.imagen.setVisible(false);
-                        enemy.imagen.removeInteractive();
-                      }
-                      else
-                        enemy.vida = enemy.vida - danio;
-                      //console.log('danio al enemigo', danio);
+                      danio = 2;
+                      
                       switch(enemy)
                       {
                         case self.carguero1:
@@ -1439,6 +1468,7 @@ export class game extends Phaser.Scene{
                           Escarguero = 6;
                           break;
                         default:
+                          Escarguero = 0;
                           break;
                       }
                       
@@ -1447,6 +1477,17 @@ export class game extends Phaser.Scene{
                         carguero: Escarguero
                       }              
                       self.socket.emit('playerHit', pack);
+
+                      if(enemy.vida <= danio)
+                      {
+                        enemy.vida = 0;
+                        destroyed(enemy.imagen);
+                        enemy.imagen.setActive(false);
+                        enemy.imagen.setVisible(false);
+                        enemy.imagen.removeInteractive();
+                      }
+                      else
+                        enemy.vida = enemy.vida - danio;
                     }
               }
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -1458,8 +1499,8 @@ export class game extends Phaser.Scene{
               if(dist === "corta")
               {
                 probExtra = Math.floor(Math.random() * (2));
-                //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                //console.log('la probabilidad extra del canion es %', probExtra + '0');
+                console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra + '0');
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 2)
                 {
@@ -1468,18 +1509,6 @@ export class game extends Phaser.Scene{
 
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   
-                  if(enemy.vida <= danio)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen);
-                    enemy.imagen.removeInteractive();
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    self.textures.remove(enemy.imagen);
-                  }
-                  else
-                    enemy.vida = enemy.vida - danio;
-                  //console.log('danio al enemigo', danio);
                   switch(enemy)
                   {
                     case self.carguero1:
@@ -1501,6 +1530,7 @@ export class game extends Phaser.Scene{
                       Escarguero = 6;
                       break;
                     default:
+                      Escarguero = 0;
                       break;
                   }
                   
@@ -1509,6 +1539,18 @@ export class game extends Phaser.Scene{
                     carguero: Escarguero
                   }              
                   self.socket.emit('playerHit', pack);
+
+                  if(enemy.vida <= danio)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen);
+                    enemy.imagen.removeInteractive();
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    self.textures.remove(enemy.imagen);
+                  }
+                  else
+                    enemy.vida = enemy.vida - danio;
                 }
               }
               else if(dist === "media")
@@ -1523,17 +1565,6 @@ export class game extends Phaser.Scene{
                   danio = 4;
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   
-                  if(enemy.vida <= danio)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen);
-                    enemy.imagen.removeInteractive();
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    self.textures.remove(enemy.imagen);
-                  }
-                  else
-                    enemy.vida = enemy.vida - danio;
                   //console.log('danio al enemigo', danio);
                   switch(enemy)
                   {
@@ -1556,6 +1587,7 @@ export class game extends Phaser.Scene{
                       Escarguero = 6;
                       break;
                     default:
+                      Escarguero = 0;
                       break;
                   }
                   
@@ -1564,6 +1596,18 @@ export class game extends Phaser.Scene{
                     carguero: Escarguero
                   }              
                   self.socket.emit('playerHit', pack);
+
+                  if(enemy.vida <= danio)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen);
+                    enemy.imagen.removeInteractive();
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    self.textures.remove(enemy.imagen);
+                  }
+                  else
+                    enemy.vida = enemy.vida - danio;
                 }  
               }
               else if(dist === "larga")
@@ -1577,18 +1621,6 @@ export class game extends Phaser.Scene{
                   danio = 4;
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   
-                  if(enemy.vida <= danio)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen);
-                    enemy.imagen.removeInteractive();
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    self.textures.remove(enemy.imagen);
-                  }
-                  else
-                    enemy.vida = enemy.vida - danio;
-                  //console.log('danio al enemigo', danio);
                   switch(enemy)
                   {
                     case self.carguero1:
@@ -1610,6 +1642,7 @@ export class game extends Phaser.Scene{
                       Escarguero = 6;
                       break;
                     default:
+                      Escarguero = 0;
                       break;
                   }
                   
@@ -1618,6 +1651,18 @@ export class game extends Phaser.Scene{
                     carguero: Escarguero
                   }              
                   self.socket.emit('playerHit', pack);
+
+                  if(enemy.vida <= danio)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen);
+                    enemy.imagen.removeInteractive();
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    self.textures.remove(enemy.imagen);
+                  }
+                  else
+                    enemy.vida = enemy.vida - danio;
                 }
               }     
             }

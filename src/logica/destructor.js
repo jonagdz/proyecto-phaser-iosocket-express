@@ -20,7 +20,7 @@ export class Destructor { // extends Bote
         this.reticula = reticula;
         this.cargas = cargas;
         this.ammoCargas = ammoCar;
-        this.ammoCanion = ammoCan
+        this.ammoCanion = ammoCan;
     };
 
     // Metodos
