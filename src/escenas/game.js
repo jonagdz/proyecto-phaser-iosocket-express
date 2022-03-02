@@ -287,16 +287,16 @@ export class game extends Phaser.Scene{
       generarEquipo2();
       this.botonDOWNDI = self.physics.add.image(700, 800, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1)).setDisplaySize(80,80);
 
-      this.botonSUBE = self.physics.add.image(800, 800, DEF.IMAGENES.BOTONSUBIR).setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
+      this.botonSUBE = self.physics.add.image(800, 800, DEF.IMAGENES.BOTONSUBIR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSUBE(1)).setDisplaySize(80,80);
    
 
-      this.botonSONAR = self.physics.add.image(900, 800, DEF.IMAGENES.BOTONSONAR).setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
+      this.botonSONAR = self.physics.add.image(900, 800, DEF.IMAGENES.BOTONSONAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSONAR(1)).setDisplaySize(80,80);
     
 
-      this.botonCAMBIARARMA = self.physics.add.image(1000, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
+      this.botonCAMBIARARMA = self.physics.add.image(1000, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCAMBIARARMA(1)).setDisplaySize(80,80);
      
 
-      this.botonLARGAVISTA = self.physics.add.image(1100, 800, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
+      this.botonLARGAVISTA = self.physics.add.image(1100, 800, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickLARGAVISTA(1)).setDisplaySize(80,80);
      
     } 
     
@@ -309,6 +309,48 @@ export class game extends Phaser.Scene{
         prof(0);
       }
     }
+    
+    function ClickSUBE(val){
+      if(val===1){
+        console.log('sube');
+        sube(1)
+      } 
+      else{
+        sube(0)
+      }
+    }
+    function ClickSONAR(val){
+      if(val===1){
+        console.log('sonar');
+        sonar(1);
+      } 
+      else{
+        sonar(0);
+      }
+    }
+
+    function ClickCAMBIARARMA(val){
+      if(val===1){
+        console.log('armacambio');
+        cambiarArma(1);
+
+      } 
+      else{
+       cambiarArma(0);
+      }
+    }
+    function ClickLARGAVISTA(val){
+      if(val===1){
+        console.log('larga viista');
+        largavista(1);
+
+      } 
+      else{
+        largavista(0);
+      }
+    }
+    
+  
 
     function generarEquipo1(){     
       // Genero los objetos cargueros, con sus imagenes, colisiones, etc
@@ -904,6 +946,162 @@ export class game extends Phaser.Scene{
             // Si me encuentro a mucha profundidad la velocidad va a ser lenta
             self.submarino.velocidad = self.velocidadBaja; 
           }
+      }
+    }
+
+    function sube(val){
+      if(val==1){
+         // Idem anteriores pero subiendo de 1 a 0
+         if (self.submarino.profundidad == 1){
+          self.submarino.profundidad = 0;
+          self.submarino.armas = 0;
+          console.log('subi a la superficie');
+          //self.submarino.imagen.setTexture('uboot');
+          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
+          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        } else if (self.submarino.profundidad == 2){
+          // Idem anteriores pero subiendo de 0 a 1
+          self.submarino.profundidad = 1;
+          self.submarino.armas = 4;
+          //self.submarino.imagen.setTexture('UbootProfundidad1');
+          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
+          console.log('subi a poca profundidad');
+          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        }
+        if(self.submarino.profundidad === 0){
+          self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+        }
+
+        // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
+        if (self.submarino.profundidad == 0){
+          // Si me encuentro en la superficie la velocidad va a ser lenta
+          self.submarino.velocidad = self.velocidadBaja; 
+        }else if(self.submarino.profundidad == 1){
+          // Si me encuentro a baja profundidad la velocidad va a ser media
+          self.submarino.velocidad = self.velocidadMedia; 
+        }else if(self.submarino.profundidad == 2){
+        // Si me encuentro a mucha profundidad la velocidad va a ser lenta
+          self.submarino.velocidad = self.velocidadBaja; 
+        }
+      }
+    }
+
+    function sonar(val){
+      if(val==1){
+      // Activo sonar si hay sonares disponibles
+      if(self.submarino.sonar>0){
+        if (self.usoSonar !== true){
+          // Texto de aviso
+          self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
+          
+          self.usoSonar = true;
+
+          // Activo sonido de sonar
+          self.soundSonar.play();
+
+          // Cambio de cámaras
+          self.cameras.main.setMask(self.mask);
+          self.cameras.main.setZoom(0.9);
+          
+          // Activo cuenta regresiva
+          self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
+          
+          // Vuelvo a vista normal y elimino aviso
+          self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
+          
+          function camaraSonar(){
+            // Restablezco las cámaras
+            self.cameras.main.setMask(self.mask);
+            self.cameras.main.setZoom(1.4);
+            self.usoSonar = false;
+            console.log("USO SONAR:"+self.usoSonar);
+            // Elimino texto de tiempo restante
+            removeText();
+            self.soundSonar.stop();
+            contadorS=0;
+          }
+          function actualizarContSonar(){
+            contadorS++;
+            self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS) + '\nSONARES RESTANTES: '+(self.submarino.sonar));
+            if (contadorS === 10){
+              self.cuentaSonar.remove(true);
+            }
+          }
+          function removeText() {
+            self.statusSonar.destroy();
+          }
+          self.submarino.sonar--;
+        }
+      }else{
+        if (self.usoSonar !== true){
+            // Texto de aviso
+            self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
+
+            self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
+            self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
+            
+            function eliminoAvisoNHS(){
+              // Elimino texto de aviso no hay sonar
+              removeText();
+              contadorS=0;
+            }
+            function avisoNoHaySonar(){
+              contadorS++;
+              self.statusSonar.setText('¡SONAR AGOTADO!');
+              if (contadorS === 5){
+                self.cuentaSonar.remove(true);
+              }
+            }
+            function removeText() {
+              self.statusSonar.destroy();
+            }
+          }
+        }
+     }
+    }
+
+    function cambiarArma(valor){
+      if(valor===1){
+          //si esta en superficie, que cambie de armas tranquilamente
+          if(self.submarino.profundidad === 0){
+            if (self.submarino.armas === 0){
+              self.submarino.armas = 1;
+              console.log('Cambio a Torpedos');
+            }else{
+              self.submarino.armas = 0;
+              console.log('cambio a canon');
+            }
+          }else if(self.submarino.profundidad === 1){
+            //si esta a profundidad 1 que solo pueda usar el arma 1, torpedos
+              self.submarino.armas = 4;
+              console.log('Solo Torpedos a esta profundidad');  
+          }else if(self.submarino.profundidad === 2){
+            //si esta en profundidad 2 que no pueda disparar
+            self.submarino.armas = -1;
+          }
+          if(self.submarino.armas === 0){
+            self.distMax = 300;
+          }else if(self.submarino.armas === 1 || self.submarino.armas === 4){
+            self.distMax = 500;
+          }   
+          self.submarino.reticula.x = self.submarino.imagen.x + (Math.cos((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
+          self.submarino.reticula.y = self.submarino.imagen.y + (Math.sin((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
+      }    
+    }
+
+    function largavista(v){
+      if(v===1){
+        console.log("entro al larga vista");
+        if(self.submarino.largavista === false && (self.submarino.profundidad === 0)){
+          self.submarino.largavista = true;
+          self.largaVistas.angle=self.submarino.imagen.angle+270;
+          self.cameras.main.setMask(self.mar.masklv);
+          self.cameras.main.setZoom(0.9);
+        }else if(self.submarino.largavista === true && (self.submarino.profundidad === 0)){
+          self.submarino.largavista = false;
+          self.cameras.main.setMask(self.mask);
+          self.cameras.main.setZoom(1.4);
+        }
       }
     }
 
