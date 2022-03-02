@@ -252,31 +252,12 @@ export class game extends Phaser.Scene{
     // Segun el equipo del jugador actual, genero todos elementos del equipo correspondiente
     if(self.equipo === 1){ // Genero el equipo 1 que son el destructor y los cargueros, aunque tambien debo generar al submarino (Pero sin su camara ni colisiones) para ir actualizando su posicion en este cliente con el movimiento del otro jugador      
       generarEquipo1();
-
-      // Habilito el boton para cambiar de camara con los cargueros
-      const btnCamaraCarguero = this.add.text(600, 600, 'BOTON PARA CAMBIAR DE CAMARA CON LOS CARGUEROS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(1));
-      const btnCamaraDestructor = this.add.text(600, 650, 'BOTON PARA CAMBIAR DE CAMARA CON EL DESTRUCTOR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioCamaraCargueros(0));
-      self.input.on('pointerdown', function (pointer) {
-        self.input.mouse.requestPointerLock();
-      }, self);
-      //this.botonDOWNDI = self.physics.add.image(700, 900, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
-      //this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
+      this.botonDOWNDI = self.physics.add.image(700, 900, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
+      this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
-      this.botonDOWNDI = self.physics.add.image(800, 800, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
-      this.botonDOWNDI.setDisplaySize(80,80);
+      this.botonDOWNDI = self.physics.add.image(700, 700, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
       this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
-
-      this.botonSUBE = self.physics.add.image(900, 800, DEF.IMAGENES.BOTONSUBIR).setOrigin(0).setScrollFactor(0).setDepth(10)
-      this.botonSUBE.setDisplaySize(80,80);
-
-      this.botonSONAR = self.physics.add.image(1000, 800, DEF.IMAGENES.BOTONSONAR).setOrigin(0).setScrollFactor(0).setDepth(10)
-      this.botonSONAR.setDisplaySize(80,80);
-
-      this.botonCAMBIARARMA = self.physics.add.image(1100, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10)
-      this.botonCAMBIARARMA.setDisplaySize(80,80);
-
-
     } 
     
     function ClickDOWN(val){
