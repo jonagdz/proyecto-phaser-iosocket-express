@@ -31,8 +31,5 @@ window.onload = () =>{
   // Defino mis variables
   var Game;
   Game = new Phaser.Game(config);
-  //Metodo pque escucha cuando se hace un click en la pantalla, lockea el cursor para usarlo como mira
-  Game.canvas.addEventListener('mousedown', function () {
-  Game.input.mouse.requestPointerLock();
-  });
+
 }

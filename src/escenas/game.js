@@ -175,6 +175,10 @@ export class game extends Phaser.Scene{
     // Segun el equipo del jugador actual, genero todos elementos del equipo correspondiente
     if(self.equipo === 1){ // Genero el equipo 1 que son el destructor y los cargueros, aunque tambien debo generar al submarino (Pero sin su camara ni colisiones) para ir actualizando su posicion en este cliente con el movimiento del otro jugador      
       generarEquipo1();
+
+      self.input.on('pointerdown', function (pointer) {
+          self.input.mouse.requestPointerLock();
+        }, self);
       //this.botonDOWNDI = self.physics.add.image(700, 900, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
       //this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
@@ -804,18 +808,22 @@ export class game extends Phaser.Scene{
         //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.destructor.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
         //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
-        Disparo(self.destructor.imagen, bullet, self.destructor.reticula, self.submarino.imagen, self.submarino);
-      }else{
+        Disparo(self.destructor, bullet, self.submarino);
+
+      }
+      else
+      {
+
         //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
         //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.destructor.imagen, self.destructor);
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero1.imagen, self.carguero1);
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero2.imagen, self.carguero2);
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero3.imagen, self.carguero3);
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero4.imagen, self.carguero4);
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero5.imagen, self.carguero5);
-        Disparo(self.submarino.imagen, bullet, self.submarino.reticula, self.carguero6.imagen, self.carguero6);
+        Disparo(self.submarino, bullet, self.destructor);
+        Disparo(self.submarino, bullet, self.carguero1);
+        Disparo(self.submarino, bullet, self.carguero2);
+        Disparo(self.submarino, bullet, self.carguero3);
+        Disparo(self.submarino, bullet, self.carguero4);
+        Disparo(self.submarino, bullet, self.carguero5);
+        Disparo(self.submarino, bullet, self.carguero6);
       }
       //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
       //dano al enemigo si el ya te gano
@@ -833,8 +841,13 @@ export class game extends Phaser.Scene{
     }, this);
 
     // FUNCION DE DISPARO DEL JUGADOR
-    function Disparo(player, bullet, reticula, enemyImag, enemy){
-      if (bullet){
+    function Disparo(nave, bullet, enemy)
+    {
+      let player = nave.imagen;
+      let reticula = nave.reticula;
+      let enemyImag = enemy.imagen;
+
+      if (bullet){ //Eeta funcion maneja la colsion de la bala con los bordes del mundo
           bullet.fire(player, reticula); //LLAMA AL METODO DISPARAR DE BULLET
           bullet.setCollideWorldBounds(true);
           bullet.body.onWorldBounds = true;
@@ -863,6 +876,7 @@ export class game extends Phaser.Scene{
           self.physics.add.collider(bullet, reticula, function(bullet){
             bullet.destroy();
           });
+
           //MANEJO DE COLISION ENTRE LA BALA Y OTROS JUGADORES
           self.physics.add.collider(bullet, enemyImag, function(bullet){
             distCorta = 75;
@@ -873,299 +887,351 @@ export class game extends Phaser.Scene{
             larga = false;  
             let distancia = Math.sqrt((bullet.x - player.x)**2 + (bullet.y - player.y)**2);
             //console.log((bullet.x - player.x)**2);
-            if(distancia <= distCorta){
-              corta = true;
+            let dist;
+            if(distancia <= distCorta)
+            {
+              dist = "corta";
+              /*corta = true;
               media = false;
-              larga = false;
-            }else if(distancia > distCorta && distancia<= distMedia){
-              corta = false;
-              media = true;
-              larga = false;
-            }else if(distancia > distMedia){
-              corta = false;
-              media = false;
-              larga = true;  
+              larga = false;*/
             }
-            console.log("distancia corta", corta);
+            else if(distancia > distCorta && distancia<= distMedia)
+            {
+              dist = "media";
+              /*corta = false;
+              media = true;
+              larga = false;*/
+            }
+            else if(distancia > distMedia)
+            {
+              dist = "larga";
+              /*corta = false;
+              media = false;
+              larga = true; */ 
+            }
+           /*console.log("distancia corta", corta);
             console.log("distancia media", media);
-            console.log("distiancia larga", larga);
+            console.log("distiancia larga", larga);*/
             
             bullet.destroy();
-            handleHit(enemyImag, corta, media, larga, enemy);
+            handleHit(nave, dist, enemy);
           });
       }
     }
     //funcion que maneja el dano hecho por cada vez que se lanza el evento disparo del click, segun el tipo de arma es el dano hecho
     //el dano luego es enviado por socket al otro jugador. Tambien realiza la gestion de vida del oponente - danio para poder
     //mostrar que estamos haciendole danio al otro jugador y que muere.
-    function handleHit(enemy, corta, media, larga, enemyobj){
-      probabilidad = Math.floor(Math.random() * (11));
-      console.log('la probabilidad base es %', probabilidad, '0');
+    function handleHit(nave, dist, enemy)
+    {
+      probabilidad = Math.floor(Math.random() * (11)); //Probabilidad Base
       let Escarguero;
       if(self.equipo === 1){
 //--------------------------------------------------------------------------------------------------------------------------------
 //                                                  CANON DEL DESTRUCTOR
 //--------------------------------------------------------------------------------------------------------------------------------
-          if(self.destructor.armas === 0 && self.submarino.profundidad === 0){
-            if(corta){
-              probExtra = Math.floor(Math.random() * (2));
-              console.log('la probabilidad extra del canion es %', probExtra, '0');
-              console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
-              //si la probabilidad de errar es mayor que el 40%, entonces fallo
-              if((probabilidad + probExtra) > 4){
-                hitted(enemy.x, enemy.y); 
+          if(nave.armas === 0 && enemy.profundidad === 0)
+          {
+            if(dist === "corta")
+            {
+              probExtra = Math.floor(Math.random() * (2)); // Bonificacion de probabilidad
+
+              //console.log('la probabilidad extra del canion es %', probExtra, '0');
+              //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              //si la probabilidad de acierto es mayor que el 40%, entonces acierto
+              if((probabilidad + probExtra) > 4)
+              {
+                hitted(enemy.imagen.x, enemy.imagen.y); 
                 danio = 5;
-                damAcuD = damAcuD + danio;              
+                enemy.vida = enemy.vida - danio;              
+                
                 pack ={
                   danio: danio,
                   carguero: 0
-                }              
+                } 
+
                 self.socket.emit('playerHit', pack);
-                console.log('danio al enemigo', danio);
-                if(damAcuD >= enemyobj.vida){
-                  destroyed(enemy);
-                  enemy.setActive(false);
-                  enemy.setVisible(false);
+
+                if(danio >= enemy.vida)
+                {
+                  enemy.vida = 0;
+                  destroyed(enemy.imagen); //Funcion que anima fuego
+                  enemy.imagen.setActive(false);
+                  enemy.imagen.setVisible(false);
+                  enemy.imagen.removeInteractive();
+                  
                   let envio={
                     socket: self.socket,
                     resultado: 1,
                     equipo: 1
                   }
+
                   let envioSocket= {
                     resultado: 1,
                     equipo: 1
                   }
+
                   self.socket.emit('Finalizo', envioSocket);
                   self.scene.start(DEF.SCENES.FinScene, envio);
                 }
+                else
+                {
+                  enemy.vida = enemy.vida - danio;  
+                }
               }  
-            }else if(media){
+            
+            }
+            else if(dist === "media")
+            {
               probExtra = Math.floor(Math.random() * (3));
-              console.log('la probabilidad extra del canion es %', probExtra, '0');
-              console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              //console.log('la probabilidad extra del canion es %', probExtra, '0');
+              //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
               //si la probabilidad de errar es mayor que el 40%, entonces fallo
               if((probabilidad + probExtra) > 3){
-                hitted(enemy.x, enemy.y); 
+                hitted(enemy.imagen.x, enemy.imagen.y); 
                 danio = 5;
-                damAcuD = damAcuD + danio;              
+                enemy.vida = enemy.vida - danio;              
+                
                 pack ={
                   danio: danio,
                   carguero: 0
-                }              
+                } 
+
                 self.socket.emit('playerHit', pack);
-                console.log('danio al enemigo', danio);
-                if(damAcuD >= enemyobj.vida){
-                  destroyed(enemy);
-                  enemy.setActive(false);
-                  enemy.setVisible(false);
+
+                if(danio >= enemy.vida)
+                {
+                  enemy.vida = 0;
+                  destroyed(enemy.imagen); //Funcion que anima fuego
+                  enemy.imagen.setActive(false);
+                  enemy.imagen.setVisible(false);
+                  enemy.imagen.removeInteractive();
+                  
                   let envio={
                     socket: self.socket,
                     resultado: 1,
                     equipo: 1
                   }
+
                   let envioSocket= {
                     resultado: 1,
                     equipo: 1
                   }
+
                   self.socket.emit('Finalizo', envioSocket);
                   self.scene.start(DEF.SCENES.FinScene, envio);
                 }
+                else
+                {
+                  enemy.vida = enemy.vida - danio;  
+                }
               }  
-            }else if(larga){
+            }
+            else if(dist === "larga")
+            {
               probExtra = Math.floor(Math.random() * (3));
-              console.log('la probabilidad extra del canion es %', probExtra, '0');
-              console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              //console.log('la probabilidad extra del canion es %', probExtra, '0');
+              //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
               //si la probabilidad de errar es mayor que el 60%, entonces fallo
               if((probabilidad + probExtra) > 6){
-                hitted(enemy.x, enemy.y); 
+                hitted(enemy.imagen.x, enemy.imagen.y); 
                 danio = 5;
-                damAcuD = damAcuD + danio;              
+                enemy.vida = enemy.vida - danio;              
+                
                 pack ={
                   danio: danio,
                   carguero: 0
-                }              
+                } 
+
                 self.socket.emit('playerHit', pack);
-                console.log('danio al enemigo', danio);
-                if(damAcuD >= enemyobj.vida){
-                  destroyed(enemy);
-                  enemy.setActive(false);
-                  enemy.setVisible(false);
+
+                if(danio >= enemy.vida)
+                {
+                  enemy.vida = 0;
+                  destroyed(enemy.imagen); //Funcion que anima fuego
+                  enemy.imagen.setActive(false);
+                  enemy.imagen.setVisible(false);
+                  enemy.imagen.removeInteractive();
+                  
                   let envio={
                     socket: self.socket,
                     resultado: 1,
                     equipo: 1
                   }
+
                   let envioSocket= {
                     resultado: 1,
                     equipo: 1
                   }
+
                   self.socket.emit('Finalizo', envioSocket);
                   self.scene.start(DEF.SCENES.FinScene, envio);
+                }
+                else
+                {
+                  enemy.vida = enemy.vida - danio;  
                 }
               } 
             }   
 //--------------------------------------------------------------------------------------------------------------------------------
 //                                                  CARGAS DE PROFUNDIDAD DEL DESTRUCTOR
 //--------------------------------------------------------------------------------------------------------------------------------
-          }else if (self.destructor.armas === 1){
-            if(corta){
+          }else if (nave.armas === 1){
+            if(dist === "corta")
+            {
               probExtra = Math.floor(Math.random() * (2));
-              console.log('la probabilidad extra de la carga es %', probExtra, '0');
-              console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              //console.log('la probabilidad extra de la carga es %', probExtra, '0');
+              //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
               //si la probabilidad de errar es mayor que el 10%, entonces fallo
-              if((probabilidad + probExtra) > 1){
-                if(self.destructor.cargas === self.submarino.profundidad){
+              if((probabilidad + probExtra) > 1)
+              {
+                if(nave.cargas === enemy.profundidad)
+                {
                   danio = 3;
-                  console.log('danio al enemigo', danio);
-                  hitted(enemy.x, enemy.y); 
+                  hitted(enemy.imagen.x, enemy.imagen.y); 
+                  enemy.vida = enemy.vida - danio;              
+                  
                   pack ={
                     danio: danio,
                     carguero: 0
-                  }              
+                  } 
+  
                   self.socket.emit('playerHit', pack);
-                }else{
-                  danio = 0;
-                  console.log('danio al enemigo', danio);
-                }  
-                damAcuD = damAcuD + danio;              
-                if(damAcuD >= enemyobj.vida){
-                  destroyed(enemy);
-                  enemy.setActive(false);
-                  enemy.setVisible(false);
-                  let envio={
-                    socket: self.socket,
-                    resultado: 1,
-                    equipo: 1
+  
+                  if(danio >= enemy.vida)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen); //Funcion que anima fuego
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    enemy.imagen.removeInteractive();
+                    
+                    let envio={
+                      socket: self.socket,
+                      resultado: 1,
+                      equipo: 1
+                    }
+  
+                    let envioSocket= {
+                      resultado: 1,
+                      equipo: 1
+                    }
+  
+                    self.socket.emit('Finalizo', envioSocket);
+                    self.scene.start(DEF.SCENES.FinScene, envio);
                   }
-                  let envioSocket= {
-                    resultado: 1,
-                    equipo: 1
+                  else
+                  {
+                    enemy.vida = enemy.vida - danio;  
                   }
-                  self.socket.emit('Finalizo', envioSocket);
-                  self.scene.start(DEF.SCENES.FinScene, envio);
                 }
               }  
-            }else if(media){
+            }
+            else if(dist === "media")
+            {
               probExtra = Math.floor(Math.random() * (3));
-              console.log('la probabilidad extra de la carga es %', probExtra, '0');
-              console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              //console.log('la probabilidad extra de la carga es %', probExtra, '0');
+              //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
               //si la probabilidad de errar es mayor que el 70%, entonces fallo
-              if((probabilidad + probExtra) > 7){
-                if(self.destructor.cargas === self.submarino.profundidad){
+              if((probabilidad + probExtra) > 7)
+              {
+                if(nave.cargas === enemy.profundidad)
+                {
                   danio = 3;
-                  console.log('danio al enemigo', danio);
-                  hitted(enemy.x, enemy.y); 
+                  hitted(enemy.imagen.x, enemy.imagen.y); 
+                  enemy.vida = enemy.vida - danio;              
+                  
                   pack ={
                     danio: danio,
                     carguero: 0
-                  }              
+                  } 
+  
                   self.socket.emit('playerHit', pack);
-                }else{
-                  danio = 0;
-                  console.log('danio al enemigo', danio);
-                }  
-                damAcuD = damAcuD + danio;              
-                if(damAcuD >= enemyobj.vida){
-                  destroyed(enemy);
-                  enemy.setActive(false);
-                  enemy.setVisible(false);
-                  let envio={
-                    socket: self.socket,
-                    resultado: 1,
-                    equipo: 1
+  
+                  if(danio >= enemy.vida)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen); //Funcion que anima fuego
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    enemy.imagen.removeInteractive();
+                    
+                    let envio={
+                      socket: self.socket,
+                      resultado: 1,
+                      equipo: 1
+                    }
+  
+                    let envioSocket= {
+                      resultado: 1,
+                      equipo: 1
+                    }
+  
+                    self.socket.emit('Finalizo', envioSocket);
+                    self.scene.start(DEF.SCENES.FinScene, envio);
                   }
-                  let envioSocket= {
-                    resultado: 1,
-                    equipo: 1
+                  else
+                  {
+                    enemy.vida = enemy.vida - danio;  
                   }
-                  self.socket.emit('Finalizo', envioSocket);
-                  self.scene.start(DEF.SCENES.FinScene, envio);
                 }
               }  
-            }else if(larga){
-              //La probabilidad de acertar a larga distancia es imposible, entonces 0 danio
-                danio = 0;
-                console.log('danio al enemigo', danio);
-                damAcuD = damAcuD + danio;              
-                if(damAcuD >= enemyobj.vida){
-                  destroyed(enemy);
-                  enemy.setActive(false);
-                  enemy.setVisible(false);
-                }
-              }
-            }   
+            }
+          }   
 //--------------------------------------------------------------------------------------------------------------------------------
 //                                                  CANON DEL SUBMARINO
 //--------------------------------------------------------------------------------------------------------------------------------            
-      }else if (self.equipo === 2){      
-            if(self.submarino.armas === 0){
-              if(corta){
+      }
+      else if (self.equipo === 2)
+      {      
+            if(nave.armas === 0)
+            {
+              if(dist === "corta")
+              {
                 probExtra = Math.floor(Math.random() * (2));
-                console.log('la probabilidad extra del canion es %', probExtra, '0');
-                console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                //console.log('la probabilidad extra del canion es %', probExtra, '0');
+                //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
-                if((probabilidad + probExtra) > 3){
-                  console.log("entro al if del danio sub corto");
-                  hitted(enemy.x, enemy.y); 
-                  danio = 1;
+                if((probabilidad + probExtra) > 3)
+                {
+                  //console.log("entro al if del danio sub corto");
+                  hitted(enemy.imagen.x, enemy.imagen.y); 
                   
-                  console.log('danio al enemigo', danio);
-                  if(enemyobj === self.carguero1){ 
-                    Escarguero = 1;
-                    damCar1 = damCar1 + danio;
-                    if(damCar1 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }    
-                  }else if(enemyobj === self.carguero2){
-                    Escarguero = 2;
-                    damCar2 = damCar2 + danio;
-                    if(damCar2 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }  
-                  }else if(enemyobj === self.carguero3){
-                    Escarguero = 3;
-                    damCar3 = damCar3 + danio;
-                    if(damCar3 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }  
-                  }else if(enemyobj === self.carguero4){
-                    Escarguero = 4;
-                    damCar4 = damCar4 + danio;
-                    if(damCar4 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }else if(enemyobj === self.carguero5){
-                    Escarguero = 5;
-                    damCar5 = damCar5 + danio;
-                    if(damCar5 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }else if(enemyobj === self.carguero6){
-                    Escarguero = 6;
-                    damCar6 = damCar6 + danio;
-                    if(damCar6 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }else{
-                    damAcuS = damAcuS + danio;
-                    if(damAcuS >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
+                  danio = 1;
+                  if(enemy.vida <= danio)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen);
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    enemy.imagen.removeInteractive();
                   }
+                  else
+                    enemy.vida = enemy.vida - danio;
+                  //console.log('danio al enemigo', danio);
+                  switch(enemy)
+                  {
+                    case self.carguero1:
+                      Escarguero = 1;
+                      break;
+                    case self.carguero2:
+                      Escarguero = 2;
+                      break;
+                    case self.carguero3:
+                      Escarguero = 3;
+                      break;
+                    case self.carguero4:
+                      Escarguero = 4;
+                      break;
+                    case self.carguero5:
+                      Escarguero = 5;
+                      break;
+                    case self.carguero6:
+                      Escarguero = 6;
+                      break;
+                    default:
+                      break;
+                  }
+                  
                   pack ={
                     danio: danio,
                     carguero: Escarguero
@@ -1173,366 +1239,275 @@ export class game extends Phaser.Scene{
                   self.socket.emit('playerHit', pack);
                   
                 } 
-              }else if(media){
+              }
+              else if(dist === "media")
+              {
                   probExtra = Math.floor(Math.random() * (3));
-                  console.log('la probabilidad extra del canion es %', probExtra, '0');
-                  console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                  //console.log('la probabilidad extra del canion es %', probExtra, '0');
+                  //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
                   //si la probabilidad de errar es mayor que el 10%, entonces fallo
                   if((probabilidad + probExtra) > 6){
-                    console.log("entro al if del danio sub medio");
-                    hitted(enemy.x, enemy.y); 
-                    danio = 1;
-                    
-                    console.log('danio al enemigo', danio);              
-                    if(enemyobj === self.carguero1){ 
+                    //console.log("entro al if del danio sub medio");
+                    hitted(enemy.imagen.x, enemy.imagen.y); 
+                  
+                  danio = 1;
+                  if(enemy.vida <= danio)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen);
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    enemy.imagen.removeInteractive();
+                  }
+                  else
+                    enemy.vida = enemy.vida - danio;
+                  //console.log('danio al enemigo', danio);
+                  switch(enemy)
+                  {
+                    case self.carguero1:
                       Escarguero = 1;
-                      damCar1 = damCar1 + danio;
-                      if(damCar1 >= enemyobj.vida){
-                        destroyed(enemy);
-                        enemy.setActive(false);
-                        enemy.setVisible(false);
-                      }    
-                    }else if(enemyobj === self.carguero2){
+                      break;
+                    case self.carguero2:
                       Escarguero = 2;
-                      damCar2 = damCar2 + danio;
-                      if(damCar2 >= enemyobj.vida){
-                        destroyed(enemy);
-                        enemy.setActive(false);
-                        enemy.setVisible(false);
-                      }  
-                    }else if(enemyobj === self.carguero3){
+                      break;
+                    case self.carguero3:
                       Escarguero = 3;
-                      damCar3 = damCar3 + danio;
-                      if(damCar3 >= enemyobj.vida){
-                        destroyed(enemy);
-                        enemy.setActive(false);
-                        enemy.setVisible(false);
-                      }  
-                    }else if(enemyobj === self.carguero4){
+                      break;
+                    case self.carguero4:
                       Escarguero = 4;
-                      damCar4 = damCar4 + danio;
-                      if(damCar4 >= enemyobj.vida){
-                        destroyed(enemy);
-                        enemy.setActive(false);
-                        enemy.setVisible(false);
-                      }
-                    }else if(enemyobj === self.carguero5){
+                      break;
+                    case self.carguero5:
                       Escarguero = 5;
-                      damCar5 = damCar5 + danio;
-                      if(damCar5 >= enemyobj.vida){
-                        destroyed(enemy);
-                        enemy.setActive(false);
-                        enemy.setVisible(false);
-                      }
-                    }else if(enemyobj === self.carguero6){
+                      break;
+                    case self.carguero6:
                       Escarguero = 6;
-                      damCar6 = damCar6 + danio;
-                      if(damCar6 >= enemyobj.vida){
-                        destroyed(enemy);
-                        enemy.setActive(false);
-                        enemy.setVisible(false);
-                      }
-                    }else{
-                      damAcuS = damAcuS + danio;
-                      if(damAcuS >= enemyobj.vida){
-                        destroyed(enemy);
-                        enemy.setActive(false);
-                        enemy.setVisible(false);
-                      }
-                    }
-                    pack ={
-                      danio: danio,
-                      carguero: Escarguero
-                    }              
-                    self.socket.emit('playerHit', pack);
-                  }  
-              }else if(larga){
-                    probExtra = Math.floor(Math.random() * (3));
-                    console.log('la probabilidad extra del canion es %', probExtra, '0');
-                    console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
-                    //si la probabilidad de errar es mayor que el 10%, entonces fallo
-                    if((probabilidad + probExtra) > 8){
-                      console.log("entro al if del danio sub largo");
-                      hitted(enemy.x, enemy.y); 
-                      danio = 1;
-                      console.log('danio al enemigo', danio);              
-                      if(enemyobj === self.carguero1){ 
-                        Escarguero = 1;
-                        damCar1 = damCar1 + danio;
-                        if(damCar1 >= enemyobj.vida){
-                          destroyed(enemy);
-                          enemy.setActive(false);
-                          enemy.setVisible(false);
-                        }    
-                      }else if(enemyobj === self.carguero2){
-                        Escarguero = 2;
-                        damCar2 = damCar2 + danio;
-                        if(damCar2 >= enemyobj.vida){
-                          destroyed(enemy);
-                          enemy.setActive(false);
-                          enemy.setVisible(false);
-                        }  
-                      }else if(enemyobj === self.carguero3){
-                        Escarguero = 3;
-                        damCar3 = damCar3 + danio;
-                        if(damCar3 >= enemyobj.vida){
-                          destroyed(enemy);
-                          enemy.setActive(false);
-                          enemy.setVisible(false);
-                        }  
-                      }else if(enemyobj === self.carguero4){
-                        Escarguero = 4;
-                        damCar4 = damCar4 + danio;
-                        if(damCar4 >= enemyobj.vida){
-                          destroyed(enemy);
-                          enemy.setActive(false);
-                          enemy.setVisible(false);
-                        }
-                      }else if(enemyobj === self.carguero5){
-                        Escarguero = 5;
-                        damCar5 = damCar5 + danio;
-                        if(damCar5 >= enemyobj.vida){
-                          destroyed(enemy);
-                          enemy.setActive(false);
-                          enemy.setVisible(false);
-                        }
-                      }else if(enemyobj === self.carguero6){
-                        Escarguero = 6;
-                        damCar6 = damCar6 + danio;
-                        if(damCar6 >= enemyobj.vida){
-                          destroyed(enemy);
-                          enemy.setActive(false);
-                          enemy.setVisible(false);
-                        }
-                      }else{
-                        damAcuS = damAcuS + danio;
-                        if(damAcuS >= enemyobj.vida){
-                          destroyed(enemy);
-                          enemy.setActive(false);
-                          enemy.setVisible(false);
-                        }
-                      }
-                      pack ={
-                        danio: danio,
-                        carguero: Escarguero
-                      }              
-                      self.socket.emit('playerHit', pack);
-                    }
+                      break;
+                    default:
+                      break;
                   }
-//--------------------------------------------------------------------------------------------------------------------------------
-//                                                  TORPEDOS DEL SUBMARINO
-//--------------------------------------------------------------------------------------------------------------------------------
-            }else if (self.submarino.armas === 1 || self.submarino.armas === 4){
-              if(corta){
-                probExtra = Math.floor(Math.random() * (2));
-                console.log('la probabilidad extra del canion es %', probExtra, '0');
-                console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
-                //si la probabilidad de errar es mayor que el 10%, entonces fallo
-                if((probabilidad + probExtra) > 2){
-                  console.log("entro al if del danio sub corto torpedo");
-                  hitted(enemy.x, enemy.y); 
-                  danio = 4;
                   
-                  console.log('danio al enemigo', danio);                            
-                  if(enemyobj === self.carguero1){ 
-                    Escarguero = 1;
-                    damCar1 = damCar1 + danio;
-                    if(damCar1 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }    
-                  }else if(enemyobj === self.carguero2){
-                    Escarguero = 2;
-                    damCar2 = damCar2 + danio;
-                    if(damCar2 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }  
-                  }else if(enemyobj === self.carguero3){
-                    Escarguero = 3;
-                    damCar3 = damCar3 + danio;
-                    if(damCar3 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }  
-                  }else if(enemyobj === self.carguero4){
-                    Escarguero = 4;
-                    damCar4 = damCar4 + danio;
-                    if(damCar4 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }else if(enemyobj === self.carguero5){
-                    Escarguero = 5;
-                    damCar5 = damCar5 + danio;
-                    if(damCar5 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }else if(enemyobj === self.carguero6){
-                    Escarguero = 6;
-                    damCar6 = damCar6 + danio;
-                    if(damCar6 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }else{
-                    damAcuS = damAcuS + danio;
-                    if(damAcuS >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }
-                  pack ={
-                    danio: danio,
-                    carguero: Escarguero
-                  }              
-                  self.socket.emit('playerHit', pack);
-                }
-              }else if(media){
-                probExtra = Math.floor(Math.random() * (3));
-                console.log('la probabilidad extra del canion es %', probExtra, '0');
-                console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
-                //si la probabilidad de errar es mayor que el 10%, entonces fallo
-                if((probabilidad + probExtra) > 3){
-                  hitted(enemy.x, enemy.y); 
-                  danio = 4;
-                  
-                  console.log('danio al enemigo', danio);                            
-                  if(enemyobj === self.carguero1){ 
-                    Escarguero = 1;
-                    damCar1 = damCar1 + danio;
-                    if(damCar1 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }    
-                  }else if(enemyobj === self.carguero2){
-                    Escarguero = 2;
-                    damCar2 = damCar2 + danio;
-                    if(damCar2 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }  
-                  }else if(enemyobj === self.carguero3){
-                    Escarguero = 3;
-                    damCar3 = damCar3 + danio;
-                    if(damCar3 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }  
-                  }else if(enemyobj === self.carguero4){
-                    Escarguero = 4;
-                    damCar4 = damCar4 + danio;
-                    if(damCar4 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }else if(enemyobj === self.carguero5){
-                    Escarguero = 5;
-                    damCar5 = damCar5 + danio;
-                    if(damCar5 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }else if(enemyobj === self.carguero6){
-                    Escarguero = 6;
-                    damCar6 = damCar6 + danio;
-                    if(damCar6 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }else{
-                    damAcuS = damAcuS + danio;
-                    if(damAcuS >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }
                   pack ={
                     danio: danio,
                     carguero: Escarguero
                   }              
                   self.socket.emit('playerHit', pack);
                 }  
-              }else if(larga){
-                probExtra = Math.floor(Math.random() * (3));
-                console.log('la probabilidad extra del canion es %', probExtra, '0');
-                console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              }
+              else if(dist === "larga")
+              {
+                    probExtra = Math.floor(Math.random() * (3));
+                    //console.log('la probabilidad extra del canion es %', probExtra, '0');
+                    //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                    //si la probabilidad de errar es mayor que el 10%, entonces fallo
+                    if((probabilidad + probExtra) > 8)
+                    {
+                      //console.log("entro al if del danio sub largo");
+                      hitted(enemy.imagen.x, enemy.imagen.y); 
+                  
+                      danio = 1;
+                      if(enemy.vida <= danio)
+                      {
+                        enemy.vida = 0;
+                        destroyed(enemy.imagen);
+                        enemy.imagen.setActive(false);
+                        enemy.imagen.setVisible(false);
+                        enemy.imagen.removeInteractive();
+                      }
+                      else
+                        enemy.vida = enemy.vida - danio;
+                      //console.log('danio al enemigo', danio);
+                      switch(enemy)
+                      {
+                        case self.carguero1:
+                          Escarguero = 1;
+                          break;
+                        case self.carguero2:
+                          Escarguero = 2;
+                          break;
+                        case self.carguero3:
+                          Escarguero = 3;
+                          break;
+                        case self.carguero4:
+                          Escarguero = 4;
+                          break;
+                        case self.carguero5:
+                          Escarguero = 5;
+                          break;
+                        case self.carguero6:
+                          Escarguero = 6;
+                          break;
+                        default:
+                          break;
+                      }
+                      
+                      pack ={
+                        danio: danio,
+                        carguero: Escarguero
+                      }              
+                      self.socket.emit('playerHit', pack);
+                    }
+              }
+//--------------------------------------------------------------------------------------------------------------------------------
+//                                                  TORPEDOS DEL SUBMARINO
+//--------------------------------------------------------------------------------------------------------------------------------
+            }
+            else if (nave.armas === 1 || nave.armas === 4)
+            {
+              if(dist === "corta")
+              {
+                probExtra = Math.floor(Math.random() * (2));
+                //console.log('la probabilidad extra del canion es %', probExtra, '0');
+                //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
-                if((probabilidad + probExtra) > 5){
-                  hitted(enemy.x, enemy.y); 
+                if((probabilidad + probExtra) > 2)
+                {
+                  //console.log("entro al if del danio sub corto torpedo");
                   danio = 4;
-                  console.log('danio al enemigo', danio);                            
-                  if(enemyobj === self.carguero1){ 
-                    Escarguero = 1;
-                    damCar1 = damCar1 + danio;
-                    if(damCar1 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }    
-                  }else if(enemyobj === self.carguero2){
-                    Escarguero = 2;
-                    damCar2 = damCar2 + danio;
-                    if(damCar2 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }  
-                  }else if(enemyobj === self.carguero3){
-                    Escarguero = 3;
-                    damCar3 = damCar3 + danio;
-                    if(damCar3 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }  
-                  }else if(enemyobj === self.carguero4){
-                    Escarguero = 4;
-                    damCar4 = damCar4 + danio;
-                    if(damCar4 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }else if(enemyobj === self.carguero5){
-                    Escarguero = 5;
-                    damCar5 = damCar5 + danio;
-                    if(damCar5 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }else if(enemyobj === self.carguero6){
-                    Escarguero = 6;
-                    damCar6 = damCar6 + danio;
-                    if(damCar6 >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
-                  }else{
-                    damAcuS = damAcuS + danio;
-                    if(damAcuS >= enemyobj.vida){
-                      destroyed(enemy);
-                      enemy.setActive(false);
-                      enemy.setVisible(false);
-                    }
+
+                  hitted(enemy.imagen.x, enemy.imagen.y); 
+                  
+                  if(enemy.vida <= danio)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen);
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    enemy.imagen.removeInteractive();
                   }
+                  else
+                    enemy.vida = enemy.vida - danio;
+                  //console.log('danio al enemigo', danio);
+                  switch(enemy)
+                  {
+                    case self.carguero1:
+                      Escarguero = 1;
+                      break;
+                    case self.carguero2:
+                      Escarguero = 2;
+                      break;
+                    case self.carguero3:
+                      Escarguero = 3;
+                      break;
+                    case self.carguero4:
+                      Escarguero = 4;
+                      break;
+                    case self.carguero5:
+                      Escarguero = 5;
+                      break;
+                    case self.carguero6:
+                      Escarguero = 6;
+                      break;
+                    default:
+                      break;
+                  }
+                  
+                  pack ={
+                    danio: danio,
+                    carguero: Escarguero
+                  }              
+                  self.socket.emit('playerHit', pack);
+                }
+              }
+              else if(dist === "media")
+              {
+                probExtra = Math.floor(Math.random() * (3));
+                //console.log('la probabilidad extra del canion es %', probExtra, '0');
+                //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                //si la probabilidad de errar es mayor que el 10%, entonces fallo
+                if((probabilidad + probExtra) > 3)
+                {
+                  
+                  danio = 4;
+                  hitted(enemy.imagen.x, enemy.imagen.y); 
+                  
+                  if(enemy.vida <= danio)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen);
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    enemy.imagen.removeInteractive();
+                  }
+                  else
+                    enemy.vida = enemy.vida - danio;
+                  //console.log('danio al enemigo', danio);
+                  switch(enemy)
+                  {
+                    case self.carguero1:
+                      Escarguero = 1;
+                      break;
+                    case self.carguero2:
+                      Escarguero = 2;
+                      break;
+                    case self.carguero3:
+                      Escarguero = 3;
+                      break;
+                    case self.carguero4:
+                      Escarguero = 4;
+                      break;
+                    case self.carguero5:
+                      Escarguero = 5;
+                      break;
+                    case self.carguero6:
+                      Escarguero = 6;
+                      break;
+                    default:
+                      break;
+                  }
+                  
+                  pack ={
+                    danio: danio,
+                    carguero: Escarguero
+                  }              
+                  self.socket.emit('playerHit', pack);
+                }  
+              }
+              else if(dist === "larga")
+              {
+                probExtra = Math.floor(Math.random() * (3));
+                //console.log('la probabilidad extra del canion es %', probExtra, '0');
+                //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                //si la probabilidad de errar es mayor que el 10%, entonces fallo
+                if((probabilidad + probExtra) > 5)
+                {
+                  danio = 4;
+                  hitted(enemy.imagen.x, enemy.imagen.y); 
+                  
+                  if(enemy.vida <= danio)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen);
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    enemy.imagen.removeInteractive();
+                  }
+                  else
+                    enemy.vida = enemy.vida - danio;
+                  //console.log('danio al enemigo', danio);
+                  switch(enemy)
+                  {
+                    case self.carguero1:
+                      Escarguero = 1;
+                      break;
+                    case self.carguero2:
+                      Escarguero = 2;
+                      break;
+                    case self.carguero3:
+                      Escarguero = 3;
+                      break;
+                    case self.carguero4:
+                      Escarguero = 4;
+                      break;
+                    case self.carguero5:
+                      Escarguero = 5;
+                      break;
+                    case self.carguero6:
+                      Escarguero = 6;
+                      break;
+                    default:
+                      break;
+                  }
+                  
                   pack ={
                     danio: danio,
                     carguero: Escarguero
@@ -1544,6 +1519,8 @@ export class game extends Phaser.Scene{
             
           } 
     }
+   
+    
     //funcion que muestra la explosion en la posicion determinada
     function hitted(x, y){
       //self.explotion2 = self.add.sprite(x,y,'explot').setDisplaySize(100, 100).setDepth(5);
@@ -1580,24 +1557,32 @@ export class game extends Phaser.Scene{
       self.explotion3.play('explot3');
     }
     //funcion que procesa el dano y el porcentaje de acierto
-    function RecibeHit(player, playerIMG, damage, escar){
+    function RecibeHit(player, damage, escar)
+    {
+      let playerIMG = player.imagen;
       hitted(playerIMG.x, playerIMG.y);
       
-      if(player.vida > 0){
-        console.log('Vida Restante', player.vida);
+      if(player.vida > 0)
+      {
+        //console.log('Vida Restante', player.vida);
         player.vida = player.vida - damage; 
-        console.log('Vida Restante', player.vida);
+        //console.log('Vida Restante', player.vida);
       }
-      if(player.vida <= 0){
+      if(player.vida <= 0)
+      {
         console.log('vida menor que 0');
         destroyed(playerIMG);
         playerIMG.setActive(false);
         playerIMG.setVisible(false);
-        if(escar){
+        playerIMG.removeInteractive();
+
+        if(escar)
+        {
           carguerosMuertos++;
         }
       }
-      if(carguerosMuertos > 3){
+      if(carguerosMuertos > 3)
+      {
         let envio={
           socket: self.socket,
           resultado: 1,
@@ -1716,26 +1701,43 @@ export class game extends Phaser.Scene{
     });
 
     //escucho el tiro que me dieron desde el otro jugador y lo proceso
-    this.socket.on('playerHitted', function(playerInfo){       
-        if(self.equipo===1){
+    this.socket.on('playerHitted', function(playerInfo)
+    {       
+        if(self.equipo===1)
+        {
           console.log("carguero golpeado numero", playerInfo.carguero);
-          if(playerInfo.carguero === 1){
-            RecibeHit(self.carguero1, self.carguero1.imagen, playerInfo.damage, true);
-          }else if(playerInfo.carguero === 2){
-            RecibeHit(self.carguero2, self.carguero2.imagen, playerInfo.damage, true);
-          }else if(playerInfo.carguero === 3){
-            RecibeHit(self.carguero3, self.carguero3.imagen, playerInfo.damage, true);
-          }else if(playerInfo.carguero === 4){
-            RecibeHit(self.carguero4, self.carguero4.imagen, playerInfo.damage, true);
-          }else if(playerInfo.carguero === 5){
-            RecibeHit(self.carguero5, self.carguero5.imagen, playerInfo.damage, true);
-          }else if(playerInfo.carguero === 6){
-            RecibeHit(self.carguero6, self.carguero6.imagen, playerInfo.damage, true);
-          }else{
-            RecibeHit(self.destructor, self.destructor.imagen, playerInfo.damage, false);
+          if(playerInfo.carguero === 1)
+          {
+            RecibeHit(self.carguero1, playerInfo.damage, true);
           }
-        }else{
-            RecibeHit(self.submarino, self.submarino.imagen, playerInfo.damage, false);
+          else if(playerInfo.carguero === 2)
+          {
+            RecibeHit(self.carguero2, playerInfo.damage, true);
+          }
+          else if(playerInfo.carguero === 3)
+          {
+            RecibeHit(self.carguero3, playerInfo.damage, true);
+          }
+          else if(playerInfo.carguero === 4)
+          {
+            RecibeHit(self.carguero4, playerInfo.damage, true);
+          }
+          else if(playerInfo.carguero === 5)
+          {
+            RecibeHit(self.carguero5, playerInfo.damage, true);
+          }
+          else if(playerInfo.carguero === 6)
+          {
+            RecibeHit(self.carguero6, playerInfo.damage, true);
+          }
+          else
+          {
+            RecibeHit(self.destructor, playerInfo.damage, false);
+          }
+        }
+        else
+        {
+            RecibeHit(self.submarino, playerInfo.damage, false);
         }
     }); 
 
