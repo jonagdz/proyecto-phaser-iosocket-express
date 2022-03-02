@@ -263,12 +263,31 @@ export class game extends Phaser.Scene{
       //this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
-      
-      // Habilito el boton para acceder a la funcion de largavistas
-      const btnActivarLargaVista = this.add.text(900, 600, 'ACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(1));
-      const btnDesactivarLargaVista = this.add.text(900, 650, 'DESACTIVAR LARGA VISTAS', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => cambioLargaVistas(0));
-      const btnActivarSonar = this.add.text(900, 700, 'ACTIVAR SONAR', { fill: '#000000' }).setScrollFactor(0).setInteractive().on('pointerdown', () => activarSonar());
-    }    
+      this.botonDOWNDI = self.physics.add.image(800, 800, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
+      this.botonDOWNDI.setDisplaySize(80,80);
+      this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
+
+      this.botonSUBE = self.physics.add.image(900, 800, DEF.IMAGENES.BOTONSUBIR).setOrigin(0).setScrollFactor(0).setDepth(10)
+      this.botonSUBE.setDisplaySize(80,80);
+
+      this.botonSONAR = self.physics.add.image(1000, 800, DEF.IMAGENES.BOTONSONAR).setOrigin(0).setScrollFactor(0).setDepth(10)
+      this.botonSONAR.setDisplaySize(80,80);
+
+      this.botonCAMBIARARMA = self.physics.add.image(1100, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10)
+      this.botonCAMBIARARMA.setDisplaySize(80,80);
+
+
+    } 
+    
+    function ClickDOWN(val){
+      if(val===1){
+        console.log('baja');
+        prof(1);
+      } 
+      else{
+        prof(0);
+      }
+    }
 
     function generarEquipo1(){     
       // Genero los objetos cargueros, con sus imagenes, colisiones, etc
