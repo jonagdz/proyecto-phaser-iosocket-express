@@ -29,6 +29,7 @@ export class game extends Phaser.Scene{
     this.mar;
     this.distMax = 300;
     this.statusSonar;
+    this.Hit;
     this.partida = {
       naves: 
       [
@@ -1366,7 +1367,7 @@ export class game extends Phaser.Scene{
               probExtra = Math.floor(Math.random() * (2)); // Bonificacion de probabilidad
 
               //console.log('la probabilidad extra del canion es %', probExtra, '0');
-              //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra + '0');
               //si la probabilidad de acierto es mayor que el 40%, entonces acierto
               if((probabilidad + probExtra) > 4)
               {
@@ -1413,7 +1414,7 @@ export class game extends Phaser.Scene{
             {
               probExtra = Math.floor(Math.random() * (3));
               //console.log('la probabilidad extra del canion es %', probExtra, '0');
-              //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+'0');
               //si la probabilidad de errar es mayor que el 40%, entonces fallo
               if((probabilidad + probExtra) > 3){
                 hitted(enemy.imagen.x, enemy.imagen.y); 
@@ -1458,7 +1459,7 @@ export class game extends Phaser.Scene{
             {
               probExtra = Math.floor(Math.random() * (3));
               //console.log('la probabilidad extra del canion es %', probExtra, '0');
-              //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra +'0');
               //si la probabilidad de errar es mayor que el 60%, entonces fallo
               if((probabilidad + probExtra) > 6){
                 hitted(enemy.imagen.x, enemy.imagen.y); 
@@ -1507,7 +1508,7 @@ export class game extends Phaser.Scene{
             {
               probExtra = Math.floor(Math.random() * (2));
               //console.log('la probabilidad extra de la carga es %', probExtra, '0');
-              //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
               //si la probabilidad de errar es mayor que el 10%, entonces fallo
               if((probabilidad + probExtra) > 1)
               {
@@ -1556,7 +1557,7 @@ export class game extends Phaser.Scene{
             {
               probExtra = Math.floor(Math.random() * (3));
               //console.log('la probabilidad extra de la carga es %', probExtra, '0');
-              //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+              console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
               //si la probabilidad de errar es mayor que el 70%, entonces fallo
               if((probabilidad + probExtra) > 7)
               {
@@ -1614,7 +1615,7 @@ export class game extends Phaser.Scene{
               {
                 probExtra = Math.floor(Math.random() * (2));
                 //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 3)
                 {
@@ -1669,7 +1670,7 @@ export class game extends Phaser.Scene{
               {
                   probExtra = Math.floor(Math.random() * (3));
                   //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                  //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                  console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                   //si la probabilidad de errar es mayor que el 10%, entonces fallo
                   if((probabilidad + probExtra) > 6){
                     //console.log("entro al if del danio sub medio");
@@ -1724,7 +1725,7 @@ export class game extends Phaser.Scene{
               {
                     probExtra = Math.floor(Math.random() * (3));
                     //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                    //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                    console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                     //si la probabilidad de errar es mayor que el 10%, entonces fallo
                     if((probabilidad + probExtra) > 8)
                     {
@@ -1786,7 +1787,7 @@ export class game extends Phaser.Scene{
               {
                 probExtra = Math.floor(Math.random() * (2));
                 //console.log('la probabilidad extra del canion es %', probExtra + '0');
-                console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra + '0');
+                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 2)
                 {
@@ -1843,7 +1844,7 @@ export class game extends Phaser.Scene{
               {
                 probExtra = Math.floor(Math.random() * (3));
                 //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 3)
                 {
@@ -1900,7 +1901,7 @@ export class game extends Phaser.Scene{
               {
                 probExtra = Math.floor(Math.random() * (3));
                 //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                //console.log('la probabilidad sumada esta vez es de  %', probabilidad + probExtra, '0');
+                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 5)
                 {
@@ -1992,12 +1993,24 @@ export class game extends Phaser.Scene{
       });
       self.explotion3.play('explot3');
     }
+
+    /*function TextoPop(x, y) {
+      self.Hit = self.add.text( x + 10, y + 10, 
+        'Te dieron feo papi', 
+        {font: '20px monospace', fill: '#fff', align: 'center'}
+      );
+      //self.instructions.anchor.setTo(0.5, 0.5);
+      self.time.addEvent(3000, self.Hit.destroy(), self.Hit);
+    }*/
+
     //funcion que procesa el dano y el porcentaje de acierto
     function RecibeHit(player, damage, escar)
     {
       playerIMG = player.imagen;
       hitted(playerIMG.x, playerIMG.y);
-      console.log(player);
+      //text = game.add.text(32, 380, '', { font: "30pt Courier", fill: "#19cb65", stroke: "#119f4e", strokeThickness: 2 });
+      //self.HIT = self.add.text(playerIMG.x + 10, playerIMG.y + 10, '', { font: '30px Courier', fill: "#19cb65", stroke: "#119f4e", strokeThickness: 2}).setScrollFactor(0);
+      //TextoPop(playerIMG.x, playerIMG.y);
       if(player.vida > 0)
       {
         player.vida = player.vida - damage; 
