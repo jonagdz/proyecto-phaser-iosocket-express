@@ -864,7 +864,9 @@ export class game extends Phaser.Scene{
         // Se crea una colision del carguero con la costa1
         self.physics.add.collider(self.carguero1.imagen, self.costa1);
         // Se crea una colision del carguero con la costa2
+        
         self.physics.add.collider(carguero.imagen, self.costa2, handleCollisionCosta, colisionCargoCosta2, self);
+        
         // Se crea la colision con el submarino y el destructor
         self.physics.add.collider(self.carguero1.imagen, self.destructor.imagen);
         self.physics.add.collider(self.carguero1.imagen, self.submarino.imagen);
@@ -925,7 +927,19 @@ export class game extends Phaser.Scene{
       
     }
     function handleCollisionCosta(carguero, costa2){
-      carguerosAsalvo++;
+      if(carguero === self.carguero1.imagen)
+        cargueroSalvado(self.carguero1);
+      else if(carguero === self.carguero2.imagen)
+        cargueroSalvado(self.carguero2);
+      else if(carguero === self.carguero3.imagen)
+        cargueroSalvado(self.carguero3);
+      else if(carguero === self.carguero4.imagen)
+        cargueroSalvado(self.carguero4);
+      else if(carguero === self.carguero5.imagen)
+        cargueroSalvado(self.carguero5);
+      else if(carguero === self.carguero6.imagen)
+        cargueroSalvado(self.carguero6);
+      console.log("cargueros A SALVO", carguerosAsalvo);
       if (carguerosAsalvo >= 3){
         let envio={
           socket: self.socket,
@@ -939,6 +953,11 @@ export class game extends Phaser.Scene{
         self.socket.emit('Finalizo', envioSocket);
         self.scene.start(DEF.SCENES.FinScene, envio);
       }
+    }
+    function cargueroSalvado(carguero){
+      if (carguero.vida > 0)
+        carguerosAsalvo++;
+        carguero.vida = 0;
     }
     
     function colisionCargoCosta2(carguero, costa2)
