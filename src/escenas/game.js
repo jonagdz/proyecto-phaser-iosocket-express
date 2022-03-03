@@ -1946,7 +1946,9 @@ export class game extends Phaser.Scene{
                     enemy.imagen.removeInteractive();
                   }
                   else
+                  {
                     enemy.vida = enemy.vida - danio;
+                  }
                 }else{
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                   let contadorAviso = 0;
@@ -2393,7 +2395,6 @@ export class game extends Phaser.Scene{
                   let contadorAviso = 0;
                   self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
                     '', {font: '20px monospace', fill: '#024A86', align: 'center'});
-
                   function aviso(){
                     self.Hit2.setText('Danio: ' + danio);
                     contadorAviso++;
