@@ -692,7 +692,19 @@ export class game extends Phaser.Scene{
           self.cameras.main.setZoom(0.9);
         }else if(self.submarino.largavista === true && (self.submarino.profundidad === 0)){
           self.submarino.largavista = false;
-          self.cameras.main.setMask(self.mask);
+          restablezcoMask();
+        }
+        function restablezcoMask(){
+          // Construyo el larga vista
+          self.largaVistas = self.make.sprite({
+            x: centroW,
+            y: centroH,
+            key: DEF.IMAGENES.LARGAVISTAS,
+            add: false
+          });
+          self.largaVistas.setOrigin(0.5,0);
+          self.mar.masklv = new Phaser.Display.Masks.BitmapMask(self, self.largaVistas);
+          self.cameras.main.setMask(mask);
           self.cameras.main.setZoom(1.4);
         }
       });
