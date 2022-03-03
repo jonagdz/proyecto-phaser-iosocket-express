@@ -1,0 +1,28 @@
+{"frames": {
+
+"botonALERTACARGUEROS.png":
+{
+	"frame": {"x":0,"y":0,"w":180,"h":181},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":181},
+	"sourceSize": {"w":180,"h":181}
+},
+"botonALERTACARGUEROSROJO.png":
+{
+	"frame": {"x":180,"y":0,"w":180,"h":181},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":181},
+	"sourceSize": {"w":180,"h":181}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "alertacargueros.png",
+	"format": "RGBA8888",
+	"size": {"w":360,"h":181},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:a1a0604a0ad8dc1fefeb0b3183a8229c:ab9ec84283f29f5e3fde0d23bfb02a4b:a85eba66d81dbd440169332a8d216a34$"
+}
+}

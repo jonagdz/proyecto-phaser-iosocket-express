@@ -280,10 +280,14 @@ export class game extends Phaser.Scene{
     // Segun el equipo del jugador actual, genero todos elementos del equipo correspondiente
     if(self.equipo === 1){ // Genero el equipo 1 que son el destructor y los cargueros, aunque tambien debo generar al submarino (Pero sin su camara ni colisiones) para ir actualizando su posicion en este cliente con el movimiento del otro jugador      
       generarEquipo1();
-      this.botonCAMBIARARMA = self.physics.add.image(1000, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCAMBIARARMADESTRU(1)).setDisplaySize(80,80);
+      this.botonCAMBIARARMA = self.physics.add.image(950, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCAMBIARARMADESTRU(1)).setDisplaySize(80,80);
 
-      this.botonCAMARA = self.physics.add.image(1100, 800, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCamara(1)).setDisplaySize(80,80);
+      this.botonCAMARA = self.physics.add.image(1050, 800, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCamara(1)).setDisplaySize(80,80);
       
+      this.botonHOME = self.physics.add.image(950, 50, DEF.IMAGENES.BOTONHOME).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickHOME(1)).setDisplaySize(80,80);
+      
+      this.botonSAVE = self.physics.add.image(1050, 50, DEF.IMAGENES.BOTONGUARDAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSAVE(1)).setDisplaySize(80,80);
+
       self.input.on('pointerdown', function (pointer) {
           self.input.mouse.requestPointerLock();
         }, self);
@@ -306,7 +310,10 @@ export class game extends Phaser.Scene{
      
 
       this.botonLARGAVISTA = self.physics.add.image(1100, 800, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickLARGAVISTA(1)).setDisplaySize(80,80);
-     
+      
+      this.botonHOME = self.physics.add.image(880, 200, DEF.IMAGENES.BOTONHOME).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickHOME(1)).setDisplaySize(80,80);
+    
+      this.botonSAVE = self.physics.add.image(980, 200, DEF.IMAGENES.BOTONGUARDAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSAVE(1)).setDisplaySize(80,80);
     } 
     
     function ClickDOWN(val){
@@ -382,8 +389,19 @@ export class game extends Phaser.Scene{
       }
     }
     
-  
-
+    function ClickHOME (v) {
+      if(v===1){
+        self.socket.disconnect();
+        console.log("Vuelve a inicio");
+        self.scene.start(DEF.SCENES.MENUPRINCIPAL);
+      }
+    }
+    
+    function ClickSAVE(vv){
+      if(vv===1){
+        console.log("guardar");
+      }
+    }
     function generarEquipo1(){     
       // Genero los objetos cargueros, con sus imagenes, colisiones, etc
       generarCargueros();

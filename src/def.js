@@ -43,8 +43,10 @@ export const DEF = {
         BOTONSUBIR: "botonsube.png",
         BOTONSONAR: "botonsonar.png",
         BOTONARMA: "botondisparo.png",
-        BOTONLARGAVISTA: "botonlargavista.png"
-
+        BOTONLARGAVISTA: "botonlargavista.png",
+        BOTONHOME: "botonhomeNegro.png",
+        BOTONGUARDAR: "botonGUARDAD.png"
+      
     },
 
     AUDIO: {
@@ -66,6 +68,8 @@ export const DEF = {
         INITPART: "iniciarpart.png",
         CARGARPART: "cargarpart.png",
         CONTROLS: "controls.png",
-        CREDITS:"credits.png"
+        CREDITS:"credits.png",
+        CARGUEROSALERT: "alertacargueros.png",
+        ALERTADISPARO: "alertadisparo.png"
     },
 };
