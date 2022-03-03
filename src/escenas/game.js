@@ -287,6 +287,12 @@ export class game extends Phaser.Scene{
       this.botonHOME = self.physics.add.image(950, 50, DEF.IMAGENES.BOTONHOME).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickHOME(1)).setDisplaySize(80,80);
       
       this.botonSAVE = self.physics.add.image(1050, 50, DEF.IMAGENES.BOTONGUARDAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSAVE(1)).setDisplaySize(80,80);
+      
+      this.carg = self.add.sprite(1500, 300, 'CARGUEROSALERT').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
+      this.carg.setActive(false).setVisible(false);
+      
+      this.disp = self.add.sprite(1500, 400, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
+      this.disp.setActive(false).setVisible(false);
 
       self.input.on('pointerdown', function (pointer) {
           self.input.mouse.requestPointerLock();
@@ -314,6 +320,9 @@ export class game extends Phaser.Scene{
       this.botonHOME = self.physics.add.image(880, 200, DEF.IMAGENES.BOTONHOME).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickHOME(1)).setDisplaySize(80,80);
     
       this.botonSAVE = self.physics.add.image(980, 200, DEF.IMAGENES.BOTONGUARDAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSAVE(1)).setDisplaySize(80,80);
+    
+      this.disp = self.add.sprite(1500, 500, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
+      this.disp.setActive(false).setVisible(false);
     } 
     
     function ClickDOWN(val){
@@ -402,6 +411,46 @@ export class game extends Phaser.Scene{
         console.log("guardar");
       }
     }
+
+    function alertacargueros (val) {
+      //console.log("Selecciona");
+      if(val===1){
+        //console.log("entroalif");
+        self.anims.create({  
+          key: 'animalertcargueros',
+          frames: [
+              { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROS.png" },
+              { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROSROJO.png" },
+          ],
+          frameRate: 5,
+          repeat:3,
+          hideOnComplete: true,
+          
+          });
+          self.carg.play('animalertcargueros');
+      }   
+    }
+    
+    function ALERTADISPARO (val) {
+      //console.log("Selecciona");
+      if(val===1){
+        //console.log("entroalif");
+        self.disp.setActive(true).setVisible(true);
+        self.anims.create({  
+          key: 'anidisp',
+          frames: [
+              { key: 'ALERTADISPARO',frame:"ALERTADisparosNEGRO.png" },
+              { key: 'ALERTADISPARO',frame:"ALERTADisparosROJO.png" },
+          ],
+          frameRate: 5,
+          repeat:3,
+          hideOnComplete: true,
+          
+          });
+          self.disp.play('anidisp');
+      }   
+    }
+
     function generarEquipo1(){     
       // Genero los objetos cargueros, con sus imagenes, colisiones, etc
       generarCargueros();
