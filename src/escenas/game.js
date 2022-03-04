@@ -188,6 +188,7 @@ export class game extends Phaser.Scene{
     let carguerosAsalvo = 0;
     let pack;
     let playerIMG;
+    let enemyImg;
 
     // Obtengo el centro del canvas para la máscara
     const centroW = this.sys.game.config.width / 2;
@@ -317,8 +318,8 @@ export class game extends Phaser.Scene{
       this.disp = self.add.sprite(1500, 400, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
       //this.disp.setActive(false).setVisible(false);
 
-      this.cruz = self.add.sprite(800, 500, 'CRUZ').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
-      this.cruz.setActive(false).setVisible(false);
+      //this.cruz = self.add.sprite(800, 500, 'CRUZ').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
+      //this.cruz.setActive(false).setVisible(false);
 
       self.input.on('pointerdown', function (pointer) {
           self.input.mouse.requestPointerLock();
@@ -351,8 +352,7 @@ export class game extends Phaser.Scene{
       this.disp = self.add.sprite(1500, 500, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
       this.disp.setActive(false).setVisible(false);
 
-      this.cruz = self.add.sprite(800, 500, 'CRUZ').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
-      this.cruz.setActive(false).setVisible(false);
+      
       // Parte superior del HUD
       self.UISubVida =  self.add.text(1200, 170, 'Vida: ' + self.submarino.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
       self.UISubMunicionTor =  self.add.text(1200, 200, 'Munición torpedos: ' + self.submarino.ammoTorpedos, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
@@ -485,26 +485,7 @@ export class game extends Phaser.Scene{
       }   
     }
 
-    function CRUZ (val) {
-      //console.log("Selecciona");
-      if(val===1){
-        //console.log("entroalif");
-        self.cruz.setActive(true).setVisible(true);
-        self.anims.create({  
-          key: 'ani',
-          frames: [
-              { key: 'CRUZ',frame:"cruzaler.png" },
-              { key: 'CRUZ',frame:"cruzalerr.png" }
- 
-          ],
-          frameRate: 5,
-          repeat:3,
-          hideOnComplete: true,
-          
-          });
-          self.cruz.play('ani');
-      }   
-    }
+  
 
     function generarEquipo1(){     
       // Genero los objetos cargueros, con sus imagenes, colisiones, etc
@@ -2662,12 +2643,32 @@ export class game extends Phaser.Scene{
       self.explotion3.play('explot3');
     }
 
+    function CRUZ (imagen) {
+      self.cruz = self.add.sprite(imagen.x, imagen.y, 'CRUZ').setDepth(10).setDisplaySize(80,80);
+      console.log("entro a la cruz");
+      self.anims.create({  
+        key: 'ani',
+        frames: [
+            { key: 'CRUZ',frame:"cruzaler.png" },
+            { key: 'CRUZ',frame:"cruzalerr.png" }
+        ],
+        frameRate: 5,
+        repeat:3,
+        hideOnComplete: true,
+        
+        });
+        self.cruz.play('ani');
+    }
     //funcion que procesa el dano y el porcentaje de acierto
-    function RecibeHit(player, damage, escar)
+    function RecibeHit(player, damage, escar, enemy)
     {
       let contadorAviso = 0;
       playerIMG = player.imagen;
+      //enemyImg = enemy.imagen;
+
+      CRUZ(enemy.imagen);
       hitted(playerIMG.x, playerIMG.y);
+      
       self.Hit = self.add.text( playerIMG.x + 25, playerIMG.y + 25, 
         '', {font: '20px monospace', fill: '#FF0000', align: 'center'});
       function aviso(){
@@ -2857,36 +2858,36 @@ export class game extends Phaser.Scene{
         {
           if (playerInfo.numerocarguero === 0)
           {
-            RecibeHit(self.destructor, playerInfo.damage, false);
+            RecibeHit(self.destructor, playerInfo.damage, false, self.submarino);
           }
           else if(playerInfo.numerocarguero === 1)
           {
-            RecibeHit(self.carguero1, playerInfo.damage, true);
+            RecibeHit(self.carguero1, playerInfo.damage, true, self.submarino);
           }
           else if(playerInfo.numerocarguero === 2)
           {
-            RecibeHit(self.carguero2, playerInfo.damage, true);
+            RecibeHit(self.carguero2, playerInfo.damage, true, self.submarino);
           }
           else if(playerInfo.numerocarguero === 3)
           {
-            RecibeHit(self.carguero3, playerInfo.damage, true);
+            RecibeHit(self.carguero3, playerInfo.damage, true, self.submarino);
           }
           else if(playerInfo.numerocarguero === 4)
           {
-            RecibeHit(self.carguero4, playerInfo.damage, true);
+            RecibeHit(self.carguero4, playerInfo.damage, true, self.submarino);
           }
           else if(playerInfo.numerocarguero === 5)
           {
-            RecibeHit(self.carguero5, playerInfo.damage, true);
+            RecibeHit(self.carguero5, playerInfo.damage, true, self.submarino);
           }
           else if(playerInfo.numerocarguero === 6)
           {
-            RecibeHit(self.carguero6, playerInfo.damage, true);
+            RecibeHit(self.carguero6, playerInfo.damage, true, self.submarino);
           }
         }
         else
         {
-            RecibeHit(self.submarino, playerInfo.damage, false);
+            RecibeHit(self.submarino, playerInfo.damage, false, self.destructor);
         }
     }); 
 
