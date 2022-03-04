@@ -143,6 +143,7 @@ export class game extends Phaser.Scene{
     let bullet;
     let danio;
     let camaraActual = 0;
+    let camaraActCarg = 0;
     let reticula;
     let cuentaSonar;
     let resetSonar;
@@ -331,9 +332,15 @@ export class game extends Phaser.Scene{
 
       self.input.keyboard.on('keydown-' + 'ONE',function(){
         camaraDestrCarg();
-        //self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
-        //self.cameras.main.setZoom(1.4);
       })
+
+      self.input.keyboard.on('keydown-' + 'TWO',function(){
+        camaraCargMini();
+      })
+
+      // Cámara de seguimiento a Cargueros
+      this.camaraEventos = this.cameras.add(1200, 900, 400, 100).setZoom(0.5);
+      this.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
       //generarUIEquipo2();
@@ -978,7 +985,6 @@ export class game extends Phaser.Scene{
               self.statusSonar.destroy();
             }
           }
-          
         }
       }
     }
@@ -1049,39 +1055,54 @@ export class game extends Phaser.Scene{
 
     function camaraDestrCarg(){
       if(camaraActual == 0){
-        self.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 1;
       }else if(camaraActual == 1){
-        self.camaraEventos.startFollow(self.carguero2.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero2.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 2;
       }else if(camaraActual == 2){
-        self.camaraEventos.startFollow(self.carguero3.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero3.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 3;
       }else if(camaraActual == 3){
-        self.camaraEventos.startFollow(self.carguero4.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero4.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 4;
       }else if(camaraActual == 4){
-        self.camaraEventos.startFollow(self.carguero5.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero5.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 5;
       }else if(camaraActual == 5){
-        self.camaraEventos.startFollow(self.carguero6.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero6.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 6;
       }else if(camaraActual == 6){
-        self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(0.9);
         camaraActual = 0;
+      }
+    }
+
+    function camaraCargMini(){
+      if(camaraActCarg == 0){
+        self.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
+        camaraActCarg = 1;
+      }else if(camaraActCarg == 1){
+        self.camaraEventos.startFollow(self.carguero2.imagen,true, 0.09, 0.09); 
+        camaraActCarg = 2;
+      }else if(camaraActCarg == 2){
+        self.camaraEventos.startFollow(self.carguero3.imagen,true, 0.09, 0.09);
+        camaraActCarg = 3;
+      }else if(camaraActCarg == 3){
+        self.camaraEventos.startFollow(self.carguero4.imagen,true, 0.09, 0.09);
+        camaraActCarg = 4;
+      }else if(camaraActCarg == 4){
+        self.camaraEventos.startFollow(self.carguero5.imagen,true, 0.09, 0.09);
+        camaraActCarg = 5;
+      }else if(camaraActCarg == 5){
+        self.camaraEventos.startFollow(self.carguero6.imagen,true, 0.09, 0.09);
+        camaraActCarg = 0;
       }
     }
 
