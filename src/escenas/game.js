@@ -714,7 +714,7 @@ export class game extends Phaser.Scene{
       self.input.keyboard.on('keydown-' + 'F', function (event){
         // Activo sonar si hay sonares disponibles
         if(self.submarino.sonar>0){
-          if (self.usoSonar !== true){
+          if (self.usoSonar !== true && self.submarino.profundidad === 1){
             // Texto de aviso
             self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0).setDepth(10);
             
@@ -755,7 +755,7 @@ export class game extends Phaser.Scene{
             self.submarino.sonar--;
           }
         }else{
-          if (self.usoSonar !== true){
+          if (self.usoSonar !== true && self.submarino.profundidad === 1){
             // Texto de aviso
             self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0).setDepth(10);
 
@@ -798,14 +798,16 @@ export class game extends Phaser.Scene{
               self.cameras.main.setZoom(1.4);
             }
           }else if (self.submarino.profundidad === 1){
-            // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
-            // vea mi cambio de profundidad
-            self.submarino.profundidad = 2;
-            self.submarino.armas = -1;
-            //self.submarino.imagen.setTexture('UbootProfundidad2');
-            self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
-            console.log('baje al mucha profundidad');
-            self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+            if (self.usoSonar !== true){
+              // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
+              // vea mi cambio de profundidad
+              self.submarino.profundidad = 2;
+              self.submarino.armas = -1;
+              //self.submarino.imagen.setTexture('UbootProfundidad2');
+              self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
+              console.log('baje al mucha profundidad');
+              self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+            }
           }
           self.physics.world.removeCollider(self.colliderSub); 
           self.physics.world.removeCollider(self.colliderCarg1);
@@ -832,12 +834,14 @@ export class game extends Phaser.Scene{
       self.input.keyboard.on('keydown-' + 'E', function (event){
         // Idem anteriores pero subiendo de 1 a 0
         if (self.submarino.profundidad == 1){
-          self.submarino.profundidad = 0;
-          self.submarino.armas = 0;
-          console.log('subi a la superficie');
-          //self.submarino.imagen.setTexture('uboot');
-          self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
-          self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+          if (self.usoSonar !== true){
+            self.submarino.profundidad = 0;
+            self.submarino.armas = 0;
+            console.log('subi a la superficie');
+            //self.submarino.imagen.setTexture('uboot');
+            self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
+            self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+          }
         } else if (self.submarino.profundidad == 2){
           // Idem anteriores pero subiendo de 0 a 1
           self.submarino.profundidad = 1;
