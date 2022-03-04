@@ -72,6 +72,7 @@ export const DEF = {
         CONTROLS: "controls.png",
         CREDITS:"credits.png",
         CARGUEROSALERT: "alertacargueros.png",
-        ALERTADISPARO: "alertadisparo.png"
+        ALERTADISPARO: "alertadisparo.png",
+        CRUZ:"cruzaler.png"
     },
 };

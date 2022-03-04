@@ -242,6 +242,8 @@ export class game extends Phaser.Scene{
     this.costa2 = self.physics.add.image(6066,1078,DEF.IMAGENES.COSTA2).setDepth(5);
     this.costa2.setImmovable(true);
 
+  
+
     // Introduzco cursores y teclas utilizables
     this.cursors = this.input.keyboard.createCursorKeys();
     this.up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -314,6 +316,9 @@ export class game extends Phaser.Scene{
       this.disp = self.add.sprite(1500, 400, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
       this.disp.setActive(false).setVisible(false);
 
+      this.cruz = self.add.sprite(800, 500, 'CRUZ').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
+      this.cruz.setActive(false).setVisible(false);
+
       self.input.on('pointerdown', function (pointer) {
           self.input.mouse.requestPointerLock();
         }, self);
@@ -344,6 +349,9 @@ export class game extends Phaser.Scene{
       this.botonSAVE = self.physics.add.image(980, 200, DEF.IMAGENES.BOTONGUARDAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSAVE(1)).setDisplaySize(80,80);
       this.disp = self.add.sprite(1500, 500, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
       this.disp.setActive(false).setVisible(false);
+
+      this.cruz = self.add.sprite(800, 500, 'CRUZ').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
+      this.cruz.setActive(false).setVisible(false);
       // Parte superior del HUD
       self.UISubVida =  self.add.text(1200, 170, 'Vida: ' + self.submarino.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
       self.UISubMunicionTor =  self.add.text(1200, 200, 'Munición torpedos: ' + self.submarino.ammoTorpedos, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
@@ -473,6 +481,27 @@ export class game extends Phaser.Scene{
           
           });
           self.disp.play('anidisp');
+      }   
+    }
+
+    function CRUZ (val) {
+      //console.log("Selecciona");
+      if(val===1){
+        //console.log("entroalif");
+        self.cruz.setActive(true).setVisible(true);
+        self.anims.create({  
+          key: 'ani',
+          frames: [
+              { key: 'CRUZ',frame:"cruzaler.png" },
+              { key: 'CRUZ',frame:"cruzalerr.png" }
+ 
+          ],
+          frameRate: 5,
+          repeat:3,
+          hideOnComplete: true,
+          
+          });
+          self.cruz.play('ani');
       }   
     }
 
