@@ -147,6 +147,7 @@ export class game extends Phaser.Scene{
     let resetSonar;
     let contadorS=0;
     let usoSonar = false;
+    let nhSonar = false;
     let siguiendoDes = true;
     //self.socket.emit('listarPartidas', {id: 2});
     let carguerosMuertos = 0;
@@ -948,27 +949,32 @@ export class game extends Phaser.Scene{
         }
       }else{
         if (self.usoSonar !== true && self.submarino.profundidad === 1){
-          // Texto de aviso
-          self.statusSonar = self.add.text(550, 700, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+          if(nhSonar !== true){
+            nhSonar = true;
+            // Texto de aviso
+            self.statusSonar = self.add.text(550, 700, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
 
-          self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
-          self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
-          
-          function eliminoAvisoNHS(){
-            // Elimino texto de aviso no hay sonar
-            removeText();
-            contadorS=0;
-          }
-          function avisoNoHaySonar(){
-            contadorS++;
-            self.statusSonar.setText('                  ¡SONAR AGOTADO!');
-            if (contadorS === 5){
-              self.cuentaSonar.remove(true);
+            self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
+            self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
+            
+            function eliminoAvisoNHS(){
+              nhSonar = false;
+              // Elimino texto de aviso no hay sonar
+              removeText();
+              contadorS=0;
+            }
+            function avisoNoHaySonar(){
+              contadorS++;
+              self.statusSonar.setText('                  ¡SONAR AGOTADO!');
+              if (contadorS === 5){
+                self.cuentaSonar.remove(true);
+              }
+            }
+            function removeText() {
+              self.statusSonar.destroy();
             }
           }
-          function removeText() {
-            self.statusSonar.destroy();
-          }
+          
         }
       }
     }
