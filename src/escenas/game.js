@@ -721,15 +721,6 @@ export class game extends Phaser.Scene{
           restablezcoMask();
         }
         function restablezcoMask(){
-          // Construyo el larga vista
-          self.largaVistas = self.make.sprite({
-            x: centroW,
-            y: centroH,
-            key: DEF.IMAGENES.LARGAVISTAS,
-            add: false
-          });
-          self.largaVistas.setOrigin(0.5,0);
-          self.mar.masklv = new Phaser.Display.Masks.BitmapMask(self, self.largaVistas);
           self.cameras.main.setMask(mask);
           self.cameras.main.setZoom(1.4);
         }
@@ -747,8 +738,7 @@ export class game extends Phaser.Scene{
             // Activo sonido de sonar
             self.soundSonar.play();
 
-            // Cambio de cámaras
-            self.cameras.main.setMask(self.mask);
+            // Cambio de zoom de la cámara
             self.cameras.main.setZoom(0.9);
             
             // Activo cuenta regresiva
@@ -758,8 +748,7 @@ export class game extends Phaser.Scene{
             self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
             
             function camaraSonar(){
-              // Restablezco las cámaras
-              self.cameras.main.setMask(self.mask);
+              // Restablezco zoom de la cámara   
               self.cameras.main.setZoom(1.4);
               self.usoSonar = false;
               console.log("USO SONAR:"+self.usoSonar);
