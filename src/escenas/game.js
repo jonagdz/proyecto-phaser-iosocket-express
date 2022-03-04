@@ -225,29 +225,25 @@ export class game extends Phaser.Scene{
 
     // Islas
     this.isla1 = self.physics.add.image(2100,900,DEF.IMAGENES.ISLA).setDepth(5);
-    // this.isla1 = self.physics.add.image(2100,900,'island1').setDepth(1);
     this.isla1.setImmovable(true);
     this.isla1.setDisplaySize(400, 400);
     this.isla2 = self.physics.add.image(2460,1600,DEF.IMAGENES.ISLA).setDepth(5);
-    //this.isla2 = self.physics.add.image(2460,1600,'island1').setDepth(1);
     this.isla2.setImmovable(true);
     this.isla2.setDisplaySize(400, 400);
     this.isla3 = self.physics.add.image(3200,600,DEF.IMAGENES.ISLA).setDepth(5);
-    //this.isla3 = self.physics.add.image(3200,600,'island1').setDepth(1);
     this.isla3.setImmovable(true);
     this.isla3.setDisplaySize(400, 400);
     this.isla4 = self.physics.add.image(3400,1800,DEF.IMAGENES.ISLA).setDepth(5);
-    //this.isla4 = self.physics.add.image(3400,1800,'island1').setDepth(1);
     this.isla4.setImmovable(true);
     this.isla4.setDisplaySize(400, 400);
 
     // Costas
     this.costa1 = self.physics.add.image(345,1078,DEF.IMAGENES.COSTA1).setDepth(5);
-    //this.costa1 = self.physics.add.image(345,1078,'costa1').setDepth(1);;
     this.costa1.setImmovable(true);
     this.costa2 = self.physics.add.image(6066,1078,DEF.IMAGENES.COSTA2).setDepth(5);
-    //this.costa2 = self.physics.add.image(6066,1078,'costa2').setDepth(1);;
     this.costa2.setImmovable(true);
+
+  
 
     // Introduzco cursores y teclas utilizables
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -266,6 +262,32 @@ export class game extends Phaser.Scene{
         audioActivado=true;
       }
     });
+
+    // Se crean los eventos de cambio de camaras para los cargueros
+    self.input.keyboard.on('keydown-' + 'ONE',function(){
+      self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
+      self.cameras.main.setZoom(1.4);
+    })
+    self.input.keyboard.on('keydown-' + 'TWO',function(){
+      self.cameras.main.startFollow(self.carguero2.imagen,true, 0.09, 0.09); 
+      self.cameras.main.setZoom(1.4);
+    })
+    self.input.keyboard.on('keydown-' + 'THREE',function(){
+      self.cameras.main.startFollow(self.carguero3.imagen,true, 0.09, 0.09); 
+      self.cameras.main.setZoom(1.4);
+    })
+    self.input.keyboard.on('keydown-' + 'FOUR',function(){
+      self.cameras.main.startFollow(self.carguero4.imagen,true, 0.09, 0.09); 
+      self.cameras.main.setZoom(1.4);
+    })
+    self.input.keyboard.on('keydown-' + 'FIVE',function(){
+      self.cameras.main.startFollow(self.carguero5.imagen,true, 0.09, 0.09); 
+      self.cameras.main.setZoom(1.4);
+    })
+    self.input.keyboard.on('keydown-' + 'SIX',function(){
+      self.cameras.main.startFollow(self.carguero6.imagen,true, 0.09, 0.09); 
+      self.cameras.main.setZoom(1.4);
+    })
 
     // Se crea el evento de pausa
     self.input.keyboard.on('keydown-' + 'P', function (event){
@@ -295,6 +317,9 @@ export class game extends Phaser.Scene{
       this.disp = self.add.sprite(1500, 400, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
       //this.disp.setActive(false).setVisible(false);
 
+      this.cruz = self.add.sprite(800, 500, 'CRUZ').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
+      this.cruz.setActive(false).setVisible(false);
+
       self.input.on('pointerdown', function (pointer) {
           self.input.mouse.requestPointerLock();
         }, self);
@@ -303,27 +328,35 @@ export class game extends Phaser.Scene{
       self.socket.emit('iniciarPartida', self.partida);
       //this.botonDOWNDI = self.physics.add.image(700, 900, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
       //this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
+      // Parte superior del HUD
+      self.UIDesVida =  self.add.text(1200, 170, 'Vida: ' + self.destructor.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+      self.UIDesMunicionCar =  self.add.text(1200, 200, 'Munición cargas: ' + self.destructor.ammoCargas, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+      self.UIDesMunicionCan =  self.add.text(1200, 230, 'Munición cañon: ' + self.destructor.ammoCanion, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+      self.UIDesCarg1 = self.add.text(300, 170, 'Vida carguero 1: ' + self.carguero1.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+      self.UIDesCarg2 = self.add.text(300, 200, 'Vida carguero 2: ' + self.carguero2.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+      self.UIDesCarg3 = self.add.text(300, 230, 'Vida carguero 3: ' + self.carguero3.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+      self.UIDesCarg4 = self.add.text(300, 260, 'Vida carguero 4: ' + self.carguero4.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+      self.UIDesCarg5 = self.add.text(300, 290, 'Vida carguero 5: ' + self.carguero5.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+      self.UIDesCarg6 = self.add.text(300, 320, 'Vida carguero 6: ' + self.carguero6.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
+      //generarUIEquipo2();
       this.botonDOWNDI = self.physics.add.image(700, 800, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1)).setDisplaySize(80,80);
-
       this.botonSUBE = self.physics.add.image(800, 800, DEF.IMAGENES.BOTONSUBIR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSUBE(1)).setDisplaySize(80,80);
-   
-
       this.botonSONAR = self.physics.add.image(900, 800, DEF.IMAGENES.BOTONSONAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSONAR(1)).setDisplaySize(80,80);
-    
-
       this.botonCAMBIARARMA = self.physics.add.image(1000, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCAMBIARARMA(1)).setDisplaySize(80,80);
-     
-
       this.botonLARGAVISTA = self.physics.add.image(1100, 800, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickLARGAVISTA(1)).setDisplaySize(80,80);
-      
       this.botonHOME = self.physics.add.image(880, 200, DEF.IMAGENES.BOTONHOME).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickHOME(1)).setDisplaySize(80,80);
-    
       this.botonSAVE = self.physics.add.image(980, 200, DEF.IMAGENES.BOTONGUARDAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSAVE(1)).setDisplaySize(80,80);
-    
       this.disp = self.add.sprite(1500, 500, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
       this.disp.setActive(false).setVisible(false);
+
+      this.cruz = self.add.sprite(800, 500, 'CRUZ').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
+      this.cruz.setActive(false).setVisible(false);
+      // Parte superior del HUD
+      self.UISubVida =  self.add.text(1200, 170, 'Vida: ' + self.submarino.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+      self.UISubMunicionTor =  self.add.text(1200, 200, 'Munición torpedos: ' + self.submarino.ammoTorpedos, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+      self.UISubMunicionCan =  self.add.text(1200, 230, 'Munición cañon: ' + self.submarino.ammoCanion, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);      
     } 
     
     function ClickDOWN(val){
@@ -450,6 +483,27 @@ export class game extends Phaser.Scene{
       }   
     }
 
+    function CRUZ (val) {
+      //console.log("Selecciona");
+      if(val===1){
+        //console.log("entroalif");
+        self.cruz.setActive(true).setVisible(true);
+        self.anims.create({  
+          key: 'ani',
+          frames: [
+              { key: 'CRUZ',frame:"cruzaler.png" },
+              { key: 'CRUZ',frame:"cruzalerr.png" }
+ 
+          ],
+          frameRate: 5,
+          repeat:3,
+          hideOnComplete: true,
+          
+          });
+          self.cruz.play('ani');
+      }   
+    }
+
     function generarEquipo1(){     
       // Genero los objetos cargueros, con sus imagenes, colisiones, etc
       generarCargueros();
@@ -545,15 +599,16 @@ export class game extends Phaser.Scene{
       
       // Se crea el evento de cambio cámaras entre destructor y cargueros
       self.input.keyboard.on('keydown-' + 'C', function (event){
-        if(self.siguiendoDes === true){
-          self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
-          self.cameras.main.setZoom(1.4);
-          self.siguiendoDes = false;
-        }else{
+        console.log("Vuelvo a camara destructor");
+        //if(self.siguiendoDes === true){
+        //  self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
+        //  self.cameras.main.setZoom(1.4);
+        //  self.siguiendoDes = false;
+        //}else{
           self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
           self.cameras.main.setZoom(0.9);
           self.siguiendoDes = true;
-        }
+        //}
       });
 
       // Funcion que al precionar la tecla V, cambia la profundidad de las cargas de profundidad del destructor
@@ -694,15 +749,6 @@ export class game extends Phaser.Scene{
           restablezcoMask();
         }
         function restablezcoMask(){
-          // Construyo el larga vista
-          self.largaVistas = self.make.sprite({
-            x: centroW,
-            y: centroH,
-            key: DEF.IMAGENES.LARGAVISTAS,
-            add: false
-          });
-          self.largaVistas.setOrigin(0.5,0);
-          self.mar.masklv = new Phaser.Display.Masks.BitmapMask(self, self.largaVistas);
           self.cameras.main.setMask(mask);
           self.cameras.main.setZoom(1.4);
         }
@@ -713,15 +759,14 @@ export class game extends Phaser.Scene{
         if(self.submarino.sonar>0){
           if (self.usoSonar !== true){
             // Texto de aviso
-            self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
+            self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0).setDepth(10);
             
             self.usoSonar = true;
 
             // Activo sonido de sonar
             self.soundSonar.play();
 
-            // Cambio de cámaras
-            self.cameras.main.setMask(self.mask);
+            // Cambio de zoom de la cámara
             self.cameras.main.setZoom(0.9);
             
             // Activo cuenta regresiva
@@ -731,8 +776,7 @@ export class game extends Phaser.Scene{
             self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
             
             function camaraSonar(){
-              // Restablezco las cámaras
-              self.cameras.main.setMask(self.mask);
+              // Restablezco zoom de la cámara   
               self.cameras.main.setZoom(1.4);
               self.usoSonar = false;
               console.log("USO SONAR:"+self.usoSonar);
@@ -756,7 +800,7 @@ export class game extends Phaser.Scene{
         }else{
           if (self.usoSonar !== true){
             // Texto de aviso
-            self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
+            self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0).setDepth(10);
 
             self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
             self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
@@ -1157,7 +1201,7 @@ export class game extends Phaser.Scene{
       if(self.submarino.sonar>0){
         if (self.usoSonar !== true){
           // Texto de aviso
-          self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
+          self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0).setDepth(10);
           
           self.usoSonar = true;
 
@@ -1200,7 +1244,7 @@ export class game extends Phaser.Scene{
       }else{
         if (self.usoSonar !== true){
             // Texto de aviso
-            self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0);
+            self.statusSonar = self.add.text(350, 270, '', { font: '50px Courier', fill: '#000000' }).setScrollFactor(0).setDepth(10);
 
             self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
             self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
@@ -1307,10 +1351,13 @@ export class game extends Phaser.Scene{
         {
           self.destructor.ammoCanion--;
           console.log("Municion restante Canon", self.destructor.ammoCanion);
- 
+          
           //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
           Disparo(self.destructor, bullet, self.submarino);
 
+          // Actualizo en la barra grafica la cantidad de municion de cañon restante
+          self.UIDesMunicionCan.destroy();
+          self.UIDesMunicionCan =  self.add.text(1200, 230, 'Munición cañon: ' + self.destructor.ammoCanion, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
         }
         if (self.destructor.armas === 1 && self.destructor.vida > 0 && self.destructor.ammoCargas > 0)
         {
@@ -1319,11 +1366,14 @@ export class game extends Phaser.Scene{
       
           //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
           Disparo(self.destructor, bullet, self.submarino);
+
+          // Actualizo en la barra grafica la cantidad de municion de cañon restante
+          self.UIDesMunicionCar.destroy();
+          self.UIDesMunicionCar =  self.add.text(1200, 200, 'Munición cargas: ' + self.destructor.ammoCargas, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
         }
       }
       else
       {
-
         //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
         bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
         
@@ -1341,6 +1391,10 @@ export class game extends Phaser.Scene{
           Disparo(self.submarino, bullet, self.carguero4);
           Disparo(self.submarino, bullet, self.carguero5);
           Disparo(self.submarino, bullet, self.carguero6);    
+
+          // Actualizo en la barra grafica la cantidad de municion restante
+          self.UISubMunicionCan.destroy();
+          self.UISubMunicionCan =  self.add.text(1200, 230, 'Munición cañon: ' + self.submarino.ammoCanion, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
         }
         if ((self.submarino.armas === 1 || self.submarino.armas === 4) && self.submarino.vida > 0 && self.submarino.ammoTorpedos > 0)
         {
@@ -1355,6 +1409,10 @@ export class game extends Phaser.Scene{
           Disparo(self.submarino, bullet, self.carguero4);
           Disparo(self.submarino, bullet, self.carguero5);
           Disparo(self.submarino, bullet, self.carguero6);    
+
+          // Actualizo en la barra grafica la cantidad de municion restante
+          self.UISubMunicionTor.destroy();
+          self.UISubMunicionTor =  self.add.text(1200, 200, 'Munición torpedos: ' + self.submarino.ammoTorpedos, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
         }
       }
       //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
@@ -2633,6 +2691,26 @@ export class game extends Phaser.Scene{
         if(escar){
           alertacargueros();
           self.soundAlarm.play({volume: 0.04, loop: false});
+        }
+        // Muestro en la parte grafica la vida actualizada de cada barco luego del disparo
+        if (self.equipo == 1){
+          self.UIDesVida.destroy();
+          self.UIDesCarg1.destroy();
+          self.UIDesCarg2.destroy();
+          self.UIDesCarg3.destroy();
+          self.UIDesCarg4.destroy();
+          self.UIDesCarg5.destroy();
+          self.UIDesCarg6.destroy();
+          self.UIDesVida =  self.add.text(1200, 170, 'Vida: ' + self.destructor.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+          self.UIDesCarg1 = self.add.text(300, 170, 'Vida carguero 1: ' + self.carguero1.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+          self.UIDesCarg2 = self.add.text(300, 200, 'Vida carguero 2: ' + self.carguero2.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+          self.UIDesCarg3 = self.add.text(300, 230, 'Vida carguero 3: ' + self.carguero3.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+          self.UIDesCarg4 = self.add.text(300, 260, 'Vida carguero 4: ' + self.carguero4.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+          self.UIDesCarg5 = self.add.text(300, 290, 'Vida carguero 5: ' + self.carguero5.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+          self.UIDesCarg6 = self.add.text(300, 320, 'Vida carguero 6: ' + self.carguero6.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+        }else{
+          self.UISubVida.destroy();
+          self.UISubVida =  self.add.text(1200, 170, 'Vida: ' + player.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
         }
       }
       if(player.vida <= 0)

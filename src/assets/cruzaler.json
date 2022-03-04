@@ -1,0 +1,28 @@
+{"frames": {
+
+"cruzaler.png":
+{
+	"frame": {"x":0,"y":0,"w":640,"h":640},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":640,"h":640},
+	"sourceSize": {"w":640,"h":640}
+},
+"cruzalerr.png":
+{
+	"frame": {"x":640,"y":0,"w":640,"h":640},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":640,"h":640},
+	"sourceSize": {"w":640,"h":640}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "cruzaler.png",
+	"format": "RGBA8888",
+	"size": {"w":1280,"h":640},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:b3aa18017dabba5417286aa76bc5d72c:5c38f2355a1d009e50c53f26efa76000:3ef283c8f544beebcd8c3dd087d4e1f8$"
+}
+}

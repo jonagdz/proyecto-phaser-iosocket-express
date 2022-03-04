@@ -4,6 +4,8 @@ import { game } from './escenas/game.js';
 import { GameMenu} from './escenas/GameMenu.js';
 import { salaEspera } from './escenas/salaEspera.js';
 import { gameOver } from './escenas/gameOver.js';
+import { creditos } from './escenas/creditos.js';
+import { controles } from './escenas/controles.js';
 
 // Configuracion de Phaser
 var config = {
@@ -20,11 +22,11 @@ var config = {
   physics: {
     default: 'arcade',
     arcade: {
-      debug: false, // En true para ver las hitbox reales de los objetos y el vector a donde apunta la direccion junto con la fuerza (tamaño de la flecha de direccion)
+      debug: true, // En true para ver las hitbox reales de los objetos y el vector a donde apunta la direccion junto con la fuerza (tamaño de la flecha de direccion)
       gravity: { y: 0 }
     }
   },
-  scene: [bootGame, preGameMenu, salaEspera, game, GameMenu, gameOver]
+  scene: [bootGame, preGameMenu, salaEspera, game, GameMenu, gameOver, creditos, controles]
 }
 
 window.onload = () =>{
