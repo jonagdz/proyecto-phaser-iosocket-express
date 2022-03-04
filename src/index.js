@@ -4,6 +4,8 @@ import { game } from './escenas/game.js';
 import { GameMenu} from './escenas/GameMenu.js';
 import { salaEspera } from './escenas/salaEspera.js';
 import { gameOver } from './escenas/gameOver.js';
+import { creditos } from './escenas/creditos.js';
+import { controles } from './escenas/controles.js';
 
 // Configuracion de Phaser
 var config = {
@@ -24,7 +26,7 @@ var config = {
       gravity: { y: 0 }
     }
   },
-  scene: [bootGame, preGameMenu, salaEspera, game, GameMenu, gameOver]
+  scene: [bootGame, preGameMenu, salaEspera, game, GameMenu, gameOver, creditos, controles]
 }
 
 window.onload = () =>{

@@ -41,11 +41,12 @@ export class GameMenu extends Phaser.Scene{
         }
         
         function ClickCREDITS(){
-            console.log("creditos");
+            self.scene.start(DEF.SCENES.CREDITS); 
         }
 
         function ClickCONTROL(){
             console.log("controles");
+            self.scene.start(DEF.SCENES.CONTROLS); 
         }
 
         function ElegirIni(tru){

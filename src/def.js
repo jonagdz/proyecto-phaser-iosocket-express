@@ -6,7 +6,9 @@ export const DEF = {
         LOBBY: "salaEspera",
         LateralScene: "lateralView",
         FinScene: "gameOver",
-        MENUPRINCIPAL: "GameMenu"
+        MENUPRINCIPAL: "GameMenu",
+        CREDITS: "creditos",
+        CONTROLS: "controles"
     },
 
     IMAGENES: {
@@ -32,21 +34,21 @@ export const DEF = {
         INFO: "information.png",
         INFOTXT: "infotext.png",
         CLOSE: "close.png",
-      //  BOTONUP: "UP.png", 
-      //  BOTONRIGHT: "RIGHT.png",
-      //  BOTONLEFT: "LEFT.png",
-       // BOTONDOWN: "DOWN.png",   
-     //   BOTONUPDR: "diagonalr.png",
-    //    BOTONDOWNDR: "diagonalrdown.png",
-        //  BOTONUPDI: "diagonaliup.png",
+        // BOTONUP: "UP.png", 
+        // BOTONRIGHT: "RIGHT.png",
+        // BOTONLEFT: "LEFT.png",
+        // BOTONDOWN: "DOWN.png",   
+        // BOTONUPDR: "diagonalr.png",
+        // BOTONDOWNDR: "diagonalrdown.png",
+        // BOTONUPDI: "diagonaliup.png",
         BOTONDOWNDI: "botonsumerge.png",
         BOTONSUBIR: "botonsube.png",
         BOTONSONAR: "botonsonar.png",
         BOTONARMA: "botondisparo.png",
         BOTONLARGAVISTA: "botonlargavista.png",
         BOTONHOME: "botonhomeNegro.png",
-        BOTONGUARDAR: "botonGUARDAD.png"
-      
+        BOTONGUARDAR: "botonGUARDAD.png",
+        CONTROLES: "controles.png"
     },
 
     AUDIO: {
