@@ -218,6 +218,7 @@ export class game extends Phaser.Scene{
   
     // Ajusto audio
     this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
+    this.soundAlarm = this.sound.add(DEF.AUDIO.ALERTA);
     let soundBackground = this.sound.add(DEF.AUDIO.JUEGO,{loop: true});
     let audioActivado = true;
     //soundBackground.play();
@@ -289,10 +290,10 @@ export class game extends Phaser.Scene{
       this.botonSAVE = self.physics.add.image(1050, 50, DEF.IMAGENES.BOTONGUARDAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSAVE(1)).setDisplaySize(80,80);
       
       this.carg = self.add.sprite(1500, 300, 'CARGUEROSALERT').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
-      this.carg.setActive(false).setVisible(false);
+      //this.carg.setActive(false).setVisible(false);
       
       this.disp = self.add.sprite(1500, 400, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
-      this.disp.setActive(false).setVisible(false);
+      //this.disp.setActive(false).setVisible(false);
 
       self.input.on('pointerdown', function (pointer) {
           self.input.mouse.requestPointerLock();
@@ -412,23 +413,21 @@ export class game extends Phaser.Scene{
       }
     }
 
-    function alertacargueros (val) {
-      //console.log("Selecciona");
-      if(val===1){
-        //console.log("entroalif");
+    function alertacargueros () {
+      console.log('entro a la animacion');
         self.anims.create({  
           key: 'animalertcargueros',
           frames: [
               { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROS.png" },
               { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROSROJO.png" },
+              { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROS.png" },
           ],
           frameRate: 5,
           repeat:3,
-          hideOnComplete: true,
+          hideOnComplete: false,
           
           });
-          self.carg.play('animalertcargueros');
-      }   
+          self.carg.play('animalertcargueros'); 
     }
     
     function ALERTADISPARO (val) {
@@ -444,7 +443,7 @@ export class game extends Phaser.Scene{
           ],
           frameRate: 5,
           repeat:3,
-          hideOnComplete: true,
+          hideOnComplete: false,
           
           });
           self.disp.play('anidisp');
@@ -1533,25 +1532,27 @@ export class game extends Phaser.Scene{
                 }
               }else{
                 //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                let contadorAviso = 0;
-                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                if(enemy.vida > 0){
+                  let contadorAviso = 0;
+                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
 
-                function aviso(){
-                  self.Hit2.setText('Miss');
-                  contadorAviso++;
-                  if (contadorAviso==3){
-                    self.statusEnvio.remove(true);
+                  function aviso(){
+                    self.Hit2.setText('Miss');
+                    contadorAviso++;
+                    if (contadorAviso==3){
+                      self.statusEnvio.remove(true);
+                    }
                   }
+                  
+                  function prueba(){
+                    self.Hit2.destroy();
+                  }
+                  
+                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+            
+                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                 }
-                
-                function prueba(){
-                  self.Hit2.destroy();
-                }
-                
-                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-          
-                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                 //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
               }  
             
@@ -1623,25 +1624,27 @@ export class game extends Phaser.Scene{
                 }
               }else{
                 //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                let contadorAviso = 0;
-                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                if(enemy.vida > 0){
+                  let contadorAviso = 0;
+                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
 
-                function aviso(){
-                  self.Hit2.setText('Miss');
-                  contadorAviso++;
-                  if (contadorAviso==3){
-                    self.statusEnvio.remove(true);
+                  function aviso(){
+                    self.Hit2.setText('Miss');
+                    contadorAviso++;
+                    if (contadorAviso==3){
+                      self.statusEnvio.remove(true);
+                    }
                   }
+                  
+                  function prueba(){
+                    self.Hit2.destroy();
+                  }
+                  
+                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+            
+                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                 }
-                
-                function prueba(){
-                  self.Hit2.destroy();
-                }
-                
-                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-          
-                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                 //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
               }  
             }
@@ -1712,25 +1715,27 @@ export class game extends Phaser.Scene{
                 }
               }else{
                 //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                let contadorAviso = 0;
-                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                if(enemy.vida > 0){
+                  let contadorAviso = 0;
+                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
 
-                function aviso(){
-                  self.Hit2.setText('Miss');
-                  contadorAviso++;
-                  if (contadorAviso==3){
-                    self.statusEnvio.remove(true);
+                  function aviso(){
+                    self.Hit2.setText('Miss');
+                    contadorAviso++;
+                    if (contadorAviso==3){
+                      self.statusEnvio.remove(true);
+                    }
                   }
+                  
+                  function prueba(){
+                    self.Hit2.destroy();
+                  }
+                  
+                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+            
+                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                 }
-                
-                function prueba(){
-                  self.Hit2.destroy();
-                }
-                
-                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-          
-                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                 //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
               } 
             }   
@@ -1809,25 +1814,27 @@ export class game extends Phaser.Scene{
                 }
               }else{
                 //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                let contadorAviso = 0;
-                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                if(enemy.vida > 0){
+                  let contadorAviso = 0;
+                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
 
-                function aviso(){
-                  self.Hit2.setText('Miss');
-                  contadorAviso++;
-                  if (contadorAviso==3){
-                    self.statusEnvio.remove(true);
+                  function aviso(){
+                    self.Hit2.setText('Miss');
+                    contadorAviso++;
+                    if (contadorAviso==3){
+                      self.statusEnvio.remove(true);
+                    }
                   }
+                  
+                  function prueba(){
+                    self.Hit2.destroy();
+                  }
+                  
+                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+            
+                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                 }
-                
-                function prueba(){
-                  self.Hit2.destroy();
-                }
-                
-                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-          
-                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                 //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
               }  
             }
@@ -1902,25 +1909,27 @@ export class game extends Phaser.Scene{
                 }
               }else{
                 //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                let contadorAviso = 0;
-                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                if(enemy.vida > 0){
+                  let contadorAviso = 0;
+                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
 
-                function aviso(){
-                  self.Hit2.setText('Miss');
-                  contadorAviso++;
-                  if (contadorAviso==3){
-                    self.statusEnvio.remove(true);
+                  function aviso(){
+                    self.Hit2.setText('Miss');
+                    contadorAviso++;
+                    if (contadorAviso==3){
+                      self.statusEnvio.remove(true);
+                    }
                   }
+                  
+                  function prueba(){
+                    self.Hit2.destroy();
+                  }
+                  
+                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+            
+                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                 }
-                
-                function prueba(){
-                  self.Hit2.destroy();
-                }
-                
-                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-          
-                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                 //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
               }  
             }
@@ -2012,25 +2021,27 @@ export class game extends Phaser.Scene{
                   }
                 }else{
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                  if(enemy.vida > 0){
+                    let contadorAviso = 0;
+                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
 
-                  function aviso(){
-                    self.Hit2.setText('Miss');
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
+                    function aviso(){
+                      self.Hit2.setText('Miss');
+                      contadorAviso++;
+                      if (contadorAviso==3){
+                        self.statusEnvio.remove(true);
+                      }
                     }
+                    
+                    function prueba(){
+                      self.Hit2.destroy();
+                    }
+                    
+                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              
+                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                   }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                   //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
                 } 
               }
@@ -2111,25 +2122,27 @@ export class game extends Phaser.Scene{
                       enemy.vida = enemy.vida - danio;
                 }else{
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                  if(enemy.vida > 0){
+                    let contadorAviso = 0;
+                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
 
-                  function aviso(){
-                    self.Hit2.setText('Miss');
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
+                    function aviso(){
+                      self.Hit2.setText('Miss');
+                      contadorAviso++;
+                      if (contadorAviso==3){
+                        self.statusEnvio.remove(true);
+                      }
                     }
+                    
+                    function prueba(){
+                      self.Hit2.destroy();
+                    }
+                    
+                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              
+                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                   }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                   //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
                 }  
               }
@@ -2211,25 +2224,27 @@ export class game extends Phaser.Scene{
                         enemy.vida = enemy.vida - danio;
                     }else{
                       //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                      let contadorAviso = 0;
-                      self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                        '', {font: '20px monospace', fill: '#fff', align: 'center'});
-
-                      function aviso(){
-                        self.Hit2.setText('Miss');
-                        contadorAviso++;
-                        if (contadorAviso==3){
-                          self.statusEnvio.remove(true);
+                      if(enemy.vida > 0){
+                        let contadorAviso = 0;
+                        self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                          '', {font: '20px monospace', fill: '#fff', align: 'center'});
+    
+                        function aviso(){
+                          self.Hit2.setText('Miss');
+                          contadorAviso++;
+                          if (contadorAviso==3){
+                            self.statusEnvio.remove(true);
+                          }
                         }
+                        
+                        function prueba(){
+                          self.Hit2.destroy();
+                        }
+                        
+                        self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                  
+                        self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                       }
-                      
-                      function prueba(){
-                        self.Hit2.destroy();
-                      }
-                      
-                      self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-                
-                      self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                       //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
                     }
               }
@@ -2318,25 +2333,27 @@ export class game extends Phaser.Scene{
                     enemy.vida = enemy.vida - danio;
                 }else{
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                  if(enemy.vida > 0){
+                    let contadorAviso = 0;
+                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
 
-                  function aviso(){
-                    self.Hit2.setText('Miss');
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
+                    function aviso(){
+                      self.Hit2.setText('Miss');
+                      contadorAviso++;
+                      if (contadorAviso==3){
+                        self.statusEnvio.remove(true);
+                      }
                     }
+                    
+                    function prueba(){
+                      self.Hit2.destroy();
+                    }
+                    
+                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              
+                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                   }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                   //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
                 }
               }
@@ -2419,25 +2436,27 @@ export class game extends Phaser.Scene{
                     enemy.vida = enemy.vida - danio;
                 } else {
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                  if(enemy.vida > 0){
+                    let contadorAviso = 0;
+                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
 
-                  function aviso(){
-                    self.Hit2.setText('Miss');
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
+                    function aviso(){
+                      self.Hit2.setText('Miss');
+                      contadorAviso++;
+                      if (contadorAviso==3){
+                        self.statusEnvio.remove(true);
+                      }
                     }
+                    
+                    function prueba(){
+                      self.Hit2.destroy();
+                    }
+                    
+                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              
+                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                   }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                   //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
                 } 
               }
@@ -2517,25 +2536,27 @@ export class game extends Phaser.Scene{
                     enemy.vida = enemy.vida - danio;
                 }else{
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                  if(enemy.vida > 0){
+                    let contadorAviso = 0;
+                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
 
-                  function aviso(){
-                    self.Hit2.setText('Miss');
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
+                    function aviso(){
+                      self.Hit2.setText('Miss');
+                      contadorAviso++;
+                      if (contadorAviso==3){
+                        self.statusEnvio.remove(true);
+                      }
                     }
+                    
+                    function prueba(){
+                      self.Hit2.destroy();
+                    }
+                    
+                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              
+                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                   }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                   //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
                 }
               }     
@@ -2588,9 +2609,7 @@ export class game extends Phaser.Scene{
       playerIMG = player.imagen;
       hitted(playerIMG.x, playerIMG.y);
       self.Hit = self.add.text( playerIMG.x + 25, playerIMG.y + 25, 
-        '', 
-        {font: '20px monospace', fill: '#FF0000', align: 'center'}
-      );
+        '', {font: '20px monospace', fill: '#FF0000', align: 'center'});
       function aviso(){
         self.Hit.setText('Impacto Recibido! Danio: ' + damage);
         contadorAviso++;
@@ -2611,6 +2630,10 @@ export class game extends Phaser.Scene{
       {
         player.vida = player.vida - damage; 
         console.log('Vida Restante', player.vida);
+        if(escar){
+          alertacargueros();
+          self.soundAlarm.play({volume: 0.04, loop: false});
+        }
       }
       if(player.vida <= 0)
       {
@@ -2622,6 +2645,9 @@ export class game extends Phaser.Scene{
         self.textures.remove(playerIMG);
         if(escar)
         {
+          console.log('entro a ESCAR')
+          alertacargueros();
+          self.soundAlarm.play({volume: 0.04, loop: false});
           carguerosMuertos++;
         }
       }
