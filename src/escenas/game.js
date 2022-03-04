@@ -27,7 +27,7 @@ export class game extends Phaser.Scene{
     this.carguero6 = new Carguero('Carguero6',this.velocidadBaja,8,0,0,0,8); // Creo el objeto carguero6
     this.largaVistas = {};
     this.mar;
-    this.puedoDisparar;
+    this.puedoDisparar = 1;
     this.distMax = 300;
     this.statusSonar;
     this.Hit;
@@ -359,12 +359,10 @@ export class game extends Phaser.Scene{
     }
 
     function ClickCAMBIARARMASUB(){
-      console.log('armacambio');
       cambiarArmaSub();
     }
 
     function ClickCAMBIARARMADESTRU(){
-      console.log('armacambio');
       cambiarArmaDestr();
     }
 
@@ -373,14 +371,12 @@ export class game extends Phaser.Scene{
     }
 
     function ClickCAMARA(){
-      console.log('Cambio de camara desde el equipo 1 haciendo click en el boton');
       camaraDestrCarg();
     }
     
     function ClickHOME(){
       soundBackground.stop();
       self.socket.disconnect();
-      //console.log("Vuelve a inicio");
       self.scene.start(DEF.SCENES.MENUPRINCIPAL);
     }
     
@@ -577,22 +573,19 @@ export class game extends Phaser.Scene{
       // Zoom de la cámara
       self.cameras.main.setZoom(1.4);
       
-      // Se crea una colision del barco con la isla
-      self.physics.add.collider(self.submarino.imagen, self.isla1); 
-      self.physics.add.collider(self.submarino.imagen, self.isla2); 
-      self.physics.add.collider(self.submarino.imagen, self.isla3); 
-      self.physics.add.collider(self.submarino.imagen, self.isla4); 
+      // Se crea una colision del barco con las islas
+      self.colliderSubIsla1 = self.physics.add.collider(self.submarino.imagen, self.isla1);
+      self.colliderSubIsla2 = self.physics.add.collider(self.submarino.imagen, self.isla2);
+      self.colliderSubIsla3 = self.physics.add.collider(self.submarino.imagen, self.isla3);
+      self.colliderSubIsla4 = self.physics.add.collider(self.submarino.imagen, self.isla4);
       // Se crea una colision del barco con la bomba
       self.physics.add.collider(self.submarino.imagen, self.bomb);
-      // Se crea una colision del barco con los cargueros
-      //self.physics.add.collider(self.submarino.imagen, self.grupoCargueros);
-      //self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
-      // Se crea una colision del barco con la costa1
+      // Se crea una colision del barco con las costas
       self.physics.add.collider(self.submarino.imagen, self.costa1);
-      // Se crea una colision del barco con la costa2
       self.physics.add.collider(self.submarino.imagen, self.costa2);
       // Si el submarino se encuentra en la superficie, que colisione con el destructor
       self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
+      // Se crea colision del submarino con los cargueros
       self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
       self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
       self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
@@ -673,7 +666,6 @@ export class game extends Phaser.Scene{
 
       // Genero las imagenes de los cargueros, colisiones, particulas, etc
       arrayCargueros.forEach(function(carguero){
-        //carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, 'carguero').setDisplaySize(200, 75).setDepth(5) // Seteo tamaño y profundidad de la imagen
         carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
         // Particulas
         //const particles = self.add.particles("Blue").setDepth(2)
@@ -821,7 +813,6 @@ export class game extends Phaser.Scene{
           //self.submarino.imagen.setTexture('UbootProfundidad1');
           self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
           self.submarino.armas = 4;
-          console.log('baje a poca profundidad');
           self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
           // Cambio de cámara
           if (self.lvactivado === true){
@@ -836,7 +827,6 @@ export class game extends Phaser.Scene{
             self.submarino.armas = -1;
             //self.submarino.imagen.setTexture('UbootProfundidad2');
             self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
-            console.log('baje al mucha profundidad');
             self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
           }
         }
@@ -847,6 +837,10 @@ export class game extends Phaser.Scene{
         self.physics.world.removeCollider(self.colliderCarg4);
         self.physics.world.removeCollider(self.colliderCarg5);
         self.physics.world.removeCollider(self.colliderCarg6); 
+        //self.physics.world.removeCollider(self.colliderSubIsla1); 
+        //self.physics.world.removeCollider(self.colliderSubIsla2); 
+        //self.physics.world.removeCollider(self.colliderSubIsla3); 
+        //self.physics.world.removeCollider(self.colliderSubIsla4); 
       
         // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
         if (self.submarino.profundidad === 0){
@@ -868,7 +862,6 @@ export class game extends Phaser.Scene{
         if (self.usoSonar !== true){
           self.submarino.profundidad = 0;
           self.submarino.armas = 0;
-          console.log('subi a la superficie');
           //self.submarino.imagen.setTexture('uboot');
           self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
           self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
@@ -879,7 +872,6 @@ export class game extends Phaser.Scene{
         self.submarino.armas = 4;
         //self.submarino.imagen.setTexture('UbootProfundidad1');
         self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
-        console.log('subi a poca profundidad');
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
       }
       if(self.submarino.profundidad === 0){
@@ -890,6 +882,10 @@ export class game extends Phaser.Scene{
         self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
         self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
         self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
+        //self.colliderSubIsla1 = self.physics.add.collider(self.submarino.imagen, self.isla1);
+        //self.colliderSubIsla2 = self.physics.add.collider(self.submarino.imagen, self.isla2);
+        //self.colliderSubIsla3 = self.physics.add.collider(self.submarino.imagen, self.isla3);
+        //self.colliderSubIsla4 = self.physics.add.collider(self.submarino.imagen, self.isla4);
       }
 
       // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
@@ -930,7 +926,7 @@ export class game extends Phaser.Scene{
             // Restablezco zoom de la cámara   
             self.cameras.main.setZoom(1.4);
             self.usoSonar = false;
-            console.log("USO SONAR:"+self.usoSonar);
+            //console.log("USO SONAR:"+self.usoSonar);
             // Elimino texto de tiempo restante
             removeText();
             self.soundSonar.stop();
@@ -1008,7 +1004,7 @@ export class game extends Phaser.Scene{
     }
 
     function largaVista(){
-      console.log("entro al larga vista");
+      //console.log("entro al larga vista");
       if(self.submarino.largavista === false && (self.submarino.profundidad === 0)){
         self.submarino.largavista = true;
         self.largaVistas.angle=self.submarino.imagen.angle+270;
@@ -1046,43 +1042,36 @@ export class game extends Phaser.Scene{
 
     function camaraDestrCarg(){
       if(camaraActual == 0){
-        console.log("Entro a camara 1")
         self.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 1;
       }else if(camaraActual == 1){
-        console.log("Entro a camara 2")
         self.camaraEventos.startFollow(self.carguero2.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero2.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 2;
       }else if(camaraActual == 2){
-        console.log("Entro a camara 3")
         self.camaraEventos.startFollow(self.carguero3.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero3.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 3;
       }else if(camaraActual == 3){
-        console.log("Entro a camara 4")
         self.camaraEventos.startFollow(self.carguero4.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero4.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 4;
       }else if(camaraActual == 4){
-        console.log("Entro a camara 5")
         self.camaraEventos.startFollow(self.carguero5.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero5.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 5;
       }else if(camaraActual == 5){
-        console.log("Entro a camara 6")
         self.camaraEventos.startFollow(self.carguero6.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero6.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 6;
       }else if(camaraActual == 6){
-        console.log("Entro a camara 0")
         self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(0.9);
         camaraActual = 0;
@@ -1110,7 +1099,6 @@ export class game extends Phaser.Scene{
           if(self.destructor.armas === 0 && self.destructor.vida > 0 && self.destructor.ammoCanion > 0)
           {
             self.destructor.ammoCanion--;
-            //console.log("Municion restante Canon", self.destructor.ammoCanion);
             
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
             Disparo(self.destructor, bullet, self.submarino);
@@ -1121,7 +1109,6 @@ export class game extends Phaser.Scene{
           if (self.destructor.armas === 1 && self.destructor.vida > 0 && self.destructor.ammoCargas > 0)
           {
             self.destructor.ammoCargas--;
-            //console.log("Cargas de profundidad restantes", self.destructor.ammoCargas);
         
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
             Disparo(self.destructor, bullet, self.submarino);
@@ -1139,7 +1126,6 @@ export class game extends Phaser.Scene{
           if(self.submarino.armas === 0 && self.submarino.vida > 0 && self.submarino.ammoCanion > 0)
           {
             self.submarino.ammoCanion--;
-            //console.log("Municion restante Canon", self.submarino.ammoCanion);
   
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
             Disparo(self.submarino, bullet, self.destructor);
@@ -1156,7 +1142,6 @@ export class game extends Phaser.Scene{
           if ((self.submarino.armas === 1 || self.submarino.armas === 4) && self.submarino.vida > 0 && self.submarino.ammoTorpedos > 0)
           {
             self.submarino.ammoTorpedos--;
-            //console.log("Torpedos restantes", self.submarino.ammoTorpedos);
             
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
             Disparo(self.submarino, bullet, self.destructor);
@@ -2463,7 +2448,6 @@ export class game extends Phaser.Scene{
       if(player.vida > 0)
       {
         player.vida = player.vida - damage; 
-        //console.log('Vida Restante', player.vida);
         if(escar){
           alertaCargueros();
           self.soundAlarm.play({volume: 0.04, loop: false});
@@ -2483,7 +2467,7 @@ export class game extends Phaser.Scene{
       }
       if(player.vida <= 0)
       {
-        console.log('vida menor que 0');
+        //console.log('vida menor que 0');
         destroyed(playerIMG);
         playerIMG.removeInteractive();
         playerIMG.setActive(false);
@@ -2491,7 +2475,7 @@ export class game extends Phaser.Scene{
         self.textures.remove(playerIMG);
         if(escar)
         {
-          console.log('entro a ESCAR')
+          //console.log('entro a ESCAR')
           alertaCargueros();
           self.soundAlarm.play({volume: 0.04, loop: false});
           carguerosMuertos++;
@@ -2665,12 +2649,12 @@ export class game extends Phaser.Scene{
           if (self.submarino.profundidad === 1 ){
             //self.submarino.imagen.setTexture('UbootProfundidad2').setVisible(true);
             self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2).setVisible(true);
-            console.log('bajo a poca profundidad');
+            //console.log('bajo a poca profundidad');
           }else if (self.submarino.profundidad == 2){
             self.submarino.imagen.setVisible(false);
-             console.log('bajo a mucha profundidad');
+             //console.log('bajo a mucha profundidad');
          }else{
-            console.log('superficie');
+            //console.log('superficie');
             //self.submarino.imagen.setTexture('uboot').setVisible(true);
             self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0).setVisible(true);
          }
@@ -2683,6 +2667,10 @@ export class game extends Phaser.Scene{
         self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
         self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
         self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
+        //self.colliderSubIsla1 = self.physics.add.collider(self.submarino.imagen, self.isla1);
+        //self.colliderSubIsla2 = self.physics.add.collider(self.submarino.imagen, self.isla2);
+        //self.colliderSubIsla3 = self.physics.add.collider(self.submarino.imagen, self.isla3);
+        //self.colliderSubIsla4 = self.physics.add.collider(self.submarino.imagen, self.isla4);
       }
       else{
         self.physics.world.removeCollider(self.colliderSub);
@@ -2692,6 +2680,10 @@ export class game extends Phaser.Scene{
         self.physics.world.removeCollider(self.colliderCarg4);
         self.physics.world.removeCollider(self.colliderCarg5);
         self.physics.world.removeCollider(self.colliderCarg6); 
+        //self.physics.world.removeCollider(self.colliderSubIsla1);
+        //self.physics.world.removeCollider(self.colliderSubIsla2);
+        //self.physics.world.removeCollider(self.colliderSubIsla3);
+        //self.physics.world.removeCollider(self.colliderSubIsla4);
       }
     }); 
 
