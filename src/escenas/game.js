@@ -27,6 +27,7 @@ export class game extends Phaser.Scene{
     this.carguero6 = new Carguero('Carguero6',this.velocidadBaja,8,0,0,0,8); // Creo el objeto carguero6
     this.largaVistas = {};
     this.mar;
+    this.puedoDisparar;
     this.distMax = 300;
     this.statusSonar;
     this.Hit;
@@ -1082,93 +1083,101 @@ export class game extends Phaser.Scene{
       }
     }
 
+    function timerDisparo(){
+      self.puedoDisparar = 1;
+    }
+
     //funcion que recibe un click y ejecuta el evento disparo, el cual activa una bala del set de balas de la clase
     this.input.on('pointerdown', function (pointer, time) {
-      if(self.equipo === 1){
-        //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
-        bullet = self.destructor.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
-        
-        //manejo de la municion del destructor
-        if(self.destructor.armas === 0 && self.destructor.vida > 0 && self.destructor.ammoCanion > 0)
-        {
-          self.destructor.ammoCanion--;
-          console.log("Municion restante Canon", self.destructor.ammoCanion);
+      if (self.puedoDisparar == 0){
+        console.log("Muy pronto para disparar aún, se debe esperar 3 segundos entre cada disparo.");
+      }else{
+        // Agrego un timer de 3 segundos entre cada disparo, para que no spamee los tiros y sea mas jugable
+        self.puedoDisparar = 0;
+        self.time.addEvent({delay: 3000, callback: timerDisparo, callbackScope: self});
+
+        if(self.equipo === 1){
+          //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
+          bullet = self.destructor.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
           
-          //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
-          Disparo(self.destructor, bullet, self.submarino);
-
-          // Actualizo en la barra grafica la cantidad de municion de cañon restante
-          self.UIDesMunicionCan.destroy();
-          self.UIDesMunicionCan =  self.add.text(1200, 250, 'Munición cañon: ' + self.destructor.ammoCanion, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-        }
-        if (self.destructor.armas === 1 && self.destructor.vida > 0 && self.destructor.ammoCargas > 0)
-        {
-          self.destructor.ammoCargas--;
-          console.log("Cargas de profundidad restantes", self.destructor.ammoCargas);
-      
-          //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
-          Disparo(self.destructor, bullet, self.submarino);
-
-          // Actualizo en la barra grafica la cantidad de municion de cañon restante
-          self.UIDesMunicionCar.destroy();
-          self.UIDesMunicionCar =  self.add.text(1200, 210, 'Munición cargas: ' + self.destructor.ammoCargas, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-        }
-      }
-      else
-      {
-        //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
-        bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
+          //manejo de la municion del destructor
+          if(self.destructor.armas === 0 && self.destructor.vida > 0 && self.destructor.ammoCanion > 0)
+          {
+            self.destructor.ammoCanion--;
+            //console.log("Municion restante Canon", self.destructor.ammoCanion);
+            
+            //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
+            Disparo(self.destructor, bullet, self.submarino);
+  
+            // Actualizo en la barra grafica la cantidad de municion de cañon restante
+            self.UIDesMunicionCan.setText('Munición cañon: ' + self.destructor.ammoCanion);
+          }
+          if (self.destructor.armas === 1 && self.destructor.vida > 0 && self.destructor.ammoCargas > 0)
+          {
+            self.destructor.ammoCargas--;
+            //console.log("Cargas de profundidad restantes", self.destructor.ammoCargas);
         
-        //manejo de municion del submarino
-        if(self.submarino.armas === 0 && self.submarino.vida > 0 && self.submarino.ammoCanion > 0)
-        {
-          self.submarino.ammoCanion--;
-          console.log("Municion restante Canon", self.submarino.ammoCanion);
-
-          //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
-          Disparo(self.submarino, bullet, self.destructor);
-          Disparo(self.submarino, bullet, self.carguero1);
-          Disparo(self.submarino, bullet, self.carguero2);
-          Disparo(self.submarino, bullet, self.carguero3);
-          Disparo(self.submarino, bullet, self.carguero4);
-          Disparo(self.submarino, bullet, self.carguero5);
-          Disparo(self.submarino, bullet, self.carguero6);    
-
-          // Actualizo en la barra grafica la cantidad de municion restante
-          self.UISubMunicionCan.destroy();
-          self.UISubMunicionCan =  self.add.text(1100, 290, 'Munición cañon: ' + self.submarino.ammoCanion, { font: '30px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+            //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
+            Disparo(self.destructor, bullet, self.submarino);
+  
+            // Actualizo en la barra grafica la cantidad de municion de cañon restante
+            self.UIDesMunicionCar.setText('Munición cargas: ' + self.destructor.ammoCargas);
+          }
         }
-        if ((self.submarino.armas === 1 || self.submarino.armas === 4) && self.submarino.vida > 0 && self.submarino.ammoTorpedos > 0)
+        else
         {
-          self.submarino.ammoTorpedos--;
-          console.log("Torpedos restantes", self.submarino.ammoTorpedos);
+          //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
+          bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
           
-          //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
-          Disparo(self.submarino, bullet, self.destructor);
-          Disparo(self.submarino, bullet, self.carguero1);
-          Disparo(self.submarino, bullet, self.carguero2);
-          Disparo(self.submarino, bullet, self.carguero3);
-          Disparo(self.submarino, bullet, self.carguero4);
-          Disparo(self.submarino, bullet, self.carguero5);
-          Disparo(self.submarino, bullet, self.carguero6);    
-
-          // Actualizo en la barra grafica la cantidad de municion restante
-          self.UISubMunicionTor.destroy();
-          self.UISubMunicionTor =  self.add.text(1100, 260, 'Munición torpedos: ' + self.submarino.ammoTorpedos, { font: '30px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+          //manejo de municion del submarino
+          if(self.submarino.armas === 0 && self.submarino.vida > 0 && self.submarino.ammoCanion > 0)
+          {
+            self.submarino.ammoCanion--;
+            //console.log("Municion restante Canon", self.submarino.ammoCanion);
+  
+            //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
+            Disparo(self.submarino, bullet, self.destructor);
+            Disparo(self.submarino, bullet, self.carguero1);
+            Disparo(self.submarino, bullet, self.carguero2);
+            Disparo(self.submarino, bullet, self.carguero3);
+            Disparo(self.submarino, bullet, self.carguero4);
+            Disparo(self.submarino, bullet, self.carguero5);
+            Disparo(self.submarino, bullet, self.carguero6);    
+  
+            // Actualizo en la barra grafica la cantidad de municion restante
+            self.UISubMunicionCan.setText('Munición cañon: ' + self.submarino.ammoCanion);
+          }
+          if ((self.submarino.armas === 1 || self.submarino.armas === 4) && self.submarino.vida > 0 && self.submarino.ammoTorpedos > 0)
+          {
+            self.submarino.ammoTorpedos--;
+            //console.log("Torpedos restantes", self.submarino.ammoTorpedos);
+            
+            //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
+            Disparo(self.submarino, bullet, self.destructor);
+            Disparo(self.submarino, bullet, self.carguero1);
+            Disparo(self.submarino, bullet, self.carguero2);
+            Disparo(self.submarino, bullet, self.carguero3);
+            Disparo(self.submarino, bullet, self.carguero4);
+            Disparo(self.submarino, bullet, self.carguero5);
+            Disparo(self.submarino, bullet, self.carguero6);    
+  
+            // Actualizo en la barra grafica la cantidad de municion restante
+            self.UISubMunicionTor.setText('Munición torpedos: ' + self.submarino.ammoTorpedos);
+          }
         }
-      }
-      //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
-      //dano al enemigo si el ya te gano
-      if(self.destructor.vida <= 0){
-        bullet.destroy();
-      }
-      //idem anterior
-      if(self.submarino.vida <= 0){
-        bullet.destroy();
-      }
-      //si el submarino no tiene armas porque esta sumergido
-      if(self.submarino.armas === -1){
-        bullet.destroy();
+        //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
+        //dano al enemigo si el ya te gano
+        if(self.destructor.vida <= 0){
+          bullet.destroy();
+        }
+        //idem anterior
+        if(self.submarino.vida <= 0){
+          bullet.destroy();
+        }
+        //si el submarino no tiene armas porque esta sumergido
+        if(self.submarino.armas === -1){
+          bullet.destroy();
+        }
       }
     }, this);
 
@@ -2448,30 +2457,22 @@ export class game extends Phaser.Scene{
       if(player.vida > 0)
       {
         player.vida = player.vida - damage; 
-        console.log('Vida Restante', player.vida);
+        //console.log('Vida Restante', player.vida);
         if(escar){
           alertaCargueros();
           self.soundAlarm.play({volume: 0.04, loop: false});
         }
         // Muestro en la parte grafica la vida actualizada de cada barco luego del disparo
         if (self.equipo == 1){
-          self.UIDesVida.destroy();
-          self.UIDesCarg1.destroy();
-          self.UIDesCarg2.destroy();
-          self.UIDesCarg3.destroy();
-          self.UIDesCarg4.destroy();
-          self.UIDesCarg5.destroy();
-          self.UIDesCarg6.destroy();
-          self.UIDesVida =  self.add.text(1200, 170, 'Vida: ' + self.destructor.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-          self.UIDesCarg1 = self.add.text(300, 170, 'Vida carguero 1: ' + self.carguero1.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-          self.UIDesCarg2 = self.add.text(300, 210, 'Vida carguero 2: ' + self.carguero2.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-          self.UIDesCarg3 = self.add.text(300, 250, 'Vida carguero 3: ' + self.carguero3.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-          self.UIDesCarg4 = self.add.text(300, 290, 'Vida carguero 4: ' + self.carguero4.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-          self.UIDesCarg5 = self.add.text(300, 330, 'Vida carguero 5: ' + self.carguero5.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-          self.UIDesCarg6 = self.add.text(300, 370, 'Vida carguero 6: ' + self.carguero6.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+          self.UIDesVida.setText('Vida: ' + self.destructor.vida);
+          self.UIDesCarg1.setText('Vida carguero 1: ' + self.carguero1.vida);
+          self.UIDesCarg2.setText('Vida carguero 2: ' + self.carguero2.vida);
+          self.UIDesCarg3.setText('Vida carguero 3: ' + self.carguero3.vida);
+          self.UIDesCarg4.setText('Vida carguero 4: ' + self.carguero4.vida);
+          self.UIDesCarg5.setText('Vida carguero 5: ' + self.carguero5.vida);
+          self.UIDesCarg6.setText('Vida carguero 6: ' + self.carguero6.vida);
         }else{
-          self.UISubVida.destroy();
-          self.UISubVida =  self.add.text(1100, 230, 'Vida: ' + player.vida, { font: '30px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+          self.UISubVida.setText('Vida: ' + player.vida);
         }
       }
       if(player.vida <= 0)
