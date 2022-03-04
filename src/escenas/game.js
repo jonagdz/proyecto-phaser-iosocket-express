@@ -225,6 +225,12 @@ export class game extends Phaser.Scene{
     this.soundAlarm = this.sound.add(DEF.AUDIO.ALERTA);
     let soundBackground = this.sound.add(DEF.AUDIO.JUEGO,{loop: true});
     let audioActivado = true;
+    this.soundAlarmBarco = this.sound.add(DEF.AUDIO.ALERTABARCO);
+    this.soundCanionDes = this.sound.add(DEF.AUDIO.DISPARODES);
+    this.soundCanionSub = this.sound.add(DEF.AUDIO.DISPAROSUB);
+    this.soundCargas = this.sound.add(DEF.AUDIO.CARGAS);
+    this.soundTorpedo = this.sound.add(DEF.AUDIO.TORPEDOS);
+    this.soundImpacto = this.sound.add(DEF.AUDIO.IMPACTO);
     //soundBackground.play();
 
     // Fuentes
@@ -416,6 +422,7 @@ export class game extends Phaser.Scene{
         hideOnComplete: false,
       });
       self.disp.play('anidisp');
+      self.soundAlarmBarco.play({volume: 0.04, loop: false});
     }
 
     function generarEquipo1(){     
@@ -1098,6 +1105,7 @@ export class game extends Phaser.Scene{
           //manejo de la municion del destructor
           if(self.destructor.armas === 0 && self.destructor.vida > 0 && self.destructor.ammoCanion > 0)
           {
+            self.soundCanionDes.play();
             self.destructor.ammoCanion--;
             
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
@@ -1108,6 +1116,7 @@ export class game extends Phaser.Scene{
           }
           if (self.destructor.armas === 1 && self.destructor.vida > 0 && self.destructor.ammoCargas > 0)
           {
+            self.soundCargas.play();
             self.destructor.ammoCargas--;
         
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
@@ -1125,6 +1134,7 @@ export class game extends Phaser.Scene{
           //manejo de municion del submarino
           if(self.submarino.armas === 0 && self.submarino.vida > 0 && self.submarino.ammoCanion > 0)
           {
+            self.soundCanionSub.play();
             self.submarino.ammoCanion--;
   
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
@@ -1141,6 +1151,7 @@ export class game extends Phaser.Scene{
           }
           if ((self.submarino.armas === 1 || self.submarino.armas === 4) && self.submarino.vida > 0 && self.submarino.ammoTorpedos > 0)
           {
+            self.soundTorpedo.play();
             self.submarino.ammoTorpedos--;
             
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
@@ -2447,6 +2458,7 @@ export class game extends Phaser.Scene{
 
       if(player.vida > 0)
       {
+        self.soundImpacto.play({volume: 1, loop: false});
         player.vida = player.vida - damage; 
         if(escar){
           alertaCargueros();
@@ -2609,6 +2621,7 @@ export class game extends Phaser.Scene{
           {
             RecibeHit(self.destructor, playerInfo.damage, false, self.submarino);
             ALERTADISPARO();
+            
           }
           else if(playerInfo.numerocarguero === 1)
           {
