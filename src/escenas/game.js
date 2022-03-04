@@ -287,10 +287,6 @@ export class game extends Phaser.Scene{
       this.carg = self.add.sprite(1500, 300, 'CARGUEROSALERT').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
       //this.carg.setActive(false).setVisible(false);
       this.disp = self.add.sprite(1500, 400, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
-      //this.disp.setActive(false).setVisible(false);
-
-      //this.cruz = self.add.sprite(800, 500, 'CRUZ').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
-      //this.cruz.setActive(false).setVisible(false);
 
       self.input.on('pointerdown', function (pointer) {
           self.input.mouse.requestPointerLock();
@@ -354,7 +350,6 @@ export class game extends Phaser.Scene{
       this.botonHOME = self.physics.add.image(880, 200, DEF.IMAGENES.BOTONHOME).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickHOME(1)).setDisplaySize(80,80);
       this.botonSAVE = self.physics.add.image(980, 200, DEF.IMAGENES.BOTONGUARDAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSAVE(1)).setDisplaySize(80,80);
       this.disp = self.add.sprite(1500, 500, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
-      this.disp.setActive(false).setVisible(false);
 
       
       // Parte superior del HUD
@@ -443,7 +438,6 @@ export class game extends Phaser.Scene{
     }
 
     function alertacargueros () {
-      console.log('entro a la animacion');
         self.anims.create({  
           key: 'animalertcargueros',
           frames: [
@@ -461,16 +455,15 @@ export class game extends Phaser.Scene{
           self.carg.play('animalertcargueros'); 
     }
     
-    function ALERTADISPARO (val) {
-      //console.log("Selecciona");
-      if(val===1){
-        //console.log("entroalif");
-        self.disp.setActive(true).setVisible(true);
+    function ALERTADISPARO () {
         self.anims.create({  
           key: 'anidisp',
           frames: [
               { key: 'ALERTADISPARO',frame:"ALERTADisparosNEGRO.png" },
               { key: 'ALERTADISPARO',frame:"ALERTADisparosROJO.png" },
+              { key: 'ALERTADISPARO',frame:"ALERTADisparosNEGRO.png" },
+              { key: 'ALERTADISPARO',frame:"ALERTADisparosROJO.png" },
+              { key: 'ALERTADISPARO',frame:"ALERTADisparosNEGRO.png" }
           ],
           frameRate: 5,
           repeat:3,
@@ -478,7 +471,6 @@ export class game extends Phaser.Scene{
           
           });
           self.disp.play('anidisp');
-      }   
     }
 
   
@@ -2649,7 +2641,7 @@ export class game extends Phaser.Scene{
       });
       self.explotion3.play('explot3');
     }
-
+    //funcion que muestra una cruz animada senalando de donde vino un disparo enemigo
     function CRUZ (imagen) {
       self.cruz = self.add.sprite(imagen.x, imagen.y, 'CRUZ').setDepth(10).setDisplaySize(80,80);
       console.log("entro a la cruz");
@@ -2671,7 +2663,6 @@ export class game extends Phaser.Scene{
     {
       let contadorAviso = 0;
       playerIMG = player.imagen;
-      //enemyImg = enemy.imagen;
 
       CRUZ(enemy.imagen);
       hitted(playerIMG.x, playerIMG.y);
@@ -2866,6 +2857,7 @@ export class game extends Phaser.Scene{
           if (playerInfo.numerocarguero === 0)
           {
             RecibeHit(self.destructor, playerInfo.damage, false, self.submarino);
+            ALERTADISPARO();
           }
           else if(playerInfo.numerocarguero === 1)
           {
@@ -2895,6 +2887,7 @@ export class game extends Phaser.Scene{
         else
         {
             RecibeHit(self.submarino, playerInfo.damage, false, self.destructor);
+            ALERTADISPARO();
         }
     }); 
 
