@@ -76,6 +76,9 @@ export class bootGame extends Phaser.Scene{
             if(sprite.includes("ALERTADISPARO")){
                 this.load.atlas('ALERTADISPARO', DEF.SPRITES[sprite],'./alertadisparo.json');
             }
+            if(sprite.includes("CRUZ")){
+                this.load.atlas('CRUZ', DEF.SPRITES[sprite],'./cruzaler.json');
+            }
             else
             {
                 this.load.image(DEF.SPRITES[sprite], DEF.SPRITES[sprite]);
