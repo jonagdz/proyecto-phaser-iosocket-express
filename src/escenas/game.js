@@ -454,6 +454,8 @@ export class game extends Phaser.Scene{
               { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROS.png" },
               { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROSROJO.png" },
               { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROS.png" },
+              { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROSROJO.png" },
+              { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROS.png" },
           ],
           frameRate: 5,
           repeat:3,
