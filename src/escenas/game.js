@@ -141,6 +141,7 @@ export class game extends Phaser.Scene{
     var self = this
     let bullet;
     let danio;
+    let camaraActual = 0;
     let reticula;
     let cuentaSonar;
     let resetSonar;
@@ -263,32 +264,6 @@ export class game extends Phaser.Scene{
       }
     });
 
-    // Se crean los eventos de cambio de camaras para los cargueros
-    self.input.keyboard.on('keydown-' + 'ONE',function(){
-      self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
-      self.cameras.main.setZoom(1.4);
-    })
-    self.input.keyboard.on('keydown-' + 'TWO',function(){
-      self.cameras.main.startFollow(self.carguero2.imagen,true, 0.09, 0.09); 
-      self.cameras.main.setZoom(1.4);
-    })
-    self.input.keyboard.on('keydown-' + 'THREE',function(){
-      self.cameras.main.startFollow(self.carguero3.imagen,true, 0.09, 0.09); 
-      self.cameras.main.setZoom(1.4);
-    })
-    self.input.keyboard.on('keydown-' + 'FOUR',function(){
-      self.cameras.main.startFollow(self.carguero4.imagen,true, 0.09, 0.09); 
-      self.cameras.main.setZoom(1.4);
-    })
-    self.input.keyboard.on('keydown-' + 'FIVE',function(){
-      self.cameras.main.startFollow(self.carguero5.imagen,true, 0.09, 0.09); 
-      self.cameras.main.setZoom(1.4);
-    })
-    self.input.keyboard.on('keydown-' + 'SIX',function(){
-      self.cameras.main.startFollow(self.carguero6.imagen,true, 0.09, 0.09); 
-      self.cameras.main.setZoom(1.4);
-    })
-
     // Se crea el evento de pausa
     self.input.keyboard.on('keydown-' + 'P', function (event){
       
@@ -303,20 +278,15 @@ export class game extends Phaser.Scene{
     // Segun el equipo del jugador actual, genero todos elementos del equipo correspondiente
     if(self.equipo === 1){ // Genero el equipo 1 que son el destructor y los cargueros, aunque tambien debo generar al submarino (Pero sin su camara ni colisiones) para ir actualizando su posicion en este cliente con el movimiento del otro jugador      
       generarEquipo1();
+      // Botones visuales del equipo 1
       this.botonCAMBIARARMA = self.physics.add.image(950, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCAMBIARARMADESTRU(1)).setDisplaySize(80,80);
-
-      this.botonCAMARA = self.physics.add.image(1050, 800, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCamara(1)).setDisplaySize(80,80);
-      
+      this.botonCAMARA = self.physics.add.image(1050, 800, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCamara()).setDisplaySize(80,80);
       this.botonHOME = self.physics.add.image(950, 50, DEF.IMAGENES.BOTONHOME).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickHOME(1)).setDisplaySize(80,80);
-      
       this.botonSAVE = self.physics.add.image(1050, 50, DEF.IMAGENES.BOTONGUARDAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSAVE(1)).setDisplaySize(80,80);
-      
       this.carg = self.add.sprite(1500, 300, 'CARGUEROSALERT').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
       //this.carg.setActive(false).setVisible(false);
-      
       this.disp = self.add.sprite(1500, 400, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
       //this.disp.setActive(false).setVisible(false);
-
       this.cruz = self.add.sprite(800, 500, 'CRUZ').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
       this.cruz.setActive(false).setVisible(false);
 
@@ -328,6 +298,7 @@ export class game extends Phaser.Scene{
       self.socket.emit('iniciarPartida', self.partida);
       //this.botonDOWNDI = self.physics.add.image(700, 900, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickDOWN(1));
       //this.botonDOWNDI.setInteractive().on('pointerout', () => ClickDOWN(2));
+
       // Parte superior del HUD
       self.UIDesVida =  self.add.text(1200, 170, 'Vida: ' + self.destructor.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
       self.UIDesMunicionCar =  self.add.text(1200, 200, 'Munición cargas: ' + self.destructor.ammoCargas, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
@@ -338,6 +309,38 @@ export class game extends Phaser.Scene{
       self.UIDesCarg4 = self.add.text(300, 260, 'Vida carguero 4: ' + self.carguero4.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
       self.UIDesCarg5 = self.add.text(300, 290, 'Vida carguero 5: ' + self.carguero5.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
       self.UIDesCarg6 = self.add.text(300, 320, 'Vida carguero 6: ' + self.carguero6.vida, { font: '30px Britannic bold', fill: '#FFFFFF' }).setScrollFactor(0).setDepth(10);
+      
+      // Eventos para cambio de camara del equipo 1 entre el destructor y los cargueros
+      self.input.keyboard.on('keydown-' + 'ZERO', function (){
+        self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(0.9);
+        self.siguiendoDes = true;
+      });
+
+      self.input.keyboard.on('keydown-' + 'ONE',function(){
+        self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+      })
+      self.input.keyboard.on('keydown-' + 'TWO',function(){
+        self.cameras.main.startFollow(self.carguero2.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+      })
+      self.input.keyboard.on('keydown-' + 'THREE',function(){
+        self.cameras.main.startFollow(self.carguero3.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+      })
+      self.input.keyboard.on('keydown-' + 'FOUR',function(){
+        self.cameras.main.startFollow(self.carguero4.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+      })
+      self.input.keyboard.on('keydown-' + 'FIVE',function(){
+        self.cameras.main.startFollow(self.carguero5.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+      })
+      self.input.keyboard.on('keydown-' + 'SIX',function(){
+        self.cameras.main.startFollow(self.carguero6.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+      })
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
       //generarUIEquipo2();
@@ -411,31 +414,23 @@ export class game extends Phaser.Scene{
     }
     function ClickLARGAVISTA(val){
       if(val===1){
-        console.log('larga viista');
+        //console.log('larga viista');
         largavista(1);
-
       } 
       else{
         largavista(0);
       }
     }
 
-    function ClickCamara(valu){
-     
-      if(valu===1){
-        console.log('larga viista');
-        CAMARADESTRUCARG(1);
-
-      } 
-      else{
-        CAMARADESTRUCARG(0);
-      }
+    function ClickCamara(){
+      console.log('Cambio de camara desde el equipo 1 haciendo click en el boton');
+      CAMARADESTRUCARG();
     }
     
     function ClickHOME (v) {
       if(v===1){
         self.socket.disconnect();
-        console.log("Vuelve a inicio");
+        //console.log("Vuelve a inicio");
         self.scene.start(DEF.SCENES.MENUPRINCIPAL);
       }
     }
@@ -597,20 +592,6 @@ export class game extends Phaser.Scene{
           self.destructor.armas = 0;
           console.log('cambio a canon');
         }
-      });
-      
-      // Se crea el evento de cambio cámaras entre destructor y cargueros
-      self.input.keyboard.on('keydown-' + 'C', function (event){
-        console.log("Vuelvo a camara destructor");
-        //if(self.siguiendoDes === true){
-        //  self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
-        //  self.cameras.main.setZoom(1.4);
-        //  self.siguiendoDes = false;
-        //}else{
-          self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
-          self.cameras.main.setZoom(0.9);
-          self.siguiendoDes = true;
-        //}
       });
 
       // Funcion que al precionar la tecla V, cambia la profundidad de las cargas de profundidad del destructor
@@ -1328,17 +1309,42 @@ export class game extends Phaser.Scene{
       }
     }
 
-    function CAMARADESTRUCARG(VVV){
-      if(VVV===1){
-        if(self.siguiendoDes === true){
-          self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
-          self.cameras.main.setZoom(1.4);
-          self.siguiendoDes = false;
-        }else{
-          self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
-          self.cameras.main.setZoom(0.9);
-          self.siguiendoDes = true;
-        }
+    function CAMARADESTRUCARG(){
+      if(camaraActual == 0){
+        console.log("Entro a camara 1")
+        self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+        camaraActual = 1;
+      }else if(camaraActual == 1){
+        console.log("Entro a camara 2")
+        self.cameras.main.startFollow(self.carguero2.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+        camaraActual = 2;
+      }else if(camaraActual == 2){
+        console.log("Entro a camara 3")
+        self.cameras.main.startFollow(self.carguero3.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+        camaraActual = 3;
+      }else if(camaraActual == 3){
+        console.log("Entro a camara 4")
+        self.cameras.main.startFollow(self.carguero4.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+        camaraActual = 4;
+      }else if(camaraActual == 4){
+        console.log("Entro a camara 5")
+        self.cameras.main.startFollow(self.carguero5.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+        camaraActual = 5;
+      }else if(camaraActual == 5){
+        console.log("Entro a camara 6")
+        self.cameras.main.startFollow(self.carguero6.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(1.4);
+        camaraActual = 6;
+      }else if(camaraActual == 6){
+        console.log("Entro a camara 0")
+        self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
+        self.cameras.main.setZoom(0.9);
+        camaraActual = 0;
       }
     }
 
