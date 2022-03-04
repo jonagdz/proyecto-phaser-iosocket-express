@@ -294,6 +294,10 @@ export class game extends Phaser.Scene{
       //this.carg.setActive(false).setVisible(false);
       this.disp = self.add.sprite(1500, 400, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
 
+      // Cámara de seguimiento a Cargueros
+      this.camaraEventos = this.cameras.add(1200, 900, 400, 100).setZoom(0.5);
+      this.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
+
       self.input.on('pointerdown', function (pointer) {
         self.input.mouse.requestPointerLock();
       }, self);
@@ -1040,31 +1044,37 @@ export class game extends Phaser.Scene{
     function camaraDestrCarg(){
       if(camaraActual == 0){
         console.log("Entro a camara 1")
+        self.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 1;
       }else if(camaraActual == 1){
         console.log("Entro a camara 2")
+        self.camaraEventos.startFollow(self.carguero2.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero2.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 2;
       }else if(camaraActual == 2){
         console.log("Entro a camara 3")
+        self.camaraEventos.startFollow(self.carguero3.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero3.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 3;
       }else if(camaraActual == 3){
         console.log("Entro a camara 4")
+        self.camaraEventos.startFollow(self.carguero4.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero4.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 4;
       }else if(camaraActual == 4){
         console.log("Entro a camara 5")
+        self.camaraEventos.startFollow(self.carguero5.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero5.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 5;
       }else if(camaraActual == 5){
         console.log("Entro a camara 6")
+        self.camaraEventos.startFollow(self.carguero6.imagen,true, 0.09, 0.09);
         self.cameras.main.startFollow(self.carguero6.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(1.4);
         camaraActual = 6;
