@@ -55,6 +55,12 @@ export const DEF = {
         JUEGO: "bensound-deepblue.mp3",
         SONAR: "sonarSound.mp3",
         ALERTA: "AlarmaCargueros.wav",
+        ALERTABARCO: "AlarmaDisparo.wav",
+        DISPARODES:"DisparoCanon.wav",
+        CARGAS:"Cargas.wav",
+        DISPAROSUB:"DisparoCanonSub.wav",
+        TORPEDOS:"Torpedos.wav",
+        IMPACTO: "imapcto.wav",
         CREDITOS: "bensound-evolution.mp3"
     },
 
