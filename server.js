@@ -156,8 +156,13 @@ io.on('connection', function (socket) {
     socket.broadcast.emit('playerUnder', players[socket.id])
   })
 
-  const api_url = "http://localhost:8080/getPartidas";
-    const api_url_iniciarPartida = "http://localhost:8080/iniciarPartida"; 
+  socket.on('submarinoAmmo', function(data){
+    socket.broadcast.emit('recibeSubAmmo', data)
+  })
+
+    const api_url = "http://localhost:8080/getPartidas";
+    const api_url_iniciarPartida = "http://localhost:8080/iniciarPartida";
+    const api_url_guardarPartida = "http://localhost:8080/guardarPartida"; 
 
     socket.on('listarPartidas', function (data) {
       getapi(api_url);
@@ -166,9 +171,14 @@ io.on('connection', function (socket) {
     socket.on('iniciarPartida', function (data) {
     postApiInitPart(api_url_iniciarPartida, data);
     })
+
+    socket.on('guardarPartida', function (data) {
+      postApiGuardarPart(api_url_guardarPartida, data);
+    })
+      
     // Defining async function
-    async function getapi(url) 
-    {
+  async function getapi(url) 
+  {
       try 
       {
        const response = await fetch(url)
@@ -180,8 +190,10 @@ io.on('connection', function (socket) {
      }
    }
 
-   async function postApiInitPart(url, data) 
-    {
+
+    // Defining async function
+  async function postApiInitPart(url, data) 
+  {
       try 
       {
         const response = await fetch(url, {
@@ -195,6 +207,26 @@ io.on('connection', function (socket) {
       } catch (e) {
         //console.log(e)
         console.log("Se intento guardar la partida iniciada pero tenes problemas con el BacEnd")
+      }
+   }
+
+   async function postApiGuardarPart(url, data) 
+  {
+      try 
+      {
+        //console.log(data)
+        const response = await fetch(url, {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+              'Content-type': 'application/json; charset=UTF-8',
+          },
+        })
+        //const json = await response.json()
+        console.log("Se guardo la partida con exito")
+      } catch (e) {
+        //console.log(e)
+        console.log("Se intento guardar la partida pero tenes problemas con el BacEnd")
       }
    }
 }); //EOF

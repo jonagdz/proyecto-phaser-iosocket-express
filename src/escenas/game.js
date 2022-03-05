@@ -36,6 +36,7 @@ export class game extends Phaser.Scene{
     this.statusReset;
     this.statusEnvio;
     this.statusResetEnvio;
+    this.SubAmmo = [0,0];
     this.partida = {
       naves: 
       [
@@ -394,7 +395,8 @@ export class game extends Phaser.Scene{
     }
     
     function ClickSAVE(){
-      console.log("guardar");
+      guardarPartida();
+      self.socket.emit('guardarPartida', self.partida);
     }
 
     function alertaCargueros() {
@@ -1191,6 +1193,9 @@ export class game extends Phaser.Scene{
           {
             self.soundCanionSub.play();
             self.submarino.ammoCanion--;
+            
+            self.SubAmmo[0]=self.submarino.ammoCanion;
+            self.socket.emit('submarinoAmmo', self.SubAmmo);
   
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
             Disparo(self.submarino, bullet, self.destructor);
@@ -1209,6 +1214,8 @@ export class game extends Phaser.Scene{
             self.soundTorpedo.play();
             self.submarino.ammoTorpedos--;
             
+            self.SubAmmo[1]=self.submarino.ammoTorpedos;
+            self.socket.emit('submarinoAmmo', self.SubAmmo);
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
             Disparo(self.submarino, bullet, self.destructor);
             Disparo(self.submarino, bullet, self.carguero1);
@@ -2845,6 +2852,11 @@ export class game extends Phaser.Scene{
       }    
     }); 
 
+    this.socket.on('recibeSubAmmo', function(data){
+      self.submarino.ammoCanion = data[0];
+      self.submarino.ammoTorpedos = data[1];
+    })
+
     function iniciarPartida()
     {
       self.partida.codP = 1;
@@ -2864,6 +2876,46 @@ export class game extends Phaser.Scene{
       self.partida.naves[6].posY = self.destructor.posY;
       self.partida.naves[7].posX = self.submarino.posX;
       self.partida.naves[7].posY = self.submarino.posY;
+    }
+
+    function guardarPartida()
+    {
+      self.partida.codP = 1;
+      self.partida.naves[0].vida = self.carguero1.vida;
+      self.partida.naves[0].posX = self.carguero1.posX;
+      self.partida.naves[0].posY = self.carguero1.posY;
+
+      self.partida.naves[1].vida = self.carguero2.vida;
+      self.partida.naves[1].posX = self.carguero2.posX;
+      self.partida.naves[1].posY = self.carguero2.posY;
+
+      self.partida.naves[2].vida = self.carguero3.vida;
+      self.partida.naves[2].posX = self.carguero3.posX;
+      self.partida.naves[2].posY = self.carguero3.posY;
+
+      self.partida.naves[3].vida = self.carguero4.vida;
+      self.partida.naves[3].posX = self.carguero4.posX;
+      self.partida.naves[3].posY = self.carguero4.posY;
+
+      self.partida.naves[4].vida = self.carguero5.vida;
+      self.partida.naves[4].posX = self.carguero5.posX;
+      self.partida.naves[4].posY = self.carguero5.posY;
+
+      self.partida.naves[5].vida = self.carguero6.vida;
+      self.partida.naves[5].posX = self.carguero6.posX;
+      self.partida.naves[5].posY = self.carguero6.posY;
+
+      self.partida.naves[6].vida = self.destructor.vida;
+      self.partida.naves[6].posX = self.destructor.posX;
+      self.partida.naves[6].posY = self.destructor.posY;
+      self.partida.naves[6].armas[0].municion = self.destructor.ammoCanion;
+      self.partida.naves[6].armas[1].municion = self.destructor.ammoCargas;
+
+      self.partida.naves[7].vida = self.submarino.vida;
+      self.partida.naves[7].posX = self.submarino.posX;
+      self.partida.naves[7].posY = self.submarino.posY;
+      self.partida.naves[7].armas[0].municion = self.submarino.ammoCanion;
+      self.partida.naves[7].armas[1].municion = self.submarino.ammoTorpedos;
     }
   }
 
