@@ -16,6 +16,14 @@ export class bootGame extends Phaser.Scene{
         }
     }
 
+    loadVideo() {
+        this.load.setPath("./src/assets");
+        
+        for (let video in DEF.VIDEO) {
+            this.load.video(DEF.VIDEO[video],DEF.VIDEO[video]);
+        }
+    }
+
     loadAudio() {
         this.load.setPath("./src/assets");
 
@@ -90,6 +98,7 @@ export class bootGame extends Phaser.Scene{
     preload() 
     {
         this.loadImages();
+        this.loadVideo();
         this.loadAudio();
         this.loadSprites();
       }
