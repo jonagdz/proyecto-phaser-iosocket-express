@@ -375,6 +375,9 @@ export class game extends Phaser.Scene{
       self.UIDesCarg5 = self.add.text(300, 330, 'Vida carguero 5: ' + self.carguero5.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
       self.UIDesCarg6 = self.add.text(300, 370, 'Vida carguero 6: ' + self.carguero6.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
       
+      // Parte inferior del HUD
+      self.UIDesCargCamMini = self.add.text(1080, 960, 'MiniCam: \nCarguero 1', { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+
       // Eventos para cambio de camara del equipo 1 entre el destructor y los cargueros
       self.input.keyboard.on('keydown-' + 'ZERO', function (){
         self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
@@ -391,7 +394,7 @@ export class game extends Phaser.Scene{
       })
 
       // Cámara de seguimiento a Cargueros
-      this.camaraEventos = this.cameras.add(1200, 900, 400, 100).setZoom(0.5);
+      this.camaraEventos = this.cameras.add(1210, 900, 400, 100).setZoom(0.5);
       this.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
 
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
@@ -1323,21 +1326,27 @@ export class game extends Phaser.Scene{
       if(camaraActCarg == 0){
         self.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
         camaraActCarg = 1;
+        self.UIDesCargCamMini.setText('MiniCam: \nCarguero 1');
       }else if(camaraActCarg == 1){
         self.camaraEventos.startFollow(self.carguero2.imagen,true, 0.09, 0.09); 
         camaraActCarg = 2;
+        self.UIDesCargCamMini.setText('MiniCam: \nCarguero 2');
       }else if(camaraActCarg == 2){
         self.camaraEventos.startFollow(self.carguero3.imagen,true, 0.09, 0.09);
         camaraActCarg = 3;
+        self.UIDesCargCamMini.setText('MiniCam: \nCarguero 3');
       }else if(camaraActCarg == 3){
         self.camaraEventos.startFollow(self.carguero4.imagen,true, 0.09, 0.09);
         camaraActCarg = 4;
+        self.UIDesCargCamMini.setText('MiniCam: \nCarguero 4');
       }else if(camaraActCarg == 4){
         self.camaraEventos.startFollow(self.carguero5.imagen,true, 0.09, 0.09);
         camaraActCarg = 5;
+        self.UIDesCargCamMini.setText('MiniCam: \nCarguero 5');
       }else if(camaraActCarg == 5){
         self.camaraEventos.startFollow(self.carguero6.imagen,true, 0.09, 0.09);
         camaraActCarg = 0;
+        self.UIDesCargCamMini.setText('MiniCam: \nCarguero 6');
       }
     }
 
