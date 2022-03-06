@@ -9,6 +9,12 @@ export class salaEspera extends Phaser.Scene{
     this.socket = data.socket;
     this.opcion = data.opcion;
     this.equipo = data.equipo;
+    this.loadGame = {
+      cargaPartida: Boolean,
+      partidaCargada: Object
+    };
+    this.loadGame.cargaPartida = data.loadGame.cargaPartida;
+    this.loadGame.partidaCargada = data.loadGame.partidaCargada;
   }
 
   // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
@@ -119,7 +125,8 @@ export class salaEspera extends Phaser.Scene{
     self.socket.on('JugadoresListosPlayer1', function(){
       var data = {
         socket: self.socket,
-        equipo: self.equipo
+        equipo: self.equipo,
+        loadGame: self.loadGame
       }
       self.scene.start(DEF.SCENES.GAME, data);
     })

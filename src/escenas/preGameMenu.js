@@ -5,11 +5,31 @@ export class preGameMenu extends Phaser.Scene{
       super({key:'preGameMenu'});
   }
 
+  init(data)
+  {
+    this.socket = data.socket;
+    this.loadGame = {
+      cargaPartida: Boolean,
+      partidaCargada: Object
+    };
+    this.loadGame.cargaPartida = data.cargaPartida;
+    this.loadGame.partidaCargada = data.partidaCargada;
+    this.contJugadores = data.contador;
+    this.uno = data.uno;
+    this.partidaIniciada = data.partIni;
+
+    console.log(this.loadGame.cargaPartida, this.loadGame.partidaCargada, this.contJugadores, this.uno, this.partidaIniciada)
+  }
+
   // Creo todo el contenido del juego del juego en si, imagenes, los cursores, jugadores, barcos, implemento el WebSocket
   create(){
     const self = this;
-    this.socket = io();
     this.otroEquipo = 0;
+
+    if((self.contJugadores === 2 && !self.uno) || (self.contJugadores === 2 && self.partidaIniciada))
+    {
+        self.socket.emit('jugador2Iniciado');
+    }
 
     //console.log("Dentro de preGameMenu.js");
 
@@ -53,25 +73,62 @@ export class preGameMenu extends Phaser.Scene{
 
     // Funcion que envia al servidor la c
     function ElegirEquipo(equipoElegido){
+      var datos = {
+        equipoElegido: equipoElegido,
+        loadGame: self.loadGame
+      }
       var data = {
         socket: self.socket,
         opcion: 1, // Debe ser la opcion 1 para que en sala espera aparezca mensaje que espera por otros jugadores
-        equipo: equipoElegido
+        equipo: equipoElegido,
+        loadGame: self.loadGame
       }
 
-      self.socket.emit('JugadorUnoEligeEquipo', equipoElegido);
+      self.socket.emit('JugadorUnoEligeEquipo', datos);
       // Mando al jugador 1 a la sala de espera con el equipo que eligio
       self.scene.start(DEF.SCENES.LOBBY, data); 
     }
 
-    self.socket.on('JugadoresListosPlayer2', function(equipoRestante){
-      var data = {
-        socket: self.socket,
-        equipo: equipoRestante
+    self.socket.on('JugadoresListosPlayer2', function(datos)
+    {
+      if(self.contJugadores === 2 && self.partidaIniciada)
+      {
+        var data = 
+        {
+          socket: self.socket,
+          equipo: datos.otroEquipo,
+          loadGame: {
+            cargaPartida: false,
+            partidaCargada: datos.loadGame.partidaCargada
+          }
+        }
       }
+      else
+      {
+        var data = 
+        {
+          socket: self.socket,
+          equipo: datos.otroEquipo,
+          loadGame: {
+            cargaPartida: datos.loadGame.cargaPartida,
+            partidaCargada: datos.loadGame.partidaCargada
+          }
+        }
+      }
+      
+      //console.log(data.loadGame.cargaPartida, data.loadGame.partidaCargada)
       // Mando al jugador 2 a game.js con el equipo que no se eligio
       self.scene.start(DEF.SCENES.GAME, data);
     })
+    /*self.socket.on('JugadoresListosPlayer2', function(equipoRestante){
+      var data = {
+        socket: self.socket,
+        equipo: equipoRestante,
+        loadGame: self.loadGame
+      }
+      // Mando al jugador 2 a game.js con el equipo que no se eligio
+      self.scene.start(DEF.SCENES.GAME, data);
+    })*/
 
     // Manejo el error de que se alcanzo el maximo numero de clientes mandandolo a la sala de espera con la opcion 2
     self.socket.on('errorConexion', function(){

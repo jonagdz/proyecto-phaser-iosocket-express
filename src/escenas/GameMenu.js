@@ -5,9 +5,19 @@ export class GameMenu extends Phaser.Scene{
       super({key:'GameMenu'});
     }
           
+    init()
+  {
+    this.cargaPartida = false;
+    this.partidaCargada;
+    this.contJugador = 0;
+    this.uno = true;
+    this.partidaIniciada = false;
+  }
+
   create(){
 
         const self = this;
+        this.socket = io();
 
         self.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
 
@@ -33,13 +43,58 @@ export class GameMenu extends Phaser.Scene{
         this.cr.setInteractive().on('pointerout', () => ElegirCred(2));
  /////////////////////////////////////////////////////////////////////////////////////////// 
         function ClickINIT(){
-            self.scene.start(DEF.SCENES.MENU);
+            var data = {
+                socket: self.socket,
+                cargaPartida: self.cargaPartida,
+                partidaCargada: self.partidaCargada,
+                contador: self.contJugador,
+                uno: self.uno,
+                partIni: self.partidaIniciada
+              }
+            self.socket.emit('iniciarPartidaIndication');
+            self.scene.start(DEF.SCENES.MENU, data);
         }
 
-        function ClickCARG(){
-            console.log("cargar partida");
+        function ClickCARG()
+        {            
+            self.socket.emit('cargarPartida', {data: 2});
+            self.socket.emit('cargaPartIndication');
         }
+
+        self.socket.on('cargaPartIndicated', function(data){
+            if(data.id != self.socket.id)
+            {
+                self.uno = data.uno;
+            }
+        })
+
+        self.socket.on('partidaIniciadaIndicated', function(data){
+            if(data.id != self.socket.id)
+            {
+                self.partidaIniciada = true;
+            }
+        })
+
+
+        self.socket.on('partidaCargada', function (partida) {
+            self.partidaCargada = partida;
+            self.cargaPartida = true;
+            var data = {
+                socket: self.socket,
+                cargaPartida: self.cargaPartida,
+                partidaCargada: partida,
+                contador: self.contJugador,
+                uno: self.uno
+            }
+            self.scene.start(DEF.SCENES.MENU, data);
+        })
         
+
+        self.socket.on('seUneJugador', function(data){
+            self.contJugador = data;
+            //console.log('se une jugador: '+self.contJugador)
+        })
+
         function ClickCREDITS(){
             self.scene.start(DEF.SCENES.CREDITS); 
         }
