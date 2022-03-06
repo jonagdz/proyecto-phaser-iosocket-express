@@ -275,7 +275,7 @@ export class game extends Phaser.Scene{
     this.soundCargas = this.sound.add(DEF.AUDIO.CARGAS);
     this.soundTorpedo = this.sound.add(DEF.AUDIO.TORPEDOS);
     this.soundImpacto = this.sound.add(DEF.AUDIO.IMPACTO);
-    //soundBackground.play();
+    soundBackground.play({volume: 0.05, loop: true});
     
     // Fuentes
     var style = {
@@ -1403,7 +1403,7 @@ export class game extends Phaser.Scene{
           //manejo de la municion del destructor
           if(self.destructor.armas === 0 && self.destructor.vida > 0 && self.destructor.ammoCanion > 0)
           {
-            self.soundCanionDes.play();
+            self.soundCanionDes.play({volume: 0.08, loop: false});
             self.destructor.ammoCanion--;
             
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
@@ -1414,7 +1414,7 @@ export class game extends Phaser.Scene{
           }
           if (self.destructor.armas === 1 && self.destructor.vida > 0 && self.destructor.ammoCargas > 0)
           {
-            self.soundCargas.play();
+            self.soundCargas.play({volume: 0.08, loop: false});
             self.destructor.ammoCargas--;
         
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
@@ -1432,7 +1432,7 @@ export class game extends Phaser.Scene{
           //manejo de municion del submarino
           if(self.submarino.armas === 0 && self.submarino.vida > 0 && self.submarino.ammoCanion > 0)
           {
-            self.soundCanionSub.play();
+            self.soundCanionSub.play({volume: 0.08, loop: false});
             self.submarino.ammoCanion--;
             
             self.SubAmmo[0]=self.submarino.ammoCanion;
@@ -1452,7 +1452,7 @@ export class game extends Phaser.Scene{
           }
           if ((self.submarino.armas === 1 || self.submarino.armas === 4) && self.submarino.vida > 0 && self.submarino.ammoTorpedos > 0)
           {
-            self.soundTorpedo.play();
+            self.soundTorpedo.play({volume: 0.08, loop: false});
             self.submarino.ammoTorpedos--;
             
             self.SubAmmo[1]=self.submarino.ammoTorpedos;
@@ -2823,7 +2823,7 @@ export class game extends Phaser.Scene{
 
       if(player.vida > 0)
       {
-        self.soundImpacto.play({volume: 1, loop: false});
+        self.soundImpacto.play({volume: 0.08, loop: false});
         player.vida = player.vida - damage; 
         if(escar){
           alertaCargueros();
@@ -2854,7 +2854,7 @@ export class game extends Phaser.Scene{
         {
           //console.log('entro a ESCAR')
           alertaCargueros();
-          self.soundAlarm.play({volume: 0.04, loop: false});
+          self.soundAlarm.play({volume: 0.08, loop: false});
           if(expl === 0){
             explosionCarguero();
           }   

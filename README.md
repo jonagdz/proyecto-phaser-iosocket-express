@@ -10,5 +10,6 @@ Y luego siempre levantamos el servidor con el comando "node server.js".
 Nos dirigimos en un navegador a http://localhost:5000/ y ya visualizamos el menu principal del juego.
 
 Music: https://www.bensound.com
+Sounds: https://mixkit.co/free-sound-effects
 Video: 
 Particle Sprite: <a href='https://.pngtree.com/so/Humo'>Humo png de .pngtree.com/</a>
