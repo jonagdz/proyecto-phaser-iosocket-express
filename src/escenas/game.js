@@ -1210,15 +1210,15 @@ export class game extends Phaser.Scene{
 
     function largaVista(){
       //console.log("entro al larga vista");
-      if(self.submarino.largavista === false && self.submarino.profundidad === 0 && self.usoSonar !== true){
+      if(self.submarino.largavista === false && self.submarino.profundidad === 0 && self.usoSonar !== true && self.nhSonar !== true){
         self.submarino.largavista = true;
         self.largaVistas.angle=self.submarino.imagen.angle+270;
         self.cameras.main.setMask(self.mar.masklv);
         self.cameras.main.setZoom(0.9);
-      }else if(self.submarino.largavista === true && (self.submarino.profundidad === 0)){
+      }else if(self.submarino.largavista === true && (self.submarino.profundidad === 0) && self.nhSonar !== true){
         self.submarino.largavista = false;
         restablezcoMask();
-      }else if((self.submarino.profundidad === 1 || self.submarino.profundidad === 2) && self.noLargavistas !== true && self.usoSonar !== true){
+      }else if((self.submarino.profundidad === 1 || self.submarino.profundidad === 2) && self.noLargavistas !== true && self.usoSonar !== true && self.nhSonar !== true){
         self.noLargavistas=true;
         // Texto de aviso
         self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
