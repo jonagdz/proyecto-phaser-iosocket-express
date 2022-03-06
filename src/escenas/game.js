@@ -366,6 +366,8 @@ export class game extends Phaser.Scene{
       self.UIDesVida =  self.add.text(1200, 170, 'Vida: ' + self.destructor.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
       self.UIDesMunicionCar =  self.add.text(1200, 210, 'Munición cargas: ' + self.destructor.ammoCargas, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
       self.UIDesMunicionCan =  self.add.text(1200, 250, 'Munición cañon: ' + self.destructor.ammoCanion, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+      self.UIDesArmAct =  self.add.text(1200, 290, 'Arma actual: cañon', { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+      self.UIDesArmCargProf =  self.add.text(1200, 330, 'Cargas de profundidad: -', { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
       self.UIDesCarg1 = self.add.text(300, 170, 'Vida carguero 1: ' + self.carguero1.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
       self.UIDesCarg2 = self.add.text(300, 210, 'Vida carguero 2: ' + self.carguero2.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
       self.UIDesCarg3 = self.add.text(300, 250, 'Vida carguero 3: ' + self.carguero3.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
@@ -979,7 +981,6 @@ export class game extends Phaser.Scene{
             self.cameras.main.setMask(self.mask);
             self.cameras.main.setZoom(1.4);
           }
-          //self.UISubArmAct.setText('Arma actual: torpedos');
           cambiarArmaSub();
         }else if (self.submarino.profundidad === 1 && self.submarino.largavista === false){
           if (self.usoSonar !== true){
@@ -990,7 +991,6 @@ export class game extends Phaser.Scene{
             //self.submarino.imagen.setTexture('UbootProfundidad2');
             self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
             self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-            //self.UISubArmAct.setText('Arma actual: -');
             cambiarArmaSub();
           }
         }
@@ -1029,7 +1029,6 @@ export class game extends Phaser.Scene{
           //self.submarino.imagen.setTexture('uboot');
           self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
           self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-          //self.UISubArmAct.setText('Arma actual: torpedos');
           cambiarArmaSub();
         }
       } else if (self.submarino.profundidad == 2 && self.submarino.largavista === false){
@@ -1039,7 +1038,6 @@ export class game extends Phaser.Scene{
         //self.submarino.imagen.setTexture('UbootProfundidad1');
         self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-        //self.UISubArmAct.setText('Arma actual: torpedos');
         cambiarArmaSub();
       }
       if(self.submarino.profundidad === 0){
@@ -1263,10 +1261,18 @@ export class game extends Phaser.Scene{
     function cambiarArmaDestr(){
       if (self.destructor.armas == 0){
         self.destructor.armas = 1;
+        if (self.destructor.cargas === 1){
+          self.UIDesArmCargProf.setText('Cargas de profundidad: poca');
+        }else{
+          self.UIDesArmCargProf.setText('Cargas de profundidad: mucha');
+        }
         console.log('Cambio a Cargas de Profundidad');
+        self.UIDesArmAct.setText('Arma actual: cargas de prof.');
       }else{
         self.destructor.armas = 0;
         console.log('cambio a canon');
+        self.UIDesArmAct.setText('Arma actual: cañon');
+        self.UIDesArmCargProf.setText('Cargas de profundidad: -');
       }
     }
 
@@ -1274,9 +1280,11 @@ export class game extends Phaser.Scene{
       if(self.destructor.cargas === 1){
         self.destructor.cargas = 2;
         console.log('detonador para mucha profundidad');
+        self.UIDesArmCargProf.setText('Cargas de profundidad: mucha');
       }else{
         self.destructor.cargas = 1;
         console.log('detonador para poca profundidad');
+        self.UIDesArmCargProf.setText('Cargas de profundidad: poca');
       }
     }
 
