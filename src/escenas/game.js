@@ -407,7 +407,8 @@ export class game extends Phaser.Scene{
       // Parte superior del HUD
       self.UISubVida =  self.add.text(1100, 230, 'Vida: ' + self.submarino.vida, { font: '30px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
       self.UISubMunicionTor =  self.add.text(1100, 260, 'Munición torpedos: ' + self.submarino.ammoTorpedos, { font: '30px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UISubMunicionCan =  self.add.text(1100, 290, 'Munición cañon: ' + self.submarino.ammoCanion, { font: '30px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);      
+      self.UISubMunicionCan =  self.add.text(1100, 290, 'Munición cañon: ' + self.submarino.ammoCanion, { font: '30px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+      self.UISubArmAct =  self.add.text(1100, 320, 'Arma actual: cañon', { font: '30px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);      
     } 
     
     function ClickBAJA(){
@@ -978,6 +979,8 @@ export class game extends Phaser.Scene{
             self.cameras.main.setMask(self.mask);
             self.cameras.main.setZoom(1.4);
           }
+          //self.UISubArmAct.setText('Arma actual: torpedos');
+          cambiarArmaSub();
         }else if (self.submarino.profundidad === 1 && self.submarino.largavista === false){
           if (self.usoSonar !== true){
             // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
@@ -987,6 +990,8 @@ export class game extends Phaser.Scene{
             //self.submarino.imagen.setTexture('UbootProfundidad2');
             self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
             self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+            //self.UISubArmAct.setText('Arma actual: -');
+            cambiarArmaSub();
           }
         }
         self.physics.world.removeCollider(self.colliderSub); 
@@ -1024,6 +1029,8 @@ export class game extends Phaser.Scene{
           //self.submarino.imagen.setTexture('uboot');
           self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
           self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+          //self.UISubArmAct.setText('Arma actual: torpedos');
+          cambiarArmaSub();
         }
       } else if (self.submarino.profundidad == 2 && self.submarino.largavista === false){
         // Idem anteriores pero subiendo de 0 a 1
@@ -1032,6 +1039,8 @@ export class game extends Phaser.Scene{
         //self.submarino.imagen.setTexture('UbootProfundidad1');
         self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
+        //self.UISubArmAct.setText('Arma actual: torpedos');
+        cambiarArmaSub();
       }
       if(self.submarino.profundidad === 0){
         self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
@@ -1186,18 +1195,22 @@ export class game extends Phaser.Scene{
       if(self.submarino.profundidad === 0){
         if (self.submarino.armas === 0){
           self.submarino.armas = 1;
+          self.UISubArmAct.setText('Arma actual: torpedos');
           console.log('Cambio a Torpedos');
         }else{
           self.submarino.armas = 0;
+          self.UISubArmAct.setText('Arma actual: cañon');
           console.log('cambio a canon');
         }
       }else if(self.submarino.profundidad === 1){
         //si esta a profundidad 1 que solo pueda usar el arma 1, torpedos
           self.submarino.armas = 4;
+          self.UISubArmAct.setText('Arma actual: torpedos');
           console.log('Solo Torpedos a esta profundidad');  
       }else if(self.submarino.profundidad === 2){
         //si esta en profundidad 2 que no pueda disparar
         self.submarino.armas = -1;
+        self.UISubArmAct.setText('Arma actual: -');
       }
       if(self.submarino.armas === 0){
         self.distMax = 300;
