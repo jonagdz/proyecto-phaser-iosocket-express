@@ -186,6 +186,8 @@ export class game extends Phaser.Scene{
     let reticula;
     let cuentaSonar;
     let resetSonar;
+    let resetExplosion;
+    let voyGameOver;
     let contadorS=0;
     let usoSonar = false;
     let nhSonar = false;
@@ -272,7 +274,7 @@ export class game extends Phaser.Scene{
     this.soundTorpedo = this.sound.add(DEF.AUDIO.TORPEDOS);
     this.soundImpacto = this.sound.add(DEF.AUDIO.IMPACTO);
     //soundBackground.play();
-
+    
     // Fuentes
     var style = {
       'background-color': 'lime',
@@ -281,6 +283,7 @@ export class game extends Phaser.Scene{
       'font': '48px Arial',
       'font-weight': 'bold'
     };
+
     // Islas
     this.isla1 = self.physics.add.image(2100,900,DEF.IMAGENES.ISLA).setDepth(5);
     this.isla1.setImmovable(true);
@@ -338,10 +341,6 @@ export class game extends Phaser.Scene{
       this.carg = self.add.sprite(1650, 350, 'CARGUEROSALERT').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(120,120);
       this.disp = self.add.sprite(1650, 500, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(120,120);
 
-      // Cámara de seguimiento a Cargueros
-      this.camaraEventos = this.cameras.add(1200, 900, 400, 100).setZoom(0.5);
-      this.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
-
       self.input.on('pointerdown', function (pointer) {
         self.input.mouse.requestPointerLock();
       }, self);
@@ -384,6 +383,7 @@ export class game extends Phaser.Scene{
       // Cámara de seguimiento a Cargueros
       this.camaraEventos = this.cameras.add(1200, 900, 400, 100).setZoom(0.5);
       this.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
+
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
       //generarUIEquipo2();
@@ -1248,6 +1248,40 @@ export class game extends Phaser.Scene{
       self.puedoDisparar = 1;
     }
 
+    function explosionCarguero(){
+      console.log("ENTRE A EXPLOSION ");
+      // Explosion 
+      self.videoExC = self.add.video(centroW,centroH,DEF.VIDEO.EXPLOSIONLIBERTY).setScrollFactor(0).setScale(0.7).setDepth(10);
+      self.videoExC.play();
+      // Elimino video
+      self.resetExplosion = self.time.addEvent({ delay: 5000, callback: reseteoExplC, callbackScope: self});
+      function reseteoExplC(){
+        self.videoExC.destroy();
+      }
+    }
+
+    function explosionDestructor(){
+      // Explosion 
+      self.videoExD = self.add.video(centroW,centroH,DEF.VIDEO.EXPOSIONFLETCHER).setScrollFactor(0).setScale(0.7).setDepth(10);
+      self.videoExD.play();
+      // Elimino video
+      self.resetExplosion = self.time.addEvent({ delay: 5000, callback: reseteoExplD, callbackScope: self});
+      function reseteoExplD(){
+        self.videoExD.destroy();
+      }
+    }
+
+    function explosionSubmarino(){
+      // Explosion 
+      self.videoExU = self.add.video(centroW,centroH,DEF.VIDEO.EXPLOSIONUBOAT).setScrollFactor(0).setScale(0.7).setDepth(10);
+      self.videoExU.play();
+      // Elimino video
+      self.resetExplosion = self.time.addEvent({ delay: 5000, callback: reseteoExplS, callbackScope: self});
+      function reseteoExplS(){
+        self.videoExU.destroy();
+      }
+    }
+
     //funcion que recibe un click y ejecuta el evento disparo, el cual activa una bala del set de balas de la clase
     this.input.on('pointerdown', function (pointer, time) {
       if (self.puedoDisparar == 0){
@@ -1498,9 +1532,14 @@ export class game extends Phaser.Scene{
                     resultado: 1,
                     equipo: 1
                   }
-
-                  self.socket.emit('Finalizo', envioSocket);
-                  self.scene.start(DEF.SCENES.FinScene, envio);
+                  
+                  explosionSubmarino();
+                 
+                  self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                  function voyFindScene(){
+                    self.socket.emit('Finalizo', envioSocket);
+                    self.scene.start(DEF.SCENES.FinScene, envio);
+                  }
                 }
                 else
                 {
@@ -1590,9 +1629,14 @@ export class game extends Phaser.Scene{
                     resultado: 1,
                     equipo: 1
                   }
-
-                  self.socket.emit('Finalizo', envioSocket);
-                  self.scene.start(DEF.SCENES.FinScene, envio);
+                  
+                  explosionSubmarino();
+                  
+                  self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                  function voyFindScene(){
+                    self.socket.emit('Finalizo', envioSocket);
+                    self.scene.start(DEF.SCENES.FinScene, envio);
+                  }
                 }
                 else
                 {
@@ -1681,9 +1725,14 @@ export class game extends Phaser.Scene{
                     resultado: 1,
                     equipo: 1
                   }
-
-                  self.socket.emit('Finalizo', envioSocket);
-                  self.scene.start(DEF.SCENES.FinScene, envio);
+                  
+                  explosionSubmarino();
+                 
+                  self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                  function voyFindScene(){
+                    self.socket.emit('Finalizo', envioSocket);
+                    self.scene.start(DEF.SCENES.FinScene, envio);
+                  }
                 }
                 else
                 {
@@ -1779,9 +1828,14 @@ export class game extends Phaser.Scene{
                       resultado: 1,
                       equipo: 1
                     }
-  
-                    self.socket.emit('Finalizo', envioSocket);
-                    self.scene.start(DEF.SCENES.FinScene, envio);
+                    
+                    explosionSubmarino();
+                    
+                    self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                    function voyFindScene(){
+                      self.socket.emit('Finalizo', envioSocket);
+                      self.scene.start(DEF.SCENES.FinScene, envio);
+                    }
                   }
                   else
                   {
@@ -1874,9 +1928,14 @@ export class game extends Phaser.Scene{
                       resultado: 1,
                       equipo: 1
                     }
-  
-                    self.socket.emit('Finalizo', envioSocket);
-                    self.scene.start(DEF.SCENES.FinScene, envio);
+                    
+                    explosionSubmarino();
+                   
+                    self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                    function voyFindScene(){
+                      self.socket.emit('Finalizo', envioSocket);
+                      self.scene.start(DEF.SCENES.FinScene, envio);
+                    }
                   }
                   else
                   {
@@ -1990,6 +2049,12 @@ export class game extends Phaser.Scene{
                     enemy.imagen.setActive(false);
                     enemy.imagen.setVisible(false);
                     enemy.imagen.removeInteractive();
+                    
+                    if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
+                      explosionCarguero();
+                    }else if(Escarguero === 0){
+                      explosionDestructor();
+                    }
                   }
                   else
                   {
@@ -2093,6 +2158,12 @@ export class game extends Phaser.Scene{
                       enemy.imagen.setActive(false);
                       enemy.imagen.setVisible(false);
                       enemy.imagen.removeInteractive();
+                      
+                      if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
+                        explosionCarguero();
+                      }else if(Escarguero === 0){
+                        explosionDestructor();
+                      }
                     }
                     else
                       enemy.vida = enemy.vida - danio;
@@ -2195,6 +2266,12 @@ export class game extends Phaser.Scene{
                         enemy.imagen.setActive(false);
                         enemy.imagen.setVisible(false);
                         enemy.imagen.removeInteractive();
+
+                        if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
+                          explosionCarguero();
+                        }else if(Escarguero === 0){
+                          explosionDestructor();
+                        }
                       }
                       else
                         enemy.vida = enemy.vida - danio;
@@ -2304,6 +2381,12 @@ export class game extends Phaser.Scene{
                     enemy.imagen.setActive(false);
                     enemy.imagen.setVisible(false);
                     self.textures.remove(enemy.imagen);
+                    
+                    if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
+                      explosionCarguero();
+                    }else if(Escarguero === 0){
+                      explosionDestructor();
+                    }
                   }
                   else
                     enemy.vida = enemy.vida - danio;
@@ -2407,6 +2490,11 @@ export class game extends Phaser.Scene{
                     enemy.imagen.setActive(false);
                     enemy.imagen.setVisible(false);
                     self.textures.remove(enemy.imagen);
+                    if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
+                      explosionCarguero();
+                    }else if(Escarguero === 0){
+                      explosionDestructor();
+                    }
                   }
                   else
                     enemy.vida = enemy.vida - danio;
@@ -2507,6 +2595,11 @@ export class game extends Phaser.Scene{
                     enemy.imagen.setActive(false);
                     enemy.imagen.setVisible(false);
                     self.textures.remove(enemy.imagen);
+                    if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
+                      explosionCarguero();
+                    }else if(Escarguero === 0){
+                      explosionDestructor();
+                    }
                   }
                   else
                     enemy.vida = enemy.vida - danio;
@@ -2594,7 +2687,7 @@ export class game extends Phaser.Scene{
         self.cruz.play('ani');
     }
     //funcion que procesa el dano y el porcentaje de acierto
-    function RecibeHit(player, damage, escar, enemy)
+    function RecibeHit(player, damage, escar, enemy, expl)
     {
       let contadorAviso = 0;
       playerIMG = player.imagen;
@@ -2654,7 +2747,15 @@ export class game extends Phaser.Scene{
           //console.log('entro a ESCAR')
           alertaCargueros();
           self.soundAlarm.play({volume: 0.04, loop: false});
+          if(expl === 0){
+            explosionCarguero();
+          }   
           carguerosMuertos++;
+        }
+        if(expl === 1){
+          explosionDestructor();
+        }else if(expl ===2){
+          explosionSubmarino();
         }
       }
       if(carguerosMuertos > 3)
@@ -2668,8 +2769,11 @@ export class game extends Phaser.Scene{
           resultado: 2,
           equipo: 1
         }
-        self.socket.emit('Finalizo', envioSocket);
-        self.scene.start(DEF.SCENES.FinScene, envio);
+        self.voyGameOver = self.time.addEvent({ delay: 5000, callback: voyFindScene, callbackScope: self});
+        function voyFindScene(){
+          self.socket.emit('Finalizo', envioSocket);
+          self.scene.start(DEF.SCENES.FinScene, envio);
+        }
       }
     }
     //funcion que convierte el cursor en una mira
@@ -2778,43 +2882,45 @@ export class game extends Phaser.Scene{
 
     //escucho el tiro que me dieron desde el otro jugador y lo proceso
     this.socket.on('playerHitted', function(playerInfo)
-    {       
+    {      
+        let expl=2;  
         if(self.equipo===1)
         {
+          expl=0;  
           if (playerInfo.numerocarguero === 0)
           {
-            RecibeHit(self.destructor, playerInfo.damage, false, self.submarino);
+            let expl=1;
+            RecibeHit(self.destructor, playerInfo.damage, false, self.submarino, expl);
             ALERTADISPARO();
-            
           }
           else if(playerInfo.numerocarguero === 1)
           {
-            RecibeHit(self.carguero1, playerInfo.damage, true, self.submarino);
+            RecibeHit(self.carguero1, playerInfo.damage, true, self.submarino, expl);
           }
           else if(playerInfo.numerocarguero === 2)
           {
-            RecibeHit(self.carguero2, playerInfo.damage, true, self.submarino);
+            RecibeHit(self.carguero2, playerInfo.damage, true, self.submarino, expl);
           }
           else if(playerInfo.numerocarguero === 3)
           {
-            RecibeHit(self.carguero3, playerInfo.damage, true, self.submarino);
+            RecibeHit(self.carguero3, playerInfo.damage, true, self.submarino, expl);
           }
           else if(playerInfo.numerocarguero === 4)
           {
-            RecibeHit(self.carguero4, playerInfo.damage, true, self.submarino);
+            RecibeHit(self.carguero4, playerInfo.damage, true, self.submarino, expl);
           }
           else if(playerInfo.numerocarguero === 5)
           {
-            RecibeHit(self.carguero5, playerInfo.damage, true, self.submarino);
+            RecibeHit(self.carguero5, playerInfo.damage, true, self.submarino, expl);
           }
           else if(playerInfo.numerocarguero === 6)
           {
-            RecibeHit(self.carguero6, playerInfo.damage, true, self.submarino);
+            RecibeHit(self.carguero6, playerInfo.damage, true, self.submarino, expl);
           }
         }
         else
         {
-            RecibeHit(self.submarino, playerInfo.damage, false, self.destructor);
+            RecibeHit(self.submarino, playerInfo.damage, false, self.destructor, expl);
             ALERTADISPARO();
         }
     }); 

@@ -48,7 +48,13 @@ export const DEF = {
         BOTONLARGAVISTA: "botonlargavista.png",
         BOTONHOME: "botonhomeNegro.png",
         BOTONGUARDAR: "botonGUARDAD.png",
-        CONTROLES: "controles.png"
+        CONTROLES: "controles.png",
+    },
+
+    VIDEO: {
+        EXPOSIONFLETCHER:"barcofletcheranimacion.mp4",
+        EXPLOSIONLIBERTY: "barcoliberty.mp4",
+        EXPLOSIONUBOAT: "barcoubooanimacion.mp4"
     },
 
     AUDIO: {
