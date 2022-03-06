@@ -191,7 +191,9 @@ export class game extends Phaser.Scene{
     let contadorS=0;
     let usoSonar = false;
     let nhSonar = false;
+    let noLargavistas = false;
     let siguiendoDes = true;
+    let pausaGame = false;
     //self.socket.emit('listarPartidas', {id: 2});
     let carguerosMuertos = 0;
 
@@ -324,7 +326,16 @@ export class game extends Phaser.Scene{
 
     // Se crea el evento de pausa
     self.input.keyboard.on('keydown-' + 'P', function (event){
-      
+      console.log("PAUSA:"+pausaGame);
+      if(pausaGame === true){
+        console.log("ENTRE A RESUME:"+pausaGame);
+        pausaGame = false;
+        self.scene.resume('game');
+      }else{
+        console.log("ENTRE A PAUSA:"+pausaGame);
+        pausaGame = true;
+        self.scene.pause('game');
+      }    
     });
     
    //////////////////////////////////////////////////////////////////////
@@ -350,9 +361,6 @@ export class game extends Phaser.Scene{
         iniciarPartida();
         self.socket.emit('iniciarPartida', self.partida);
       }
-      
-      //this.botonDOWNDI = self.physics.add.image(700, 900, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickBAJA(1));
-      //this.botonDOWNDI.setInteractive().on('pointerout', () => ClickBAJA(2));
 
       // Parte superior del HUD
       self.UIDesVida =  self.add.text(1200, 170, 'Vida: ' + self.destructor.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
@@ -386,7 +394,7 @@ export class game extends Phaser.Scene{
 
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
-      //generarUIEquipo2();
+      // Botones visuales del equipo 2
       this.botonDOWNDI = self.physics.add.image(710, 800, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickBAJA()).setDisplaySize(80,80);
       this.botonSUBE = self.physics.add.image(810, 800, DEF.IMAGENES.BOTONSUBIR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSUBE()).setDisplaySize(80,80);
       this.botonSONAR = self.physics.add.image(910, 800, DEF.IMAGENES.BOTONSONAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSONAR()).setDisplaySize(80,80);
@@ -903,7 +911,6 @@ export class game extends Phaser.Scene{
           contMarcha(carguero);
         }, 2000)
       }
-      
     }
 
     function handleCollisionCosta(carguero, costa2){
@@ -1056,7 +1063,8 @@ export class game extends Phaser.Scene{
     function sonar(){
       // Activo sonar si hay sonares disponibles
       if(self.submarino.sonar>0){
-        if (self.usoSonar !== true && self.submarino.profundidad === 1){
+        console.log("AVISO SONAR:"+self.nhSonar);
+        if (self.usoSonar !== true && self.nhSonar !== true && self.submarino.profundidad === 1 && self.noLargavistas !== true){
           // Texto de aviso
           self.statusSonar = self.add.text(550, 700, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
           
@@ -1095,19 +1103,42 @@ export class game extends Phaser.Scene{
             self.statusSonar.destroy();
           }
           self.submarino.sonar--;
+        }else if(self.submarino.profundidad === 0 || self.submarino.profundidad === 2 && self.noLargavistas !== true){
+          if(self.nhSonar !== true){
+            self.nhSonar=true;
+            // Texto de aviso
+            self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+            self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoSonarProf, callbackScope: self, loop: true});
+            self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoSP, callbackScope: self, repeat: 0 });
+            function eliminoAvisoSP(){
+              self.nhSonar = false;
+              // Elimino texto de aviso no hay sonar
+              removeText();
+              contadorS=0;
+            }
+            function avisoSonarProf(){
+              contadorS++;
+              self.statusSonar.setText('¡SONAR SOLO A BAJA PROFUNDIDAD!');
+              if (contadorS === 5){
+                self.cuentaSonar.remove(true);
+              }
+            }
+            function removeText() {
+              self.statusSonar.destroy();
+            }
+          }
         }
       }else{
-        if (self.usoSonar !== true && self.submarino.profundidad === 1){
-          if(nhSonar !== true){
-            nhSonar = true;
+        if (self.usoSonar !== true && self.nhSonar !== true && self.submarino.profundidad === 1 && self.noLargavistas !== true){
+            self.nhSonar = true;
             // Texto de aviso
-            self.statusSonar = self.add.text(550, 700, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+            self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
 
             self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
             self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
             
             function eliminoAvisoNHS(){
-              nhSonar = false;
+              self.nhSonar = false;
               // Elimino texto de aviso no hay sonar
               removeText();
               contadorS=0;
@@ -1115,6 +1146,29 @@ export class game extends Phaser.Scene{
             function avisoNoHaySonar(){
               contadorS++;
               self.statusSonar.setText('                  ¡SONAR AGOTADO!');
+              if (contadorS === 5){
+                self.cuentaSonar.remove(true);
+              }
+            }
+            function removeText() {
+              self.statusSonar.destroy();
+            }
+        }else if(self.submarino.profundidad === 0 || self.submarino.profundidad === 2 && self.noLargavistas !== true){
+          if(self.nhSonar !== true){
+            self.nhSonar=true;
+            // Texto de aviso
+            self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+            self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoSonarProf, callbackScope: self, loop: true});
+            self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoSP, callbackScope: self, repeat: 0 });
+            function eliminoAvisoSP(){
+              self.nhSonar = false;
+              // Elimino texto de aviso no hay sonar
+              removeText();
+              contadorS=0;
+            }
+            function avisoSonarProf(){
+              contadorS++;
+              self.statusSonar.setText('¡SONAR SOLO A BAJA PROFUNDIDAD!');
               if (contadorS === 5){
                 self.cuentaSonar.remove(true);
               }
@@ -1156,7 +1210,7 @@ export class game extends Phaser.Scene{
 
     function largaVista(){
       //console.log("entro al larga vista");
-      if(self.submarino.largavista === false && (self.submarino.profundidad === 0)){
+      if(self.submarino.largavista === false && self.submarino.profundidad === 0 && self.usoSonar !== true){
         self.submarino.largavista = true;
         self.largaVistas.angle=self.submarino.imagen.angle+270;
         self.cameras.main.setMask(self.mar.masklv);
@@ -1164,6 +1218,28 @@ export class game extends Phaser.Scene{
       }else if(self.submarino.largavista === true && (self.submarino.profundidad === 0)){
         self.submarino.largavista = false;
         restablezcoMask();
+      }else if((self.submarino.profundidad === 1 || self.submarino.profundidad === 2) && self.noLargavistas !== true && self.usoSonar !== true){
+        self.noLargavistas=true;
+        // Texto de aviso
+        self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+        self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoLargavistaSup, callbackScope: self, loop: true});
+        self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoLS, callbackScope: self, repeat: 0 });
+        function eliminoAvisoLS(){
+          self.noLargavistas = false;
+          // Elimino texto de aviso de largavistas solo en superficie
+          removeText();
+          contadorS=0;
+        }
+        function avisoLargavistaSup(){
+          contadorS++;
+          self.statusSonar.setText('¡LARGAVISTAS SOLO EN SUPERFICIE!');
+          if (contadorS === 5){
+            self.cuentaSonar.remove(true);
+          }
+        }
+        function removeText() {
+          self.statusSonar.destroy();
+        }
       }
       function restablezcoMask(){
         self.cameras.main.setMask(mask);
@@ -1249,7 +1325,6 @@ export class game extends Phaser.Scene{
     }
 
     function explosionCarguero(){
-      console.log("ENTRE A EXPLOSION ");
       // Explosion 
       self.videoExC = self.add.video(centroW,centroH,DEF.VIDEO.EXPLOSIONLIBERTY).setScrollFactor(0).setScale(0.7).setDepth(10);
       self.videoExC.play();
@@ -2650,6 +2725,7 @@ export class game extends Phaser.Scene{
       });
       self.explotion2.play('explot2');
     }
+
     //funcion que muestra y destruye un jugador
     function destroyed(playerIMG){
       //self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y ,'explot').setDisplaySize(100, 100).setDepth(5);
@@ -2669,6 +2745,7 @@ export class game extends Phaser.Scene{
       });
       self.explotion3.play('explot3');
     }
+
     //funcion que muestra una cruz animada senalando de donde vino un disparo enemigo
     function CRUZ (imagen) {
       self.cruz = self.add.sprite(imagen.x, imagen.y, 'CRUZ').setDepth(10).setDisplaySize(80,80);
@@ -2686,6 +2763,7 @@ export class game extends Phaser.Scene{
         });
         self.cruz.play('ani');
     }
+
     //funcion que procesa el dano y el porcentaje de acierto
     function RecibeHit(player, damage, escar, enemy, expl)
     {
@@ -2776,6 +2854,7 @@ export class game extends Phaser.Scene{
         }
       }
     }
+    
     //funcion que convierte el cursor en una mira
     this.input.on('pointermove', function (pointer) {
     //maneja la mira del destructor con el cursor  
