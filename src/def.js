@@ -70,7 +70,8 @@ export const DEF = {
         IMPACTO: "imapcto.wav",
         CREDITOS: "Intro.mp3",
         MENU: "Intro2.mp3",
-        ACTION: "Action.mp3"
+        ACTION: "Action.mp3",
+        ENDGAME: "Endgame.mp3"
     },
 
     SPRITES: {

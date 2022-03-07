@@ -20,8 +20,9 @@ export class GameMenu extends Phaser.Scene{
         this.socket = io();
 
         self.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
-        self.intro = self.add.video(0, 0, DEF.VIDEO.INTRO).setOrigin(0).setScrollFactor(1).setScale(2.4).setPaused(false);
+        self.intro = self.add.video(0, 0, DEF.VIDEO.INTRO).setOrigin(0).setScrollFactor(1).setScale(2.4);
         self.intro.play(true);
+        self.intro.setPaused(false);
         self.sounIntro = self.sound.add(DEF.AUDIO.MENU);
         self.sounIntro.play({volume: 0.08, loop: true});
 

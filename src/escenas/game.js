@@ -3097,6 +3097,8 @@ export class game extends Phaser.Scene{
     }); 
 
     this.socket.on('FinalizoPartida', function(data){      
+        self.soundBackground.stop();
+        self.soundAction.stop();
         if(data.resultado === 1){
           var envio2={
             socket: self.socket,
