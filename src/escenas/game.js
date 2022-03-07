@@ -1364,9 +1364,9 @@ export class game extends Phaser.Scene{
         self.UISubArmAct.setText('Arma actual: -');
       }
       if(self.submarino.armas === 0){
-        self.distMax = 300;
+        self.distMax = 450;
       }else if(self.submarino.armas === 1 || self.submarino.armas === 4){
-        self.distMax = 500;
+        self.distMax = 550;
       }   
       self.submarino.reticula.x = self.submarino.imagen.x + (Math.cos((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
       self.submarino.reticula.y = self.submarino.imagen.y + (Math.sin((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
