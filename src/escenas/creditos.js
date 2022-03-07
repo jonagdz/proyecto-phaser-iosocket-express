@@ -9,7 +9,7 @@ export class creditos extends Phaser.Scene{
     const self = this;
     self.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
 
-    let soundBackground = this.sound.add(DEF.AUDIO.CREDITOS,{loop: true});
+    let soundBackground = this.sound.add(DEF.AUDIO.CREDITOS,{volume: 0.07, loop: true});
     soundBackground.play();
 
     //////////////////////////////////////////////////CARGO INTERACCIONES Y SPRITE DE HOME/////////////////////////////////////////////////////////////////

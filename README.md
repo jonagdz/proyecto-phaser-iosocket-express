@@ -10,6 +10,9 @@ Y luego siempre levantamos el servidor con el comando "node server.js".
 Nos dirigimos en un navegador a http://localhost:5000/ y ya visualizamos el menu principal del juego.
 
 Music: https://www.bensound.com
+Music: https://pixabay.com/es/
 Sounds: https://mixkit.co/free-sound-effects
-Video: 
+Video: https://pixabay.com/es/
+Images: https://www.pinterest.com/pin/774478467142903900/, https://es.wikipedia.org/wiki/Tipo_XXVI, http://www.shipsproject.org/Wrecks/Wk_JamesEaganLayne.html
 Particle Sprite: <a href='https://.pngtree.com/so/Humo'>Humo png de .pngtree.com/</a>
+Explotion Sprite: https://www.pngitem.com/middle/hbhxbwb_explosion-sprite-sheet-free-hd-png-download/

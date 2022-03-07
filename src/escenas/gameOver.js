@@ -19,6 +19,8 @@ export class gameOver extends Phaser.Scene{
     const screenCenterY = self.cameras.main.worldView.y + self.cameras.main.height / 2;
 
     self.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
+    let soundBackground = this.sound.add(DEF.AUDIO.ENDGAME,{volume: 0.07, loop: true});
+    soundBackground.play();
     
     self.home= self.add.sprite(screenCenterX, 650, 'homes').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () => volverMenu());
     self.home.setDisplaySize(150, 150);
@@ -40,6 +42,7 @@ export class gameOver extends Phaser.Scene{
         }
     }
     function volverMenu(){
+      soundBackground.stop();
       self.socket.disconnect();
       self.scene.start(DEF.SCENES.MENUPRINCIPAL);
     }

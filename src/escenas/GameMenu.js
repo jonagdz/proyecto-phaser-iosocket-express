@@ -20,6 +20,11 @@ export class GameMenu extends Phaser.Scene{
         this.socket = io();
 
         self.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
+        self.intro = self.add.video(0, 0, DEF.VIDEO.INTRO).setOrigin(0).setScrollFactor(1).setScale(2.4);
+        self.intro.play(true);
+        self.intro.setPaused(false);
+        self.sounIntro = self.sound.add(DEF.AUDIO.MENU);
+        self.sounIntro.play({volume: 0.08, loop: true});
 
   ///////////////////////////////////////////////////////////////////////////////////////////      
         this.ini = self.add.sprite(790, 200, 'initpart').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () =>ClickINIT());
@@ -43,6 +48,7 @@ export class GameMenu extends Phaser.Scene{
         this.cr.setInteractive().on('pointerout', () => ElegirCred(2));
  /////////////////////////////////////////////////////////////////////////////////////////// 
         function ClickINIT(){
+            self.sounIntro.stop();
             var data = {
                 socket: self.socket,
                 cargaPartida: self.cargaPartida,
@@ -57,6 +63,7 @@ export class GameMenu extends Phaser.Scene{
 
         function ClickCARG()
         {            
+            self.sounIntro.stop();
             self.socket.emit('cargarPartida', {data: 2});
             self.socket.emit('cargaPartIndication');
         }

@@ -56,19 +56,24 @@ io.on('connection', function (socket) {
   //console.log("Conexiones actuales: " +io.engine.clientsCount + " - Jugadores desconectados: "+ jugadoresDesconectados);
   socket.emit('seUneJugador', io.engine.clientsCount);
   console.log('Jugador [' + socket.id + '] conectado');
-        // Genero el objeto player para el primer jugador
-        players[socket.id] = {
-          rotation: 0,
-          x: 0,
-          y: 0,
-          playerId: socket.id,
-          damage: 0,
-          equipo: 0,
-          deep: 0,
-          carguero: 0,
-          numerocarguero: 0
-        }
+  // Genero el objeto player para el primer jugador
+  players[socket.id] = {
+    rotation: 0,
+    x: 0,
+    y: 0,
+    playerId: socket.id,
+    damage: 0,
+    equipo: 0,
+    deep: 0,
+    carguero: 0,
+    numerocarguero: 0
+  }
 
+  if(jugadoresDesconectados > 0)
+  {
+    jugadoresDesconectados--;
+  }
+  
   if (io.engine.clientsCount > limiteConexiones){ // Si hay mas de 2 jugadores conectados, a los siguientes los envio a sala de espera
     socket.emit('errorConexion'); // Se emite al cliente que se alcanzo la cantidad maxima de conexiones
     console.log('Se envia al jugador [' + socket.id + '] a sala de espera debido a que se alcanzo el limite de conexiones activas ('+limiteConexiones+').');
@@ -113,9 +118,7 @@ io.on('connection', function (socket) {
       //socket.broadcast.emit('SalaEsperaPartidaEnCurso', socket);
       socket.emit('SalaEsperaPartidaEnCurso');
       jugadoresDesconectados = 0;
-    }else if(jugadoresDesconectados == 0){ // Si es la opcion que esta esperando al 2do jugador lo mando directo al game a ambos
-      
-
+    }else if(jugadoresDesconectados == 0){ // Si es la opcion que esta esperando al 2do jugador lo mando directo al game a ambos      
       socket.on('JugadorUnoEligeEquipo', function(datos){
         if (datos.equipoElegido === 1){
           otraData.otroEquipo = 2;
@@ -132,10 +135,10 @@ io.on('connection', function (socket) {
         otraData.loadGame = datos.loadGame;
 
         // Notifico al jugador 1 que el jugador 2 ya ingreso, para que vaya al juego, y mando directo al jugador 2 al juego
-        socket.broadcast.emit('JugadoresListosPlayer1');
+        /*socket.broadcast.emit('JugadoresListosPlayer1');
         socket.emit('JugadoresListosPlayer2', otraData);
         JugadorUnoEsperando = 0;
-        jugadoresDesconectados = 0;
+        jugadoresDesconectados = 0;*/
       });
 
       

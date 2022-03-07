@@ -196,7 +196,7 @@ export class game extends Phaser.Scene{
     let pausaGame = false;
     //self.socket.emit('listarPartidas', {id: 2});
     let carguerosMuertos = 0;
-
+    
     // Grupo para los cargueros y balas
     var arrayCargueros = [];
     //this.grupoCargueros = this.physics.add.group({ classType: Carguero, runChildUpdate: true });
@@ -267,7 +267,7 @@ export class game extends Phaser.Scene{
     // Ajusto audio
     this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
     this.soundAlarm = this.sound.add(DEF.AUDIO.ALERTA);
-    let soundBackground = this.sound.add(DEF.AUDIO.JUEGO,{loop: true});
+    this.soundBackground = this.sound.add(DEF.AUDIO.JUEGO,{loop: true});
     let audioActivado = true;
     this.soundAlarmBarco = this.sound.add(DEF.AUDIO.ALERTABARCO);
     this.soundCanionDes = this.sound.add(DEF.AUDIO.DISPARODES);
@@ -275,7 +275,8 @@ export class game extends Phaser.Scene{
     this.soundCargas = this.sound.add(DEF.AUDIO.CARGAS);
     this.soundTorpedo = this.sound.add(DEF.AUDIO.TORPEDOS);
     this.soundImpacto = this.sound.add(DEF.AUDIO.IMPACTO);
-    soundBackground.play({volume: 0.05, loop: true});
+    this.soundBackground.play({volume: 0.05, loop: true});
+    this.soundAction = this.sound.add(DEF.AUDIO.ACTION);
     
     // Fuentes
     var style = {
@@ -316,10 +317,12 @@ export class game extends Phaser.Scene{
     // Se crea el evento de cambio de mute de audio
     self.input.keyboard.on('keydown-' + 'M', function (event){
       if(audioActivado === true){
-        soundBackground.mute = true;
+        self.soundBackground.mute = true;
+        self.soundAction.mute = true;
         audioActivado=false;
       }else{
-        soundBackground.mute = false;
+        this.soundBackground.mute = false;
+        self.soundAction.mute = false;
         audioActivado=true;
       }
     });
@@ -375,6 +378,9 @@ export class game extends Phaser.Scene{
       self.UIDesCarg5 = self.add.text(300, 330, 'Vida carguero 5: ' + self.carguero5.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
       self.UIDesCarg6 = self.add.text(300, 370, 'Vida carguero 6: ' + self.carguero6.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
       
+      // Parte inferior del HUD
+      self.UIDesCargCamMini = self.add.text(1080, 960, 'MiniCam: \nCarguero 1', { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+
       // Eventos para cambio de camara del equipo 1 entre el destructor y los cargueros
       self.input.keyboard.on('keydown-' + 'ZERO', function (){
         self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
@@ -391,7 +397,7 @@ export class game extends Phaser.Scene{
       })
 
       // Cámara de seguimiento a Cargueros
-      this.camaraEventos = this.cameras.add(1200, 900, 400, 100).setZoom(0.5);
+      this.camaraEventos = this.cameras.add(1210, 900, 400, 100).setZoom(0.5);
       this.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
 
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
@@ -442,7 +448,8 @@ export class game extends Phaser.Scene{
     }
     
     function ClickHOME(){
-      soundBackground.stop();
+      self.soundBackground.stop();
+      self.soundAction.stop();
       self.socket.disconnect();
       self.scene.start(DEF.SCENES.MENUPRINCIPAL);
     }
@@ -526,27 +533,61 @@ export class game extends Phaser.Scene{
           self.destructor.posX = self.carguero1.posX + 300;
           self.destructor.posY = self.carguero1.posY + 600;
         }
+
+        // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+        self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
+        self.destructor.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
+        self.destructor.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+
+        //guardo la reticula y el set de balas en variables propias de la clase destructor
+        self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, DEF.SPRITES.RETICULA).setCollideWorldBounds(true);
+        self.destructor.bullet = self.playerBullets;
+        self.destructor.cargas = 1;
+        // Particulas
+        const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
+        const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
+          speed: 10, // Velocidad con la que se mueven
+          scale: {start: 0.08, end: 0}, // Tamaño
+          blendMode: "ADD" // Efecto a aplicar
+        })
+        particles.setPosition(self.destructor.imagen.x, self.destructor.imagen.y)
+        emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
+      }
+      else if (self.destructor.vida <= 0)
+      {
+         // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+         self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
+         self.destructor.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
+         self.destructor.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+
+         destroyed(self.destructor.imagen); //Funcion que anima fuego
+         self.destructor.imagen.setActive(false);
+         self.destructor.imagen.setVisible(false);
+         self.destructor.imagen.removeInteractive();
+
+      }
+      else
+      {
+         // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+         self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
+         self.destructor.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
+         self.destructor.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+ 
+         //guardo la reticula y el set de balas en variables propias de la clase destructor
+         self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, DEF.SPRITES.RETICULA).setCollideWorldBounds(true);
+         self.destructor.bullet = self.playerBullets;
+         self.destructor.cargas = 1;
+         // Particulas
+         const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
+         const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
+           speed: 10, // Velocidad con la que se mueven
+           scale: {start: 0.08, end: 0}, // Tamaño
+           blendMode: "ADD" // Efecto a aplicar
+         })
+         particles.setPosition(self.destructor.imagen.x, self.destructor.imagen.y)
+         emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
       }
 
-      // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
-      self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
-      self.destructor.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
-      self.destructor.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
-
-      //guardo la reticula y el set de balas en variables propias de la clase destructor
-      self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, DEF.SPRITES.RETICULA).setCollideWorldBounds(true);
-      self.destructor.bullet = self.playerBullets;
-      self.destructor.cargas = 1;
-      // Particulas
-      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
-      const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
-        speed: 10, // Velocidad con la que se mueven
-        scale: {start: 0.08, end: 0}, // Tamaño
-        blendMode: "ADD" // Efecto a aplicar
-      })
-      particles.setPosition(self.destructor.imagen.x, self.destructor.imagen.y)
-      emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
-      
       // Se indica que la camara siga al destructor
       self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
       self.siguiendoDes = true;
@@ -561,12 +602,12 @@ export class game extends Phaser.Scene{
       // Se crea una colision del destructor con la bomba
       self.physics.add.collider(self.destructor.imagen, self.bomb);
       // Se crea una colision del destructor con los cargueros
-      self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen);
-      self.physics.add.collider(self.destructor.imagen, self.carguero2.imagen);
-      self.physics.add.collider(self.destructor.imagen, self.carguero3.imagen);
-      self.physics.add.collider(self.destructor.imagen, self.carguero4.imagen);
-      self.physics.add.collider(self.destructor.imagen, self.carguero5.imagen);
-      self.physics.add.collider(self.destructor.imagen, self.carguero6.imagen);
+      self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen, handleCollisionCargoDes, collisionCargoDes, self);
+      self.physics.add.collider(self.destructor.imagen, self.carguero2.imagen, handleCollisionCargoDes, collisionCargoDes, self);
+      self.physics.add.collider(self.destructor.imagen, self.carguero3.imagen, handleCollisionCargoDes, collisionCargoDes, self);
+      self.physics.add.collider(self.destructor.imagen, self.carguero4.imagen, handleCollisionCargoDes, collisionCargoDes, self);
+      self.physics.add.collider(self.destructor.imagen, self.carguero5.imagen, handleCollisionCargoDes, collisionCargoDes, self);
+      self.physics.add.collider(self.destructor.imagen, self.carguero6.imagen, handleCollisionCargoDes, collisionCargoDes, self);
       // Se crea una colision del barco con las costas
       self.physics.add.collider(self.destructor.imagen, self.costa1);
       self.physics.add.collider(self.destructor.imagen, self.costa2);
@@ -585,19 +626,47 @@ export class game extends Phaser.Scene{
     }
 
     // Generar destructor
-    function generarDestructorEnemigo(){
-      // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
-      self.destructor.imagen = self.physics.add.image(0,0, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
-    
-      // Particulas
-      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
-      const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
-        speed: 10, // Velocidad con la que se mueven
-        scale: {start: 0.08, end: 0}, // Tamaño
-        blendMode: "ADD" // Efecto a aplicar
-      })
-      particles.setPosition(0,-1)
-      emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
+    function generarDestructorEnemigo()
+    {
+      if(!self.cargaPartida)
+      {
+        // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+        self.destructor.imagen = self.physics.add.image(self.destructor.posX,self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
+      
+        // Particulas
+        const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
+        const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
+          speed: 10, // Velocidad con la que se mueven
+          scale: {start: 0.08, end: 0}, // Tamaño
+          blendMode: "ADD" // Efecto a aplicar
+        })
+        particles.setPosition(self.destructor.posX,self.destructor.posY)
+        emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
+      }
+      else if (self.destructor.vida <= 0)
+      {
+        // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+        self.destructor.imagen = self.physics.add.image(self.destructor.posX,self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
+        destroyed(self.destructor.imagen); //Funcion que anima fuego
+        self.destructor.imagen.setActive(false);
+        self.destructor.imagen.setVisible(false);
+        self.destructor.imagen.removeInteractive();
+      }
+      else
+      {
+        // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+        self.destructor.imagen = self.physics.add.image(self.destructor.posX,self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
+      
+        // Particulas
+        const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
+        const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
+          speed: 10, // Velocidad con la que se mueven
+          scale: {start: 0.08, end: 0}, // Tamaño
+          blendMode: "ADD" // Efecto a aplicar
+        })
+        particles.setPosition(self.destructor.posX,self.destructor.posY)
+        emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
+      }
       
       self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
       self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
@@ -662,12 +731,12 @@ export class game extends Phaser.Scene{
       // Si el submarino se encuentra en la superficie, que colisione con el destructor
       self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
       // Se crea colision del submarino con los cargueros
-      self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
-      self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
-      self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
-      self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
-      self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
-      self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
+      self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen, handleCollisionCargoSub, collisionCargoSub, self);
+      self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen, handleCollisionCargoSub, collisionCargoSub, self);
+      self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen, handleCollisionCargoSub, collisionCargoSub, self);
+      self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen, handleCollisionCargoSub, collisionCargoSub, self);
+      self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen, handleCollisionCargoSub, collisionCargoSub, self);
+      self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen, handleCollisionCargoSub, collisionCargoSub, self);
  
       // Se crea el evento de cambio de armas
       self.input.keyboard.on('keydown-' + 'Z', function (event){
@@ -776,8 +845,8 @@ export class game extends Phaser.Scene{
           self.physics.add.collider(carguero.imagen, self.costa2, handleCollisionCosta, colisionCargoCosta2, self);
           
           // Se crea la colision con el submarino y el destructor
-          self.physics.add.collider(self.carguero1.imagen, self.destructor.imagen);
-          self.physics.add.collider(self.carguero1.imagen, self.submarino.imagen);
+          //self.physics.add.collider(self.carguero1.imagen, self.destructor.imagen, handleCollisionCargoDes, collisionCargoDes, self);
+          //self.physics.add.collider(carguero.imagen, self.submarino.imagen, handleCollisionCargoSub, collisionCargoSub, self);
         }
         else
         {
@@ -904,15 +973,96 @@ export class game extends Phaser.Scene{
     //Funcion que maneja la colision entre el carguero y la isla
     function handleCollisionCargo(carguero, isla)
     {
-      if (carguero.body.touching.right) //Cuando la el carguero colisiona de "frente" gira 90 grados hacia abajo, espera 2 segundos y continua con su marcha.
+      if (carguero.body.touching.right) //Cuando la el carguero colisiona de "frente" gira 90 grados hacia abajo o hacia abajo, espera 2 segundos y continua con su marcha.
       {
-        carguero.angle = carguero.angle + 90;
-        const velCY = Math.sin((carguero.angle - 360) * 0.01745)
-        carguero.setVelocityY(self.velocidadBaja * velCY)
-        setTimeout(() => {
+        if(Math.floor(Math.random() * 2) === 0)
+        {
+          carguero.angle = carguero.angle + 90;
+          const velCY = Math.sin((carguero.angle - 360) * 0.01745)
+          carguero.setVelocityY(self.velocidadBaja * velCY)
+          setTimeout(() => {
+            carguero.angle = carguero.angle - 90;
+            contMarcha(carguero);
+          }, 2000)
+        }
+        else
+        {
           carguero.angle = carguero.angle - 90;
-          contMarcha(carguero);
-        }, 2000)
+          const velCY = Math.sin((carguero.angle - 360) * 0.01745)
+          carguero.setVelocityY(self.velocidadBaja * velCY)
+          setTimeout(() => {
+            carguero.angle = carguero.angle + 90;
+            contMarcha(carguero);
+          }, 2000)
+        }
+        
+      }
+    }
+
+    function collisionCargoDes()
+    {
+      return true;
+    }
+    //Funcion que maneja la colision entre el carguero y el destructor
+    function handleCollisionCargoDes(destructor, carguero)
+    {
+      //console.log('colision carguero destructor');
+      if (carguero.body.touching.right) //Cuando la el carguero colisiona de "frente" gira 90 grados hacia abajo o hacia abajo, espera 2 segundos y continua con su marcha.
+      {
+        if(Math.floor(Math.random() * 2) === 0)
+        {
+          carguero.angle = carguero.angle + 90;
+          const velCY = Math.sin((carguero.angle - 360) * 0.01745)
+          carguero.setVelocityY(self.velocidadBaja * velCY)
+          setTimeout(() => {
+            carguero.angle = carguero.angle - 90;
+            contMarcha(carguero);
+          }, 2000)
+        }
+        else
+        {
+          carguero.angle = carguero.angle - 90;
+          const velCY = Math.sin((carguero.angle - 360) * 0.01745)
+          carguero.setVelocityY(self.velocidadBaja * velCY)
+          setTimeout(() => {
+            carguero.angle = carguero.angle + 90;
+            contMarcha(carguero);
+          }, 2000)
+        }
+        
+      }
+    }
+
+    function collisionCargoSub(submarino, carguero)
+    {
+      return true;
+    }
+    //Funcion que maneja la colision entre el carguero y el submarino
+    function handleCollisionCargoSub(submarino, carguero)
+    {
+      console.log('colision carguero submarino');
+      if (carguero.body.touching.right) //Cuando la el carguero colisiona de "frente" gira 90 grados hacia abajo o hacia abajo, espera 2 segundos y continua con su marcha.
+      {
+        if(Math.floor(Math.random() * 2) === 0)
+        {
+          carguero.angle = carguero.angle + 90;
+          const velCY = Math.sin((carguero.angle - 360) * 0.01745)
+          carguero.setVelocityY(self.velocidadBaja * velCY)
+          setTimeout(() => {
+            carguero.angle = carguero.angle - 90;
+            contMarcha(carguero);
+          }, 2000)
+        }
+        else
+        {
+          carguero.angle = carguero.angle - 90;
+          const velCY = Math.sin((carguero.angle - 360) * 0.01745)
+          carguero.setVelocityY(self.velocidadBaja * velCY)
+          setTimeout(() => {
+            carguero.angle = carguero.angle + 90;
+            contMarcha(carguero);
+          }, 2000)
+        }
       }
     }
 
@@ -940,6 +1090,8 @@ export class game extends Phaser.Scene{
           resultado: 1,
           equipo: 1
         }
+        self.soundBackground.stop();
+        self.soundAction.stop();
         self.socket.emit('Finalizo', envioSocket);
         self.scene.start(DEF.SCENES.FinScene, envio);
       }
@@ -1042,12 +1194,12 @@ export class game extends Phaser.Scene{
       }
       if(self.submarino.profundidad === 0){
         self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
-        self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
-        self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
-        self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
-        self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
-        self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
-        self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
+        self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen,  handleCollisionCargoSub, collisionCargoSub, self);
+        self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen,  handleCollisionCargoSub, collisionCargoSub, self);
+        self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen,  handleCollisionCargoSub, collisionCargoSub, self);
+        self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen,  handleCollisionCargoSub, collisionCargoSub, self);
+        self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen,  handleCollisionCargoSub, collisionCargoSub, self);
+        self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen,  handleCollisionCargoSub, collisionCargoSub, self);
         //self.colliderSubIsla1 = self.physics.add.collider(self.submarino.imagen, self.isla1);
         //self.colliderSubIsla2 = self.physics.add.collider(self.submarino.imagen, self.isla2);
         //self.colliderSubIsla3 = self.physics.add.collider(self.submarino.imagen, self.isla3);
@@ -1323,21 +1475,27 @@ export class game extends Phaser.Scene{
       if(camaraActCarg == 0){
         self.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
         camaraActCarg = 1;
+        self.UIDesCargCamMini.setText('MiniCam: \nCarguero 1');
       }else if(camaraActCarg == 1){
         self.camaraEventos.startFollow(self.carguero2.imagen,true, 0.09, 0.09); 
         camaraActCarg = 2;
+        self.UIDesCargCamMini.setText('MiniCam: \nCarguero 2');
       }else if(camaraActCarg == 2){
         self.camaraEventos.startFollow(self.carguero3.imagen,true, 0.09, 0.09);
         camaraActCarg = 3;
+        self.UIDesCargCamMini.setText('MiniCam: \nCarguero 3');
       }else if(camaraActCarg == 3){
         self.camaraEventos.startFollow(self.carguero4.imagen,true, 0.09, 0.09);
         camaraActCarg = 4;
+        self.UIDesCargCamMini.setText('MiniCam: \nCarguero 4');
       }else if(camaraActCarg == 4){
         self.camaraEventos.startFollow(self.carguero5.imagen,true, 0.09, 0.09);
         camaraActCarg = 5;
+        self.UIDesCargCamMini.setText('MiniCam: \nCarguero 5');
       }else if(camaraActCarg == 5){
         self.camaraEventos.startFollow(self.carguero6.imagen,true, 0.09, 0.09);
         camaraActCarg = 0;
+        self.UIDesCargCamMini.setText('MiniCam: \nCarguero 6');
       }
     }
 
@@ -1633,6 +1791,8 @@ export class game extends Phaser.Scene{
                  
                   self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
                   function voyFindScene(){
+                    self.soundBackground.stop();
+                    self.soundAction.stop();
                     self.socket.emit('Finalizo', envioSocket);
                     self.scene.start(DEF.SCENES.FinScene, envio);
                   }
@@ -1730,6 +1890,8 @@ export class game extends Phaser.Scene{
                   
                   self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
                   function voyFindScene(){
+                    self.soundBackground.stop();
+                    self.soundAction.stop();
                     self.socket.emit('Finalizo', envioSocket);
                     self.scene.start(DEF.SCENES.FinScene, envio);
                   }
@@ -1826,6 +1988,8 @@ export class game extends Phaser.Scene{
                  
                   self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
                   function voyFindScene(){
+                    self.soundBackground.stop();
+                    self.soundAction.stop();
                     self.socket.emit('Finalizo', envioSocket);
                     self.scene.start(DEF.SCENES.FinScene, envio);
                   }
@@ -1929,6 +2093,8 @@ export class game extends Phaser.Scene{
                     
                     self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
                     function voyFindScene(){
+                      self.soundBackground.stop();
+                      self.soundAction.stop();
                       self.socket.emit('Finalizo', envioSocket);
                       self.scene.start(DEF.SCENES.FinScene, envio);
                     }
@@ -2029,6 +2195,8 @@ export class game extends Phaser.Scene{
                    
                     self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
                     function voyFindScene(){
+                      self.soundBackground.stop();
+                      self.soundAction.stop();
                       self.socket.emit('Finalizo', envioSocket);
                       self.scene.start(DEF.SCENES.FinScene, envio);
                     }
@@ -2788,6 +2956,8 @@ export class game extends Phaser.Scene{
     //funcion que procesa el dano y el porcentaje de acierto
     function RecibeHit(player, damage, escar, enemy, expl)
     {
+      self.soundBackground.stop();
+      self.soundAction.play({volume: 0.07, loop: true});
       let contadorAviso = 0;
       playerIMG = player.imagen;
 
@@ -2870,6 +3040,8 @@ export class game extends Phaser.Scene{
         }
         self.voyGameOver = self.time.addEvent({ delay: 5000, callback: voyFindScene, callbackScope: self});
         function voyFindScene(){
+          self.soundBackground.stop();
+          self.soundAction.stop();
           self.socket.emit('Finalizo', envioSocket);
           self.scene.start(DEF.SCENES.FinScene, envio);
         }
@@ -3080,6 +3252,8 @@ export class game extends Phaser.Scene{
     }); 
 
     this.socket.on('FinalizoPartida', function(data){      
+        self.soundBackground.stop();
+        self.soundAction.stop();
         if(data.resultado === 1){
           var envio2={
             socket: self.socket,
