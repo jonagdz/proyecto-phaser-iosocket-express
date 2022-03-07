@@ -1253,7 +1253,7 @@ export class game extends Phaser.Scene{
           }
           function actualizarContSonar(){
             contadorS++;
-            self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE:'+(10-contadorS) + '\n             SONARES RESTANTES: '+(self.submarino.sonar));
+            self.statusSonar.setText('SONAR ACTIVADO - TIEMPO RESTANTE: '+(10-contadorS)+'s'+ '\n             SONARES RESTANTES: '+(self.submarino.sonar));
             if (contadorS === 10){
               self.cuentaSonar.remove(true);
             }
