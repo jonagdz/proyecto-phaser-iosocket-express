@@ -55,7 +55,7 @@ export const DEF = {
         EXPOSIONFLETCHER:"barcofletcheranimacion.mp4",
         EXPLOSIONLIBERTY: "barcoliberty.mp4",
         EXPLOSIONUBOAT: "barcoubooanimacion.mp4",
-        INTRO: "Intro.mp4"
+        INTRO: "Intro2.mp4"
     },
 
     AUDIO: {

@@ -1645,6 +1645,8 @@ export class game extends Phaser.Scene{
                  
                   self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
                   function voyFindScene(){
+                    self.soundBackground.stop();
+                    self.soundAction.stop();
                     self.socket.emit('Finalizo', envioSocket);
                     self.scene.start(DEF.SCENES.FinScene, envio);
                   }
@@ -1742,6 +1744,8 @@ export class game extends Phaser.Scene{
                   
                   self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
                   function voyFindScene(){
+                    self.soundBackground.stop();
+                    self.soundAction.stop();
                     self.socket.emit('Finalizo', envioSocket);
                     self.scene.start(DEF.SCENES.FinScene, envio);
                   }
@@ -1838,6 +1842,8 @@ export class game extends Phaser.Scene{
                  
                   self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
                   function voyFindScene(){
+                    self.soundBackground.stop();
+                    self.soundAction.stop();
                     self.socket.emit('Finalizo', envioSocket);
                     self.scene.start(DEF.SCENES.FinScene, envio);
                   }
@@ -1941,6 +1947,8 @@ export class game extends Phaser.Scene{
                     
                     self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
                     function voyFindScene(){
+                      self.soundBackground.stop();
+                      self.soundAction.stop();
                       self.socket.emit('Finalizo', envioSocket);
                       self.scene.start(DEF.SCENES.FinScene, envio);
                     }
@@ -2041,6 +2049,8 @@ export class game extends Phaser.Scene{
                    
                     self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
                     function voyFindScene(){
+                      self.soundBackground.stop();
+                      self.soundAction.stop();
                       self.socket.emit('Finalizo', envioSocket);
                       self.scene.start(DEF.SCENES.FinScene, envio);
                     }
@@ -2884,6 +2894,8 @@ export class game extends Phaser.Scene{
         }
         self.voyGameOver = self.time.addEvent({ delay: 5000, callback: voyFindScene, callbackScope: self});
         function voyFindScene(){
+          self.soundBackground.stop();
+          self.soundAction.stop();
           self.socket.emit('Finalizo', envioSocket);
           self.scene.start(DEF.SCENES.FinScene, envio);
         }
