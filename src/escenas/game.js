@@ -196,7 +196,7 @@ export class game extends Phaser.Scene{
     let pausaGame = false;
     //self.socket.emit('listarPartidas', {id: 2});
     let carguerosMuertos = 0;
-
+    
     // Grupo para los cargueros y balas
     var arrayCargueros = [];
     //this.grupoCargueros = this.physics.add.group({ classType: Carguero, runChildUpdate: true });
@@ -267,7 +267,7 @@ export class game extends Phaser.Scene{
     // Ajusto audio
     this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
     this.soundAlarm = this.sound.add(DEF.AUDIO.ALERTA);
-    let soundBackground = this.sound.add(DEF.AUDIO.JUEGO,{loop: true});
+    this.soundBackground = this.sound.add(DEF.AUDIO.JUEGO,{loop: true});
     let audioActivado = true;
     this.soundAlarmBarco = this.sound.add(DEF.AUDIO.ALERTABARCO);
     this.soundCanionDes = this.sound.add(DEF.AUDIO.DISPARODES);
@@ -275,7 +275,8 @@ export class game extends Phaser.Scene{
     this.soundCargas = this.sound.add(DEF.AUDIO.CARGAS);
     this.soundTorpedo = this.sound.add(DEF.AUDIO.TORPEDOS);
     this.soundImpacto = this.sound.add(DEF.AUDIO.IMPACTO);
-    soundBackground.play({volume: 0.05, loop: true});
+    this.soundBackground.play({volume: 0.05, loop: true});
+    this.soundAction = this.sound.add(DEF.AUDIO.ACTION);
     
     // Fuentes
     var style = {
@@ -316,10 +317,12 @@ export class game extends Phaser.Scene{
     // Se crea el evento de cambio de mute de audio
     self.input.keyboard.on('keydown-' + 'M', function (event){
       if(audioActivado === true){
-        soundBackground.mute = true;
+        self.soundBackground.mute = true;
+        self.soundAction.mute = true;
         audioActivado=false;
       }else{
-        soundBackground.mute = false;
+        this.soundBackground.mute = false;
+        self.soundAction.mute = false;
         audioActivado=true;
       }
     });
@@ -2788,6 +2791,8 @@ export class game extends Phaser.Scene{
     //funcion que procesa el dano y el porcentaje de acierto
     function RecibeHit(player, damage, escar, enemy, expl)
     {
+      self.soundBackground.stop();
+      self.soundAction.play({volume: 0.07, loop: true});
       let contadorAviso = 0;
       playerIMG = player.imagen;
 
