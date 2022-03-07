@@ -1406,6 +1406,12 @@ export class game extends Phaser.Scene{
           //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
           bullet = self.destructor.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
           
+          //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
+          //dano al enemigo si el ya te gano
+          if(self.destructor.vida <= 0){
+            bullet.destroy();
+          }
+
           //manejo de la municion del destructor
           if(self.destructor.armas === 0 && self.destructor.vida > 0 && self.destructor.ammoCanion > 0)
           {
@@ -1429,12 +1435,23 @@ export class game extends Phaser.Scene{
             // Actualizo en la barra grafica la cantidad de municion de cañon restante
             self.UIDesMunicionCar.setText('Munición cargas: ' + self.destructor.ammoCargas);
           }
+          
         }
         else
         {
           //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
           bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
           
+          //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
+          //dano al enemigo si el ya te gano
+          if(self.submarino.vida <= 0){
+            bullet.destroy();
+          }
+          //si el submarino no tiene armas porque esta sumergido
+          if(self.submarino.armas === -1){
+            bullet.destroy();
+          }
+
           //manejo de municion del submarino
           if(self.submarino.armas === 0 && self.submarino.vida > 0 && self.submarino.ammoCanion > 0)
           {
@@ -1475,20 +1492,12 @@ export class game extends Phaser.Scene{
             // Actualizo en la barra grafica la cantidad de municion restante
             self.UISubMunicionTor.setText('Munición torpedos: ' + self.submarino.ammoTorpedos);
           }
+
+          
         }
-        //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
-        //dano al enemigo si el ya te gano
-        if(self.destructor.vida <= 0){
-          bullet.destroy();
-        }
-        //idem anterior
-        if(self.submarino.vida <= 0){
-          bullet.destroy();
-        }
-        //si el submarino no tiene armas porque esta sumergido
-        if(self.submarino.armas === -1){
-          bullet.destroy();
-        }
+        
+        
+        
       }
     }, this);
 
