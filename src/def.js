@@ -55,7 +55,7 @@ export const DEF = {
         EXPOSIONFLETCHER:"barcofletcheranimacion.mp4",
         EXPLOSIONLIBERTY: "barcoliberty.mp4",
         EXPLOSIONUBOAT: "barcoubooanimacion.mp4",
-        INTRO: "Intro2.mp4"
+        INTRO: "Intro.mp4"
     },
 
     AUDIO: {
@@ -68,8 +68,8 @@ export const DEF = {
         DISPAROSUB:"DisparoCanonSub.wav",
         TORPEDOS:"Torpedos.wav",
         IMPACTO: "imapcto.wav",
-        CREDITOS: "bensound-evolution.mp3",
-        MENU: "Intro.mp3",
+        CREDITOS: "Intro.mp3",
+        MENU: "Intro2.mp3",
         ACTION: "Action.mp3"
     },
 
