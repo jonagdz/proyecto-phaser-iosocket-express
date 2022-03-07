@@ -24,7 +24,7 @@ export class GameMenu extends Phaser.Scene{
         self.intro.play(true);
         self.intro.setPaused(false);
         self.sounIntro = self.sound.add(DEF.AUDIO.MENU);
-        self.sounIntro.play({volume: 0.08, loop: true});
+        self.sounIntro.play({volume: 0.7, loop: true});
 
   ///////////////////////////////////////////////////////////////////////////////////////////      
         this.ini = self.add.sprite(790, 200, 'initpart').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () =>ClickINIT());
@@ -103,10 +103,12 @@ export class GameMenu extends Phaser.Scene{
         })
 
         function ClickCREDITS(){
+            self.sounIntro.stop();
             self.scene.start(DEF.SCENES.CREDITS); 
         }
 
         function ClickCONTROL(){
+            self.sounIntro.stop();
             console.log("controles");
             self.scene.start(DEF.SCENES.CONTROLS); 
         }

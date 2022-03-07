@@ -21,8 +21,8 @@ export class game extends Phaser.Scene{
     //console.log(this.cargaPartida, this.partidaCargada)
     if (!this.cargaPartida)
     {
-      this.destructor = new Destructor('Destructor',this.velocidadMedia,12,0,0,0,1,0,0,0,0,0,12, 30); // Creo el objeto destructor 
-      this.submarino = new Submarino('Submarino',this.velocidadBaja,0,14,0,0,180,2,3,0,0,0,0, false, 16, 20); // Creo el objeto submarino 
+      this.destructor = new Destructor('Destructor',this.velocidadMedia,18,0,0,0,1,0,0,0,0,0,12, 30); // Creo el objeto destructor 
+      this.submarino = new Submarino('Submarino',this.velocidadBaja,0,14,0,0,180,2,3,0,0,0,0, false, 16, 30); // Creo el objeto submarino 
       this.carguero1 = new Carguero('Carguero1',this.velocidadBaja,8,0,0,0,3); // Creo el objeto carguero1 
       this.carguero2 = new Carguero('Carguero2',this.velocidadBaja,8,0,0,0,4); // Creo el objeto carguero2
       this.carguero3 = new Carguero('Carguero3',this.velocidadBaja,8,0,0,0,5); // Creo el objeto carguero3
@@ -217,6 +217,7 @@ export class game extends Phaser.Scene{
     var posX;
     var posY;
     let distMaxima = 50;
+    let distAlto = 20;
     let damAcuD = 0;
     let damAcuS = 0;
     let damCar1 = 0;
@@ -275,7 +276,7 @@ export class game extends Phaser.Scene{
     this.soundCargas = this.sound.add(DEF.AUDIO.CARGAS);
     this.soundTorpedo = this.sound.add(DEF.AUDIO.TORPEDOS);
     this.soundImpacto = this.sound.add(DEF.AUDIO.IMPACTO);
-    this.soundBackground.play({volume: 0.05, loop: true});
+    this.soundBackground.play({volume: 0.2, loop: true});
     this.soundAction = this.sound.add(DEF.AUDIO.ACTION);
     
     // Fuentes
@@ -491,7 +492,7 @@ export class game extends Phaser.Scene{
         hideOnComplete: false,
       });
       self.disp.play('anidisp');
-      self.soundAlarmBarco.play({volume: 0.04, loop: false});
+      self.soundAlarmBarco.play({volume: 0.08, loop: false});
     }
 
     function generarEquipo1(){     
@@ -1558,7 +1559,7 @@ export class game extends Phaser.Scene{
           //manejo de la municion del destructor
           if(self.destructor.armas === 0 && self.destructor.vida > 0 && self.destructor.ammoCanion > 0)
           {
-            self.soundCanionDes.play({volume: 0.08, loop: false});
+            self.soundCanionDes.play({volume: 0.1, loop: false});
             self.destructor.ammoCanion--;
             
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
@@ -1569,7 +1570,7 @@ export class game extends Phaser.Scene{
           }
           if (self.destructor.armas === 1 && self.destructor.vida > 0 && self.destructor.ammoCargas > 0)
           {
-            self.soundCargas.play({volume: 0.08, loop: false});
+            self.soundCargas.play({volume: 0.15, loop: false});
             self.destructor.ammoCargas--;
         
             //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
@@ -1598,7 +1599,7 @@ export class game extends Phaser.Scene{
           //manejo de municion del submarino
           if(self.submarino.armas === 0 && self.submarino.vida > 0 && self.submarino.ammoCanion > 0)
           {
-            self.soundCanionSub.play({volume: 0.08, loop: false});
+            self.soundCanionSub.play({volume: 0.1, loop: false});
             self.submarino.ammoCanion--;
             
             self.SubAmmo[0]=self.submarino.ammoCanion;
@@ -1618,7 +1619,7 @@ export class game extends Phaser.Scene{
           }
           if ((self.submarino.armas === 1 || self.submarino.armas === 4) && self.submarino.vida > 0 && self.submarino.ammoTorpedos > 0)
           {
-            self.soundTorpedo.play({volume: 0.08, loop: false});
+            self.soundTorpedo.play({volume: 0.15, loop: false});
             self.submarino.ammoTorpedos--;
             
             self.SubAmmo[1]=self.submarino.ammoTorpedos;
@@ -1683,40 +1684,26 @@ export class game extends Phaser.Scene{
           //MANEJO DE COLISION ENTRE LA BALA Y OTROS JUGADORES
           if(enemy.vida>0){
             self.physics.add.collider(bullet, enemyImag, function(bullet){
-              distCorta = 75;
-              distMedia = 200;
+              distCorta = 100;
+              distMedia = 250;
 
               corta = false;
               media = false;
               larga = false;  
               let distancia = Math.sqrt((bullet.x - player.x)**2 + (bullet.y - player.y)**2);
-              //console.log((bullet.x - player.x)**2);
               let dist;
               if(distancia <= distCorta)
               {
                 dist = "corta";
-                /*corta = true;
-                media = false;
-                larga = false;*/
               }
               else if(distancia > distCorta && distancia<= distMedia)
               {
                 dist = "media";
-                /*corta = false;
-                media = true;
-                larga = false;*/
               }
               else if(distancia > distMedia)
               {
                 dist = "larga";
-                /*corta = false;
-                media = false;
-                larga = true; */ 
               }
-            /*console.log("distancia corta", corta);
-              console.log("distancia media", media);
-              console.log("distiancia larga", larga);*/
-              
               bullet.destroy();
               handleHit(nave, dist, enemy);
             });
@@ -1735,90 +1722,27 @@ export class game extends Phaser.Scene{
 //--------------------------------------------------------------------------------------------------------------------------------
 //                                                  CANON DEL DESTRUCTOR
 //--------------------------------------------------------------------------------------------------------------------------------
-          if(nave.armas === 0 && enemy.profundidad === 0)
+          if(nave.armas === 0)
           {
-            if(dist === "corta")
-            {
-              probExtra = Math.floor(Math.random() * (2)); // Bonificacion de probabilidad
-
-              //console.log('la probabilidad extra del canion es %', probExtra, '0');
-              console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra + '0');
-              //si la probabilidad de acierto es mayor que el 40%, entonces acierto
-              if((probabilidad + probExtra) > 4)
+            if(enemy.profundidad === 0){
+              if(dist === "corta")
               {
-                hitted(enemy.imagen.x, enemy.imagen.y); 
-                danio = 5;             
-                //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                let contadorAviso = 0;
-                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                  '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+                probExtra = Math.floor(Math.random() * (2)); // Bonificacion de probabilidad
 
-                function aviso(){
-                  self.Hit2.setText('Danio: ' + danio);
-                  contadorAviso++;
-                  if (contadorAviso==3){
-                    self.statusEnvio.remove(true);
-                  }
-                }
-                
-                function prueba(){
-                  self.Hit2.destroy();
-                }
-                
-                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-          
-                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                pack ={
-                  danio: danio,
-                  carguero: 0
-                } 
-
-                self.socket.emit('playerHit', pack);
-
-                if(danio >= enemy.vida)
+                //console.log('la probabilidad extra del canion es %', probExtra, '0');
+                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra + '0');
+                //si la probabilidad de acierto es mayor que el 40%, entonces acierto
+                if((probabilidad + probExtra) > 4)
                 {
-                  enemy.vida = 0;
-                  destroyed(enemy.imagen); //Funcion que anima fuego
-                  enemy.imagen.setActive(false);
-                  enemy.imagen.setVisible(false);
-                  enemy.imagen.removeInteractive();
-                  
-                  let envio={
-                    socket: self.socket,
-                    resultado: 1,
-                    equipo: 1
-                  }
-
-                  let envioSocket= {
-                    resultado: 1,
-                    equipo: 1
-                  }
-                  
-                  explosionSubmarino();
-                 
-                  self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
-                  function voyFindScene(){
-                    self.soundBackground.stop();
-                    self.soundAction.stop();
-                    self.socket.emit('Finalizo', envioSocket);
-                    self.scene.start(DEF.SCENES.FinScene, envio);
-                  }
-                }
-                else
-                {
-                  enemy.vida = enemy.vida - danio;  
-                }
-              }else{
-                //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                if(enemy.vida > 0){
+                  hitted(enemy.imagen.x, enemy.imagen.y); 
+                  danio = 6;             
+                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                   let contadorAviso = 0;
                   self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                    '', {font: '20px monospace', fill: '#024A86', align: 'center'});
 
                   function aviso(){
-                    self.Hit2.setText('Miss');
+                    self.Hit2.setText('Danio: ' + danio);
                     contadorAviso++;
                     if (contadorAviso==3){
                       self.statusEnvio.remove(true);
@@ -1832,207 +1756,294 @@ export class game extends Phaser.Scene{
                   self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
             
                   self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                }
-                //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-              }  
+                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
+
+                  pack ={
+                    danio: danio,
+                    carguero: 0
+                  } 
+
+                  self.socket.emit('playerHit', pack);
+
+                  if(danio >= enemy.vida)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen); //Funcion que anima fuego
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    enemy.imagen.removeInteractive();
+                    
+                    let envio={
+                      socket: self.socket,
+                      resultado: 1,
+                      equipo: 1
+                    }
+
+                    let envioSocket= {
+                      resultado: 1,
+                      equipo: 1
+                    }
+                    
+                    explosionSubmarino();
+                  
+                    self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                    function voyFindScene(){
+                      self.soundBackground.stop();
+                      self.soundAction.stop();
+                      self.socket.emit('Finalizo', envioSocket);
+                      self.scene.start(DEF.SCENES.FinScene, envio);
+                    }
+                  }
+                  else
+                  {
+                    enemy.vida = enemy.vida - danio;  
+                  }
+                }else{
+                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
+                  if(enemy.vida > 0){
+                    let contadorAviso = 0;
+                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
+
+                    function aviso(){
+                      self.Hit2.setText('Miss');
+                      contadorAviso++;
+                      if (contadorAviso==3){
+                        self.statusEnvio.remove(true);
+                      }
+                    }
+                    
+                    function prueba(){
+                      self.Hit2.destroy();
+                    }
+                    
+                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              
+                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
+                  }
+                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
+                }  
+              
+              }
+              else if(dist === "media")
+              {
+                probExtra = Math.floor(Math.random() * (3));
+                //console.log('la probabilidad extra del canion es %', probExtra, '0');
+                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+'0');
+                //si la probabilidad de errar es mayor que el 40%, entonces fallo
+                if((probabilidad + probExtra) > 3){
+                  hitted(enemy.imagen.x, enemy.imagen.y); 
+                  danio = 6;
+                  
+                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
+                  let contadorAviso = 0;
+                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                    '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+
+                  function aviso(){
+                    self.Hit2.setText('Danio: ' + danio);
+                    contadorAviso++;
+                    if (contadorAviso==3){
+                      self.statusEnvio.remove(true);
+                    }
+                  }
+                  
+                  function prueba(){
+                    self.Hit2.destroy();
+                  }
+                  
+                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
             
+                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
+                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
+
+                  pack ={
+                    danio: danio,
+                    carguero: 0
+                  } 
+
+                  self.socket.emit('playerHit', pack);
+
+                  if(danio >= enemy.vida)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen); //Funcion que anima fuego
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    enemy.imagen.removeInteractive();
+                    
+                    let envio={
+                      socket: self.socket,
+                      resultado: 1,
+                      equipo: 1
+                    }
+
+                    let envioSocket= {
+                      resultado: 1,
+                      equipo: 1
+                    }
+                    
+                    explosionSubmarino();
+                    
+                    self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                    function voyFindScene(){
+                      self.soundBackground.stop();
+                      self.soundAction.stop();
+                      self.socket.emit('Finalizo', envioSocket);
+                      self.scene.start(DEF.SCENES.FinScene, envio);
+                    }
+                  }
+                  else
+                  {
+                    enemy.vida = enemy.vida - danio;  
+                  }
+                }else{
+                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
+                  if(enemy.vida > 0){
+                    let contadorAviso = 0;
+                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
+
+                    function aviso(){
+                      self.Hit2.setText('Miss');
+                      contadorAviso++;
+                      if (contadorAviso==3){
+                        self.statusEnvio.remove(true);
+                      }
+                    }
+                    
+                    function prueba(){
+                      self.Hit2.destroy();
+                    }
+                    
+                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              
+                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
+                  }
+                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
+                }  
+              }
+              else if(dist === "larga")
+              {
+                probExtra = Math.floor(Math.random() * (3));
+                //console.log('la probabilidad extra del canion es %', probExtra, '0');
+                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra +'0');
+                //si la probabilidad de errar es mayor que el 60%, entonces fallo
+                if((probabilidad + probExtra) > 6){
+                  hitted(enemy.imagen.x, enemy.imagen.y); 
+                  danio = 6;
+                  
+                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
+                  let contadorAviso = 0;
+                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                    '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+
+                  function aviso(){
+                    self.Hit2.setText('Danio: ' + danio);
+                    contadorAviso++;
+                    if (contadorAviso==3){
+                      self.statusEnvio.remove(true);
+                    }
+                  }
+                  
+                  function prueba(){
+                    self.Hit2.destroy();
+                  }
+                  
+                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+            
+                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
+                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
+
+                  pack ={
+                    danio: danio,
+                    carguero: 0
+                  } 
+
+                  self.socket.emit('playerHit', pack);
+
+                  if(danio >= enemy.vida)
+                  {
+                    enemy.vida = 0;
+                    destroyed(enemy.imagen); //Funcion que anima fuego
+                    enemy.imagen.setActive(false);
+                    enemy.imagen.setVisible(false);
+                    enemy.imagen.removeInteractive();
+                    
+                    let envio={
+                      socket: self.socket,
+                      resultado: 1,
+                      equipo: 1
+                    }
+
+                    let envioSocket= {
+                      resultado: 1,
+                      equipo: 1
+                    }
+                    
+                    explosionSubmarino();
+                  
+                    self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                    function voyFindScene(){
+                      self.soundBackground.stop();
+                      self.soundAction.stop();
+                      self.socket.emit('Finalizo', envioSocket);
+                      self.scene.start(DEF.SCENES.FinScene, envio);
+                    }
+                  }
+                  else
+                  {
+                    enemy.vida = enemy.vida - danio;  
+                  }
+                }else{
+                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
+                  if(enemy.vida > 0){
+                    let contadorAviso = 0;
+                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
+
+                    function aviso(){
+                      self.Hit2.setText('Miss');
+                      contadorAviso++;
+                      if (contadorAviso==3){
+                        self.statusEnvio.remove(true);
+                      }
+                    }
+                    
+                    function prueba(){
+                      self.Hit2.destroy();
+                    }
+                    
+                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              
+                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
+                  }
+                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
+                } 
+              }
+            }else{
+              //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
+                let contadorAviso = 0;
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Miss');
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                
+                function prueba(){
+                  self.Hit2.destroy();
+                }
+                
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+          
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
             }
-            else if(dist === "media")
-            {
-              probExtra = Math.floor(Math.random() * (3));
-              //console.log('la probabilidad extra del canion es %', probExtra, '0');
-              console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+'0');
-              //si la probabilidad de errar es mayor que el 40%, entonces fallo
-              if((probabilidad + probExtra) > 3){
-                hitted(enemy.imagen.x, enemy.imagen.y); 
-                danio = 5;
-                
-                //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                let contadorAviso = 0;
-                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                  '', {font: '20px monospace', fill: '#024A86', align: 'center'});
-
-                function aviso(){
-                  self.Hit2.setText('Danio: ' + danio);
-                  contadorAviso++;
-                  if (contadorAviso==3){
-                    self.statusEnvio.remove(true);
-                  }
-                }
-                
-                function prueba(){
-                  self.Hit2.destroy();
-                }
-                
-                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-          
-                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                pack ={
-                  danio: danio,
-                  carguero: 0
-                } 
-
-                self.socket.emit('playerHit', pack);
-
-                if(danio >= enemy.vida)
-                {
-                  enemy.vida = 0;
-                  destroyed(enemy.imagen); //Funcion que anima fuego
-                  enemy.imagen.setActive(false);
-                  enemy.imagen.setVisible(false);
-                  enemy.imagen.removeInteractive();
-                  
-                  let envio={
-                    socket: self.socket,
-                    resultado: 1,
-                    equipo: 1
-                  }
-
-                  let envioSocket= {
-                    resultado: 1,
-                    equipo: 1
-                  }
-                  
-                  explosionSubmarino();
-                  
-                  self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
-                  function voyFindScene(){
-                    self.soundBackground.stop();
-                    self.soundAction.stop();
-                    self.socket.emit('Finalizo', envioSocket);
-                    self.scene.start(DEF.SCENES.FinScene, envio);
-                  }
-                }
-                else
-                {
-                  enemy.vida = enemy.vida - danio;  
-                }
-              }else{
-                //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                if(enemy.vida > 0){
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
-
-                  function aviso(){
-                    self.Hit2.setText('Miss');
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
-                    }
-                  }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                }
-                //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-              }  
-            }
-            else if(dist === "larga")
-            {
-              probExtra = Math.floor(Math.random() * (3));
-              //console.log('la probabilidad extra del canion es %', probExtra, '0');
-              console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra +'0');
-              //si la probabilidad de errar es mayor que el 60%, entonces fallo
-              if((probabilidad + probExtra) > 6){
-                hitted(enemy.imagen.x, enemy.imagen.y); 
-                danio = 5;
-                
-                //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                let contadorAviso = 0;
-                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                  '', {font: '20px monospace', fill: '#024A86', align: 'center'});
-
-                function aviso(){
-                  self.Hit2.setText('Danio: ' + danio);
-                  contadorAviso++;
-                  if (contadorAviso==3){
-                    self.statusEnvio.remove(true);
-                  }
-                }
-                
-                function prueba(){
-                  self.Hit2.destroy();
-                }
-                
-                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-          
-                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                pack ={
-                  danio: danio,
-                  carguero: 0
-                } 
-
-                self.socket.emit('playerHit', pack);
-
-                if(danio >= enemy.vida)
-                {
-                  enemy.vida = 0;
-                  destroyed(enemy.imagen); //Funcion que anima fuego
-                  enemy.imagen.setActive(false);
-                  enemy.imagen.setVisible(false);
-                  enemy.imagen.removeInteractive();
-                  
-                  let envio={
-                    socket: self.socket,
-                    resultado: 1,
-                    equipo: 1
-                  }
-
-                  let envioSocket= {
-                    resultado: 1,
-                    equipo: 1
-                  }
-                  
-                  explosionSubmarino();
-                 
-                  self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
-                  function voyFindScene(){
-                    self.soundBackground.stop();
-                    self.soundAction.stop();
-                    self.socket.emit('Finalizo', envioSocket);
-                    self.scene.start(DEF.SCENES.FinScene, envio);
-                  }
-                }
-                else
-                {
-                  enemy.vida = enemy.vida - danio;  
-                }
-              }else{
-                //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                if(enemy.vida > 0){
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
-
-                  function aviso(){
-                    self.Hit2.setText('Miss');
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
-                    }
-                  }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                }
-                //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-              } 
-            }   
+               
 //--------------------------------------------------------------------------------------------------------------------------------
 //                                                  CARGAS DE PROFUNDIDAD DEL DESTRUCTOR
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -2047,7 +2058,7 @@ export class game extends Phaser.Scene{
               {
                 if(nave.cargas === enemy.profundidad)
                 {
-                  danio = 3;
+                  danio = 8;
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
@@ -2112,7 +2123,29 @@ export class game extends Phaser.Scene{
                   {
                     enemy.vida = enemy.vida - danio;  
                   }
-                }
+                }else{
+                  if(enemy.vida > 0){
+                    let contadorAviso = 0;
+                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
+  
+                    function aviso(){
+                      self.Hit2.setText('Miss');
+                      contadorAviso++;
+                      if (contadorAviso==3){
+                        self.statusEnvio.remove(true);
+                      }
+                    }
+                    
+                    function prueba(){
+                      self.Hit2.destroy();
+                    }
+                    
+                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              
+                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
+                  }
+                }  
               }else{
                 //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                 if(enemy.vida > 0){
@@ -2149,7 +2182,7 @@ export class game extends Phaser.Scene{
               {
                 if(nave.cargas === enemy.profundidad)
                 {
-                  danio = 3;
+                  danio = 8;
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
@@ -2214,7 +2247,29 @@ export class game extends Phaser.Scene{
                   {
                     enemy.vida = enemy.vida - danio;  
                   }
-                }
+                }else{
+                  if(enemy.vida > 0){
+                    let contadorAviso = 0;
+                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
+  
+                    function aviso(){
+                      self.Hit2.setText('Miss');
+                      contadorAviso++;
+                      if (contadorAviso==3){
+                        self.statusEnvio.remove(true);
+                      }
+                    }
+                    
+                    function prueba(){
+                      self.Hit2.destroy();
+                    }
+                    
+                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              
+                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
+                  }
+                }  
               }else{
                 //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                 if(enemy.vida > 0){
@@ -2238,7 +2293,6 @@ export class game extends Phaser.Scene{
             
                   self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                 }
-                //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
               }  
             }
           }   
@@ -2261,7 +2315,7 @@ export class game extends Phaser.Scene{
                   //console.log("entro al if del danio sub corto");
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   
-                  danio = 2;
+                  danio = 4;
                   
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                   let contadorAviso = 0;
@@ -2369,7 +2423,7 @@ export class game extends Phaser.Scene{
                     //console.log("entro al if del danio sub medio");
                     hitted(enemy.imagen.x, enemy.imagen.y); 
                   
-                    danio = 2;
+                    danio = 4;
                   
                     //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                     let contadorAviso = 0;
@@ -2477,7 +2531,7 @@ export class game extends Phaser.Scene{
                       //console.log("entro al if del danio sub largo");
                       hitted(enemy.imagen.x, enemy.imagen.y); 
                   
-                      danio = 2;
+                      danio = 4;
                       
                       //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                       let contadorAviso = 0;
@@ -2966,7 +3020,7 @@ export class game extends Phaser.Scene{
     function RecibeHit(player, damage, escar, enemy, expl)
     {
       self.soundBackground.stop();
-      self.soundAction.play({volume: 0.07, loop: true});
+      self.soundAction.play({volume: 0.2, loop: true});
       let contadorAviso = 0;
       playerIMG = player.imagen;
 
@@ -2997,7 +3051,7 @@ export class game extends Phaser.Scene{
         player.vida = player.vida - damage; 
         if(escar){
           alertaCargueros();
-          self.soundAlarm.play({volume: 0.04, loop: false});
+          self.soundAlarm.play({volume: 0.06, loop: false});
         }
         // Muestro en la parte grafica la vida actualizada de cada barco luego del disparo
         if (self.equipo == 1){
@@ -3009,6 +3063,7 @@ export class game extends Phaser.Scene{
           self.UIDesCarg5.setText('Vida carguero 5: ' + self.carguero5.vida);
           self.UIDesCarg6.setText('Vida carguero 6: ' + self.carguero6.vida);
         }else{
+
           self.UISubVida.setText('Vida: ' + player.vida);
         }
       }
@@ -3024,7 +3079,7 @@ export class game extends Phaser.Scene{
         {
           //console.log('entro a ESCAR')
           alertaCargueros();
-          self.soundAlarm.play({volume: 0.08, loop: false});
+          self.soundAlarm.play({volume: 0.06, loop: false});
           if(expl === 0){
             explosionCarguero();
           }   
@@ -3066,17 +3121,18 @@ export class game extends Phaser.Scene{
           self.destructor.reticula.y += pointer.movementY;
         }
         if(self.destructor.armas == 0){
-          distMaxima = 300;
+          distMaxima = 600;
+          distAlto = 500;
           if ((self.destructor.reticula.x - self.destructor.imagen.x) > distMaxima)
               self.destructor.reticula.x = self.destructor.imagen.x +distMaxima;
             else if (self.destructor.reticula.x - self.destructor.imagen.x < -distMaxima)
               self.destructor.reticula.x = self.destructor.imagen.x -distMaxima;
-            if (self.destructor.reticula.y - self.destructor.imagen.y > distMaxima)
-              self.destructor.reticula.y = self.destructor.imagen.y +distMaxima;
-            else if (self.destructor.reticula.y - self.destructor.imagen.y < -distMaxima)
-              self.destructor.reticula.y = self.destructor.imagen.y-distMaxima;
+            if (self.destructor.reticula.y - self.destructor.imagen.y > distAlto)
+              self.destructor.reticula.y = self.destructor.imagen.y +distAlto;
+            else if (self.destructor.reticula.y - self.destructor.imagen.y < -distAlto)
+              self.destructor.reticula.y = self.destructor.imagen.y-distAlto;
         }else if (self.destructor.armas == 1){
-          distMaxima = 200;
+          distMaxima = 300;
           if ((self.destructor.reticula.x - self.destructor.imagen.x) > distMaxima)
               self.destructor.reticula.x = self.destructor.imagen.x +distMaxima;
             else if (self.destructor.reticula.x - self.destructor.imagen.x < -distMaxima)

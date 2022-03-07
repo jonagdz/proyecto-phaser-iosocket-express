@@ -10,6 +10,9 @@ export class controles extends Phaser.Scene{
     self.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
     self.imagenControles = self.physics.add.image(700, 300, DEF.IMAGENES.CONTROLES).setOrigin(0).setScrollFactor(0).setDepth(10)
     self.imagenControles.setDisplaySize(700, 700);
+
+    this.sonidoControles = this.sound.add(DEF.AUDIO.ENDGAME,{volume: 0.4, loop: true});
+    this.sonidoControles.play();
     //////////////////////////////////////////////////CARGO INTERACCIONES Y SPRITE DE HOME/////////////////////////////////////////////////////////////////
     self.home = self.add.sprite(50, 50, 'homes').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () => ClickHome());
     self.home.setDisplaySize(150, 150);
@@ -19,6 +22,7 @@ export class controles extends Phaser.Scene{
     self.txt = self.add.text(520, 200,'Controles...', { font: '50px Courier', fill: '#000000'}).setScrollFactor(0);
 
     function ClickHome () {
+        self.sonidoControles.stop();
         self.scene.start(DEF.SCENES.MENUPRINCIPAL);
     }    
 

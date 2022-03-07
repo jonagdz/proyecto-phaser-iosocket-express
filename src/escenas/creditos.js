@@ -12,8 +12,8 @@ export class creditos extends Phaser.Scene{
     this.mar = this.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
     
     // Sonido
-    let soundBackground = this.sound.add(DEF.AUDIO.CREDITOS,{volume: 0.07, loop: true});
-    soundBackground.play();
+    this.sonidoCreditos = this.sound.add(DEF.AUDIO.CREDITOS,{volume: 0.4, loop: true});
+    this.sonidoCreditos.play();
 
     //////////////////////////////////////////////////CARGO INTERACCIONES Y SPRITE DE HOME/////////////////////////////////////////////////////////////////
     self.home = self.add.sprite(50, 50, 'homes').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () => ClickHome());
@@ -30,7 +30,7 @@ export class creditos extends Phaser.Scene{
     self.textCred5 =  self.add.text(760, 1010, 'Universidad de la Empresa', { font: '40px DM Serif Text', fill: '#000000'}).setScrollFactor(0).setDepth(10);
   
     function ClickHome(){
-      soundBackground.stop();
+      self.sonidoCreditos.stop();
       self.scene.start(DEF.SCENES.MENUPRINCIPAL);
     }
     
