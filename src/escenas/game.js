@@ -448,7 +448,8 @@ export class game extends Phaser.Scene{
     }
     
     function ClickHOME(){
-      soundBackground.stop();
+      self.soundBackground.stop();
+      self.soundAction.stop();
       self.socket.disconnect();
       self.scene.start(DEF.SCENES.MENUPRINCIPAL);
     }
@@ -946,6 +947,8 @@ export class game extends Phaser.Scene{
           resultado: 1,
           equipo: 1
         }
+        self.soundBackground.stop();
+        self.soundAction.stop();
         self.socket.emit('Finalizo', envioSocket);
         self.scene.start(DEF.SCENES.FinScene, envio);
       }
