@@ -2909,7 +2909,7 @@ export class game extends Phaser.Scene{
     //maneja la mira del submarino con el cursor 
     }, this);
 
-    // Destruye a un jugador cuando se desconecta del socket
+    // Destruye a un jugador cuando se desconecta del socket y envia automaticamente a la escena de finalizacion indicando que gane la partida
     this.socket.on('playerDisconnected', function (playerId){
       if (playerId != self.socket.id){
         if(self.equipo===1){
@@ -2924,6 +2924,15 @@ export class game extends Phaser.Scene{
           self.carguero5.imagen.destroy();
           self.carguero6.imagen.destroy();
         }
+
+        // Me envio a pantalla de finalizacion
+        let envio= {
+          socket: self.socket,
+          resultado: 1,
+          equipo: self.equipo
+        }
+
+        self.scene.start(DEF.SCENES.FinScene, envio);
       }
     });
     
