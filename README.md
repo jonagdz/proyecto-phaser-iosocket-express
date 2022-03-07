@@ -14,5 +14,6 @@ Music: https://pixabay.com/es/
 Sounds: https://mixkit.co/free-sound-effects
 Video: https://pixabay.com/es/
 Images: https://www.pinterest.com/pin/774478467142903900/, https://es.wikipedia.org/wiki/Tipo_XXVI, http://www.shipsproject.org/Wrecks/Wk_JamesEaganLayne.html
+Logo Images: https://www.istockphoto.com/es/search/2/image?mediatype=illustration&phrase=lobo+gris, https://www.istockphoto.com/es/search/2/image?phrase=luna+mar
 Particle Sprite: <a href='https://.pngtree.com/so/Humo'>Humo png de .pngtree.com/</a>
 Explotion Sprite: https://www.pngitem.com/middle/hbhxbwb_explosion-sprite-sheet-free-hd-png-download/
