@@ -266,7 +266,7 @@ io.on('connection', function (socket) {
         //const json = await response.json()
       } catch (e) {
         //console.log(e)
-        console.log("Se intento guardar la partida iniciada pero tenes problemas con el BacEnd")
+        console.log("Se intento guardar la partida iniciada pero tenes problemas con el BackEnd")
       }
    }
 
@@ -286,7 +286,7 @@ io.on('connection', function (socket) {
         console.log("Se guardo la partida con exito")
       } catch (e) {
         //console.log(e)
-        console.log("Se intento guardar la partida pero tenes problemas con el BacEnd")
+        console.log("Se intento guardar la partida pero tenes problemas con el BackEnd")
       }
    }
 
