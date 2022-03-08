@@ -16,8 +16,8 @@ export class game extends Phaser.Scene{
     this.cargaPartida = data.loadGame.cargaPartida;
     this.partidaCargada = data.loadGame.partidaCargada;
     // Seteo las velocidades que se utilizaran en el juego
-    this.velocidadMedia = 400; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
-    this.velocidadBaja = 300;
+    this.velocidadMedia = 90; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
+    this.velocidadBaja = 50;
     //console.log(this.cargaPartida, this.partidaCargada)
     if (!this.cargaPartida)
     {
@@ -395,6 +395,10 @@ export class game extends Phaser.Scene{
 
       self.input.keyboard.on('keydown-' + 'TWO',function(){
         camaraCargMini();
+      })
+
+      self.input.keyboard.on('keydown-' + 'T',function(){
+        detenerMovimientoCargueros();
       })
 
       // Cámara de seguimiento a Cargueros
@@ -1498,6 +1502,33 @@ export class game extends Phaser.Scene{
         camaraActCarg = 0;
         self.UIDesCargCamMini.setText('MiniCam: \nCarguero 6');
       }
+    }
+
+    function detenerMovimientoCargueros(){
+      // Detengo el movimiento de todos los cargueros
+      self.carguero1.imagen.setAcceleration(0);
+      self.carguero1.imagen.setVelocityX(0);
+      self.carguero1.imagen.setVelocityY(0);
+
+      self.carguero2.imagen.setAcceleration(0);
+      self.carguero2.imagen.setVelocityX(0);
+      self.carguero2.imagen.setVelocityY(0);
+
+      self.carguero3.imagen.setAcceleration(0);
+      self.carguero3.imagen.setVelocityX(0);
+      self.carguero3.imagen.setVelocityY(0);
+
+      self.carguero4.imagen.setAcceleration(0);
+      self.carguero4.imagen.setVelocityX(0);
+      self.carguero4.imagen.setVelocityY(0);
+
+      self.carguero5.imagen.setAcceleration(0);
+      self.carguero5.imagen.setVelocityX(0);
+      self.carguero5.imagen.setVelocityY(0);
+
+      self.carguero6.imagen.setAcceleration(0);
+      self.carguero6.imagen.setVelocityX(0);
+      self.carguero6.imagen.setVelocityY(0);
     }
 
     function timerDisparo(){

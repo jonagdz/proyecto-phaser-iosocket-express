@@ -8,8 +8,10 @@ export class controles extends Phaser.Scene{
   create(){
     const self = this;
     self.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
-    self.imagenControles = self.physics.add.image(700, 300, DEF.IMAGENES.CONTROLES).setOrigin(0).setScrollFactor(0).setDepth(10)
-    self.imagenControles.setDisplaySize(700, 700);
+    self.imagenControles = self.physics.add.image(60, 350, DEF.IMAGENES.CONTROLES1).setOrigin(0).setScrollFactor(0).setDepth(10)
+    self.imagenControles.setDisplaySize(900, 560);
+    self.imagenControles2 = self.physics.add.image(960, 350, DEF.IMAGENES.CONTROLES2).setOrigin(0).setScrollFactor(0).setDepth(10)
+    self.imagenControles2.setDisplaySize(900, 560);
 
     this.sonidoControles = this.sound.add(DEF.AUDIO.ENDGAME,{volume: 0.4, loop: true});
     this.sonidoControles.play();
@@ -19,7 +21,7 @@ export class controles extends Phaser.Scene{
     self.home.setInteractive().on('pointerover', () => ElegirHome(1));
     self.home.setInteractive().on('pointerout', () => ElegirHome(2));
    
-    self.txt = self.add.text(520, 200,'Controles...', { font: '50px Courier', fill: '#000000'}).setScrollFactor(0);
+    self.txt = self.add.text(350, 200,'Controles: ', { font: '70px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
 
     function ClickHome () {
         self.sonidoControles.stop();
