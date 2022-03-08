@@ -402,7 +402,7 @@ export class game extends Phaser.Scene{
       })
 
       // Cámara de seguimiento a Cargueros
-      this.camaraEventos = this.cameras.add(1210, 900, 400, 100).setZoom(0.5);
+      this.camaraEventos = this.cameras.add(1245, 900, 400, 100).setZoom(0.5);
       this.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
 
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
