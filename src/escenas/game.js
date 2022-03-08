@@ -367,20 +367,20 @@ export class game extends Phaser.Scene{
       }
 
       // Parte superior del HUD
-      self.UIDesVida =  self.add.text(1200, 170, 'Vida: ' + self.destructor.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UIDesMunicionCar =  self.add.text(1200, 210, 'Munición cargas: ' + self.destructor.ammoCargas, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UIDesMunicionCan =  self.add.text(1200, 250, 'Munición cañon: ' + self.destructor.ammoCanion, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UIDesArmAct =  self.add.text(1200, 290, 'Arma actual: cañon', { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UIDesArmCargProf =  self.add.text(1200, 330, 'Cargas de profundidad: -', { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UIDesCarg1 = self.add.text(300, 170, 'Vida carguero 1: ' + self.carguero1.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UIDesCarg2 = self.add.text(300, 210, 'Vida carguero 2: ' + self.carguero2.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UIDesCarg3 = self.add.text(300, 250, 'Vida carguero 3: ' + self.carguero3.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UIDesCarg4 = self.add.text(300, 290, 'Vida carguero 4: ' + self.carguero4.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UIDesCarg5 = self.add.text(300, 330, 'Vida carguero 5: ' + self.carguero5.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UIDesCarg6 = self.add.text(300, 370, 'Vida carguero 6: ' + self.carguero6.vida, { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+      self.UIDesVida =  self.add.text(1200, 170, 'Vida: ' + self.destructor.vida, { font: '30px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UIDesMunicionCar =  self.add.text(1200, 210, 'Munición cargas: ' + self.destructor.ammoCargas, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UIDesMunicionCan =  self.add.text(1200, 250, 'Munición cañon: ' + self.destructor.ammoCanion, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UIDesArmAct =  self.add.text(1200, 290, 'Arma actual: cañon', { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UIDesArmCargProf =  self.add.text(1200, 330, 'Cargas de profundidad: -', { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UIDesCarg1 = self.add.text(300, 170, 'Vida carguero 1: ' + self.carguero1.vida, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UIDesCarg2 = self.add.text(300, 210, 'Vida carguero 2: ' + self.carguero2.vida, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UIDesCarg3 = self.add.text(300, 250, 'Vida carguero 3: ' + self.carguero3.vida, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UIDesCarg4 = self.add.text(300, 290, 'Vida carguero 4: ' + self.carguero4.vida, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UIDesCarg5 = self.add.text(300, 330, 'Vida carguero 5: ' + self.carguero5.vida, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UIDesCarg6 = self.add.text(300, 370, 'Vida carguero 6: ' + self.carguero6.vida, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
       
       // Parte inferior del HUD
-      self.UIDesCargCamMini = self.add.text(1080, 960, 'MiniCam: \nCarguero 1', { font: '35px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+      self.UIDesCargCamMini = self.add.text(1080, 960, 'MiniCam: \nCarguero 1', { font: '35px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8}).setScrollFactor(0).setDepth(10);
 
       // Eventos para cambio de camara del equipo 1 entre el destructor y los cargueros
       self.input.keyboard.on('keydown-' + 'ZERO', function (){
@@ -414,10 +414,10 @@ export class game extends Phaser.Scene{
       this.disp = self.add.sprite(1500, 500, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
       
       // Parte superior del HUD
-      self.UISubVida =  self.add.text(1100, 230, 'Vida: ' + self.submarino.vida, { font: '30px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UISubMunicionTor =  self.add.text(1100, 260, 'Munición torpedos: ' + self.submarino.ammoTorpedos, { font: '30px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UISubMunicionCan =  self.add.text(1100, 290, 'Munición cañon: ' + self.submarino.ammoCanion, { font: '30px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
-      self.UISubArmAct =  self.add.text(1100, 320, 'Arma actual: cañon', { font: '30px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);      
+      self.UISubVida =  self.add.text(1100, 230, 'Vida: ' + self.submarino.vida, { font: '30px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UISubMunicionTor =  self.add.text(1100, 260, 'Munición torpedos: ' + self.submarino.ammoTorpedos, { font: '30px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UISubMunicionCan =  self.add.text(1100, 290, 'Munición cañon: ' + self.submarino.ammoCanion, { font: '30px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+      self.UISubArmAct =  self.add.text(1100, 320, 'Arma actual: cañon', { font: '30px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);      
     } 
     
     function ClickBAJA(){
