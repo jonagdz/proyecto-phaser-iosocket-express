@@ -13,8 +13,8 @@ export class controles extends Phaser.Scene{
     self.imagenControles2 = self.physics.add.image(960, 350, DEF.IMAGENES.CONTROLES2).setOrigin(0).setScrollFactor(0).setDepth(10)
     self.imagenControles2.setDisplaySize(900, 560);
 
-    this.sonidoControles = this.sound.add(DEF.AUDIO.ENDGAME,{volume: 0.4, loop: true});
-    this.sonidoControles.play();
+    self.sonidoControles = self.sound.add(DEF.AUDIO.ENDGAME,{volume: 0.4, loop: true});
+    self.sonidoControles.play();
     //////////////////////////////////////////////////CARGO INTERACCIONES Y SPRITE DE HOME/////////////////////////////////////////////////////////////////
     self.home = self.add.sprite(50, 50, 'homes').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () => ClickHome());
     self.home.setDisplaySize(150, 150);

@@ -16,7 +16,7 @@ export class game extends Phaser.Scene{
     this.cargaPartida = data.loadGame.cargaPartida;
     this.partidaCargada = data.loadGame.partidaCargada;
     // Seteo las velocidades que se utilizaran en el juego
-    this.velocidadMedia = 90; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
+    this.velocidadMedia = 120; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
     this.velocidadBaja = 50;
     //console.log(this.cargaPartida, this.partidaCargada)
     if (!this.cargaPartida)
@@ -291,16 +291,16 @@ export class game extends Phaser.Scene{
     // Islas
     this.isla1 = self.physics.add.image(2100,900,DEF.IMAGENES.ISLA).setDepth(5);
     this.isla1.setImmovable(true);
-    this.isla1.setDisplaySize(400, 400);
+    this.isla1.setDisplaySize(300, 300);
     this.isla2 = self.physics.add.image(2460,1600,DEF.IMAGENES.ISLA).setDepth(5);
     this.isla2.setImmovable(true);
-    this.isla2.setDisplaySize(400, 400);
+    this.isla2.setDisplaySize(300, 300);
     this.isla3 = self.physics.add.image(3200,600,DEF.IMAGENES.ISLA).setDepth(5);
     this.isla3.setImmovable(true);
-    this.isla3.setDisplaySize(400, 400);
+    this.isla3.setDisplaySize(300, 300);
     this.isla4 = self.physics.add.image(3400,1800,DEF.IMAGENES.ISLA).setDepth(5);
     this.isla4.setImmovable(true);
-    this.isla4.setDisplaySize(400, 400);
+    this.isla4.setDisplaySize(300, 300);
 
     // Costas
     this.costa1 = self.physics.add.image(345,1078,DEF.IMAGENES.COSTA1).setDepth(5);
@@ -322,7 +322,7 @@ export class game extends Phaser.Scene{
         self.soundAction.mute = true;
         audioActivado=false;
       }else{
-        this.soundBackground.mute = false;
+        self.soundBackground.mute = false;
         self.soundAction.mute = false;
         audioActivado=true;
       }
@@ -330,13 +330,13 @@ export class game extends Phaser.Scene{
 
     // Se crea el evento de pausa
     self.input.keyboard.on('keydown-' + 'P', function (event){
-      console.log("PAUSA:"+pausaGame);
+      //console.log("PAUSA:"+pausaGame);
       if(pausaGame === true){
-        console.log("ENTRE A RESUME:"+pausaGame);
+        //console.log("ENTRE A RESUME:"+pausaGame);
         pausaGame = false;
         self.scene.resume('game');
       }else{
-        console.log("ENTRE A PAUSA:"+pausaGame);
+        //console.log("ENTRE A PAUSA:"+pausaGame);
         pausaGame = true;
         self.scene.pause('game');
       }    
@@ -1045,7 +1045,7 @@ export class game extends Phaser.Scene{
     //Funcion que maneja la colision entre el carguero y el submarino
     function handleCollisionCargoSub(submarino, carguero)
     {
-      console.log('colision carguero submarino');
+      //console.log('colision carguero submarino');
       if (carguero.body.touching.right) //Cuando la el carguero colisiona de "frente" gira 90 grados hacia abajo o hacia abajo, espera 2 segundos y continua con su marcha.
       {
         if(Math.floor(Math.random() * 2) === 0)
@@ -1084,7 +1084,7 @@ export class game extends Phaser.Scene{
         cargueroSalvado(self.carguero5);
       else if(carguero === self.carguero6.imagen)
         cargueroSalvado(self.carguero6);
-      console.log("cargueros A SALVO", carguerosAsalvo);
+      //console.log("cargueros A SALVO", carguerosAsalvo);
       if (carguerosAsalvo >= 3){
         let envio={
           socket: self.socket,
@@ -1227,7 +1227,7 @@ export class game extends Phaser.Scene{
     function sonar(){
       // Activo sonar si hay sonares disponibles
       if(self.submarino.sonar>0){
-        console.log("AVISO SONAR:"+self.nhSonar);
+        //console.log("AVISO SONAR:"+self.nhSonar);
         if (self.usoSonar !== true && self.nhSonar !== true && self.submarino.profundidad === 1 && self.noLargavistas !== true){
           // Texto de aviso
           self.statusSonar = self.add.text(550, 700, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
@@ -1351,17 +1351,17 @@ export class game extends Phaser.Scene{
         if (self.submarino.armas === 0){
           self.submarino.armas = 1;
           self.UISubArmAct.setText('Arma actual: torpedos');
-          console.log('Cambio a Torpedos');
+          //console.log('Cambio a Torpedos');
         }else{
           self.submarino.armas = 0;
           self.UISubArmAct.setText('Arma actual: cañon');
-          console.log('cambio a canon');
+          //console.log('cambio a canon');
         }
       }else if(self.submarino.profundidad === 1){
         //si esta a profundidad 1 que solo pueda usar el arma 1, torpedos
           self.submarino.armas = 4;
           self.UISubArmAct.setText('Arma actual: torpedos');
-          console.log('Solo Torpedos a esta profundidad');  
+          //console.log('Solo Torpedos a esta profundidad');  
       }else if(self.submarino.profundidad === 2){
         //si esta en profundidad 2 que no pueda disparar
         self.submarino.armas = -1;
@@ -1423,11 +1423,11 @@ export class game extends Phaser.Scene{
         }else{
           self.UIDesArmCargProf.setText('Cargas de profundidad: mucha');
         }
-        console.log('Cambio a Cargas de Profundidad');
+        //console.log('Cambio a Cargas de Profundidad');
         self.UIDesArmAct.setText('Arma actual: cargas de prof.');
       }else{
         self.destructor.armas = 0;
-        console.log('cambio a canon');
+        //console.log('cambio a canon');
         self.UIDesArmAct.setText('Arma actual: cañon');
         self.UIDesArmCargProf.setText('Cargas de profundidad: -');
       }
@@ -1436,11 +1436,11 @@ export class game extends Phaser.Scene{
     function cambiarCargaDestr(){
       if(self.destructor.cargas === 1){
         self.destructor.cargas = 2;
-        console.log('detonador para mucha profundidad');
+        //console.log('detonador para mucha profundidad');
         self.UIDesArmCargProf.setText('Cargas de profundidad: mucha');
       }else{
         self.destructor.cargas = 1;
-        console.log('detonador para poca profundidad');
+        //console.log('detonador para poca profundidad');
         self.UIDesArmCargProf.setText('Cargas de profundidad: poca');
       }
     }
@@ -1571,7 +1571,7 @@ export class game extends Phaser.Scene{
     //funcion que recibe un click y ejecuta el evento disparo, el cual activa una bala del set de balas de la clase
     this.input.on('pointerdown', function (pointer, time) {
       if (self.puedoDisparar == 0){
-        console.log("Muy pronto para disparar aún, se debe esperar 3 segundos entre cada disparo.");
+        //console.log("Muy pronto para disparar aún, se debe esperar 3 segundos entre cada disparo.");
       }else{
         // Agrego un timer de 3 segundos entre cada disparo, para que no spamee los tiros y sea mas jugable
         self.puedoDisparar = 0;
@@ -1761,7 +1761,7 @@ export class game extends Phaser.Scene{
                 probExtra = Math.floor(Math.random() * (2)); // Bonificacion de probabilidad
 
                 //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra + '0');
+                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra + '0');
                 //si la probabilidad de acierto es mayor que el 40%, entonces acierto
                 if((probabilidad + probExtra) > 4)
                 {
@@ -1860,7 +1860,7 @@ export class game extends Phaser.Scene{
               {
                 probExtra = Math.floor(Math.random() * (3));
                 //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+'0');
+                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+'0');
                 //si la probabilidad de errar es mayor que el 40%, entonces fallo
                 if((probabilidad + probExtra) > 3){
                   hitted(enemy.imagen.x, enemy.imagen.y); 
@@ -1958,7 +1958,7 @@ export class game extends Phaser.Scene{
               {
                 probExtra = Math.floor(Math.random() * (3));
                 //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra +'0');
+                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra +'0');
                 //si la probabilidad de errar es mayor que el 60%, entonces fallo
                 if((probabilidad + probExtra) > 6){
                   hitted(enemy.imagen.x, enemy.imagen.y); 
@@ -2083,7 +2083,7 @@ export class game extends Phaser.Scene{
             {
               probExtra = Math.floor(Math.random() * (2));
               //console.log('la probabilidad extra de la carga es %', probExtra, '0');
-              console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
+              //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
               //si la probabilidad de errar es mayor que el 10%, entonces fallo
               if((probabilidad + probExtra) > 1)
               {
@@ -2207,7 +2207,7 @@ export class game extends Phaser.Scene{
             {
               probExtra = Math.floor(Math.random() * (3));
               //console.log('la probabilidad extra de la carga es %', probExtra, '0');
-              console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
+              //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
               //si la probabilidad de errar es mayor que el 70%, entonces fallo
               if((probabilidad + probExtra) > 7)
               {
@@ -2339,7 +2339,7 @@ export class game extends Phaser.Scene{
               {
                 probExtra = Math.floor(Math.random() * (2));
                 //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
+                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 3)
                 {
@@ -2448,7 +2448,7 @@ export class game extends Phaser.Scene{
               {
                   probExtra = Math.floor(Math.random() * (3));
                   //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                  console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
+                  //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                   //si la probabilidad de errar es mayor que el 10%, entonces fallo
                   if((probabilidad + probExtra) > 6){
                     //console.log("entro al if del danio sub medio");
@@ -2555,7 +2555,7 @@ export class game extends Phaser.Scene{
               {
                     probExtra = Math.floor(Math.random() * (3));
                     //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                    console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
+                    //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                     //si la probabilidad de errar es mayor que el 10%, entonces fallo
                     if((probabilidad + probExtra) > 8)
                     {
@@ -2669,7 +2669,7 @@ export class game extends Phaser.Scene{
               {
                 probExtra = Math.floor(Math.random() * (2));
                 //console.log('la probabilidad extra del canion es %', probExtra + '0');
-                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
+                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 2)
                 {
@@ -2778,7 +2778,7 @@ export class game extends Phaser.Scene{
               {
                 probExtra = Math.floor(Math.random() * (3));
                 //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
+                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 3)
                 {
@@ -2886,7 +2886,7 @@ export class game extends Phaser.Scene{
               {
                 probExtra = Math.floor(Math.random() * (3));
                 //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
+                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 5)
                 {
@@ -3032,7 +3032,7 @@ export class game extends Phaser.Scene{
     //funcion que muestra una cruz animada senalando de donde vino un disparo enemigo
     function CRUZ (imagen) {
       self.cruz = self.add.sprite(imagen.x, imagen.y, 'CRUZ').setDepth(10).setDisplaySize(80,80);
-      console.log("entro a la cruz");
+      //console.log("entro a la cruz");
       self.anims.create({  
         key: 'ani',
         frames: [
