@@ -1684,8 +1684,8 @@ export class game extends Phaser.Scene{
           //MANEJO DE COLISION ENTRE LA BALA Y OTROS JUGADORES
           if(enemy.vida>0){
             self.physics.add.collider(bullet, enemyImag, function(bullet){
-              distCorta = 100;
-              distMedia = 250;
+              distCorta = 150;
+              distMedia = 350;
 
               corta = false;
               media = false;
@@ -1704,6 +1704,7 @@ export class game extends Phaser.Scene{
               {
                 dist = "larga";
               }
+              console.log(dist);
               bullet.destroy();
               handleHit(nave, dist, enemy);
             });
