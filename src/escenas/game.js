@@ -1799,14 +1799,14 @@ export class game extends Phaser.Scene{
                 //console.log('la probabilidad extra del canion es %', probExtra, '0');
                 console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra + '0');
                 //si la probabilidad de acierto es mayor que el 40%, entonces acierto
-                if((probabilidad + probExtra) > 4)
+                if((probabilidad + probExtra) > 3)
                 {
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   danio = 6;             
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                   let contadorAviso = 0;
                   self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+                    '', {font: '30px monospace', fill: '#024A86', align: 'center'});
 
                   function aviso(){
                     self.Hit2.setText('Daño: ' + danio);
@@ -1870,7 +1870,7 @@ export class game extends Phaser.Scene{
                   if(enemy.vida > 0){
                     let contadorAviso = 0;
                     self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                      '', {font: '30px monospace', fill: '#fff', align: 'center'});
 
                     function aviso(){
                       self.Hit2.setText('Miss');
@@ -1905,7 +1905,7 @@ export class game extends Phaser.Scene{
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                   let contadorAviso = 0;
                   self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+                    '', {font: '30px monospace', fill: '#024A86', align: 'center'});
 
                   function aviso(){
                     self.Hit2.setText('Daño: ' + danio);
@@ -1969,7 +1969,7 @@ export class game extends Phaser.Scene{
                   if(enemy.vida > 0){
                     let contadorAviso = 0;
                     self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                      '', {font: '30px monospace', fill: '#fff', align: 'center'});
 
                     function aviso(){
                       self.Hit2.setText('Miss');
@@ -2003,7 +2003,7 @@ export class game extends Phaser.Scene{
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                   let contadorAviso = 0;
                   self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+                    '', {font: '30px monospace', fill: '#024A86', align: 'center'});
 
                   function aviso(){
                     self.Hit2.setText('Daño: ' + danio);
@@ -2067,7 +2067,7 @@ export class game extends Phaser.Scene{
                   if(enemy.vida > 0){
                     let contadorAviso = 0;
                     self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                      '', {font: '30px monospace', fill: '#fff', align: 'center'});
 
                     function aviso(){
                       self.Hit2.setText('Miss');
@@ -2092,7 +2092,7 @@ export class game extends Phaser.Scene{
               //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                 let contadorAviso = 0;
                 self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                  '', {font: '30px monospace', fill: '#fff', align: 'center'});
 
                 function aviso(){
                   self.Hit2.setText('Miss');
@@ -2131,7 +2131,7 @@ export class game extends Phaser.Scene{
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                   let contadorAviso = 0;
                   self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+                    '', {font: '30px monospace', fill: '#024A86', align: 'center'});
 
                   function aviso(){
                     self.Hit2.setText('Daño: ' + danio);
@@ -2194,7 +2194,7 @@ export class game extends Phaser.Scene{
                   if(enemy.vida > 0){
                     let contadorAviso = 0;
                     self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                      '', {font: '30px monospace', fill: '#fff', align: 'center'});
   
                     function aviso(){
                       self.Hit2.setText('Miss');
@@ -2255,7 +2255,7 @@ export class game extends Phaser.Scene{
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                   let contadorAviso = 0;
                   self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+                    '', {font: '30px monospace', fill: '#024A86', align: 'center'});
 
                   function aviso(){
                     self.Hit2.setText('Daño: ' + danio);
@@ -2318,7 +2318,7 @@ export class game extends Phaser.Scene{
                   if(enemy.vida > 0){
                     let contadorAviso = 0;
                     self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                      '', {font: '30px monospace', fill: '#fff', align: 'center'});
   
                     function aviso(){
                       self.Hit2.setText('Miss');
@@ -2342,7 +2342,7 @@ export class game extends Phaser.Scene{
                 if(enemy.vida > 0){
                   let contadorAviso = 0;
                   self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
+                    '', {font: '30px monospace', fill: '#fff', align: 'center'});
 
                   function aviso(){
                     self.Hit2.setText('Miss');
@@ -2377,7 +2377,7 @@ export class game extends Phaser.Scene{
                 //console.log('la probabilidad extra del canion es %', probExtra, '0');
                 console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
-                if((probabilidad + probExtra) > 3)
+                if((probabilidad + probExtra) > 2)
                 {
                   //console.log("entro al if del danio sub corto");
                   hitted(enemy.imagen.x, enemy.imagen.y); 
@@ -2486,7 +2486,7 @@ export class game extends Phaser.Scene{
                   //console.log('la probabilidad extra del canion es %', probExtra, '0');
                   console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
                   //si la probabilidad de errar es mayor que el 10%, entonces fallo
-                  if((probabilidad + probExtra) > 6){
+                  if((probabilidad + probExtra) > 3){
                     //console.log("entro al if del danio sub medio");
                     hitted(enemy.imagen.x, enemy.imagen.y); 
                   
@@ -3095,7 +3095,7 @@ export class game extends Phaser.Scene{
       hitted(playerIMG.x, playerIMG.y);
       
       self.Hit = self.add.text( playerIMG.x + 25, playerIMG.y + 25, 
-        '', {font: '20px monospace', fill: '#FF0000', align: 'center'});
+        '', {font: '30px monospace', fill: '#FF0000', align: 'center'});
       function aviso(){
         self.Hit.setText('¡Impacto Recibido! Daño: ' + damage);
         contadorAviso++;
