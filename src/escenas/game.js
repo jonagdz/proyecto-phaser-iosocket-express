@@ -196,6 +196,7 @@ export class game extends Phaser.Scene{
     let nhSonar = false;
     let noLargavistas = false;
     let siguiendoDes = true;
+    let guardoP = false;
     let pausaGame = false;
     //self.socket.emit('listarPartidas', {id: 2});
     let carguerosMuertos = 0;
@@ -463,29 +464,37 @@ export class game extends Phaser.Scene{
     }
     
     function ClickSAVE(){
-      guardarPartida();
-      self.socket.emit('guardarPartida', self.partida);
-      self.msjPartidaGuardada =  self.add.text(500, 600, '', { font: '60px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10); 
-      
-      // Activo cuenta regresiva
-      self.cuentaGPartida = self.time.addEvent({ delay: 1000, callback: muestroPG, callbackScope: self, loop: true});
-          
-      // Vuelvo a vista normal y elimino aviso
-      self.resetPG = self.time.addEvent({ delay: 5000, callback: eliminoMsjPG, callbackScope: self, repeat: 0 });
-      
-      function eliminoMsjPG(){
-        removeText();
-        contadorPG=0;
-      }
-      function muestroPG(){
-        contadorPG++;
-        self.msjPartidaGuardada.setText('¡Partida guardada correctamente!');
-        if (contadorPG === 5){
-          self.cuentaGPartida.remove(true);
+      console.log('ANTES DE ENTRAR:'+guardoP);
+      if(guardoP !== true){
+        console.log('ENTRE A GP:'+guardoP);
+        guardarPartida();
+        guardoP = true;
+        console.log('SETEANDO EN T:'+guardoP);
+        self.socket.emit('guardarPartida', self.partida);
+        self.msjPartidaGuardada =  self.add.text(500, 600, '', { font: '60px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10); 
+        
+        // Activo cuenta regresiva
+        self.cuentaGPartida = self.time.addEvent({ delay: 1000, callback: muestroPG, callbackScope: self, loop: true});
+            
+        // Vuelvo a vista normal y elimino aviso
+        self.resetPG = self.time.addEvent({ delay: 5000, callback: eliminoMsjPG, callbackScope: self, repeat: 0 });
+        
+        function eliminoMsjPG(){
+          guardoP = false;
+          console.log('SETEANDO EN F:'+guardoP);
+          removeText();
+          contadorPG=0;
         }
-      }
-      function removeText() {
-        self.msjPartidaGuardada.destroy();
+        function muestroPG(){
+          contadorPG++;
+          self.msjPartidaGuardada.setText('¡Partida guardada correctamente!');
+          if (contadorPG === 5){
+            self.cuentaGPartida.remove(true);
+          }
+        }
+        function removeText() {
+          self.msjPartidaGuardada.destroy();
+        }
       }
     }
 
@@ -1255,7 +1264,7 @@ export class game extends Phaser.Scene{
         console.log("AVISO SONAR:"+self.nhSonar);
         if (self.usoSonar !== true && self.nhSonar !== true && self.submarino.profundidad === 1 && self.noLargavistas !== true && self.submarino.largavista !== true){
           // Texto de aviso
-          self.statusSonar = self.add.text(550, 700, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+          self.statusSonar = self.add.text(550, 700, '', { font: '45px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
           
           self.usoSonar = true;
 
@@ -1296,7 +1305,7 @@ export class game extends Phaser.Scene{
           if(self.nhSonar !== true){
             self.nhSonar=true;
             // Texto de aviso
-            self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+            self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
             self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoSonarProf, callbackScope: self, loop: true});
             self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoSP, callbackScope: self, repeat: 0 });
             function eliminoAvisoSP(){
@@ -1321,7 +1330,7 @@ export class game extends Phaser.Scene{
         if (self.usoSonar !== true && self.nhSonar !== true && self.submarino.profundidad === 1 && self.noLargavistas !== true && self.submarino.largavista !== true){
             self.nhSonar = true;
             // Texto de aviso
-            self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+            self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
 
             self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
             self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
@@ -1346,7 +1355,7 @@ export class game extends Phaser.Scene{
           if(self.nhSonar !== true){
             self.nhSonar=true;
             // Texto de aviso
-            self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+            self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
             self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoSonarProf, callbackScope: self, loop: true});
             self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoSP, callbackScope: self, repeat: 0 });
             function eliminoAvisoSP(){
@@ -1414,7 +1423,7 @@ export class game extends Phaser.Scene{
       }else if((self.submarino.profundidad === 1 || self.submarino.profundidad === 2) && self.noLargavistas !== true && self.usoSonar !== true && self.nhSonar !== true){
         self.noLargavistas=true;
         // Texto de aviso
-        self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000' }).setScrollFactor(0).setDepth(10);
+        self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
         self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoLargavistaSup, callbackScope: self, loop: true});
         self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoLS, callbackScope: self, repeat: 0 });
         function eliminoAvisoLS(){
@@ -1742,8 +1751,8 @@ export class game extends Phaser.Scene{
           //MANEJO DE COLISION ENTRE LA BALA Y OTROS JUGADORES
           if(enemy.vida>0){
             self.physics.add.collider(bullet, enemyImag, function(bullet){
-              distCorta = 150;
-              distMedia = 350;
+              distCorta = 100;
+              distMedia = 250;
 
               corta = false;
               media = false;
@@ -1762,7 +1771,6 @@ export class game extends Phaser.Scene{
               {
                 dist = "larga";
               }
-              console.log(dist);
               bullet.destroy();
               handleHit(nave, dist, enemy);
             });
