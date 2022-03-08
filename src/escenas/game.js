@@ -380,7 +380,7 @@ export class game extends Phaser.Scene{
       self.UIDesCarg6 = self.add.text(300, 370, 'Vida carguero 6: ' + self.carguero6.vida, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
       
       // Parte inferior del HUD
-      self.UIDesCargCamMini = self.add.text(1080, 960, 'MiniCam: \nCarguero 1', { font: '35px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8}).setScrollFactor(0).setDepth(10);
+      self.UIDesCargCamMini = self.add.text(1120, 960, 'MiniCam: \nCarguero 1', { font: '35px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8}).setScrollFactor(0).setDepth(10);
 
       // Eventos para cambio de camara del equipo 1 entre el destructor y los cargueros
       self.input.keyboard.on('keydown-' + 'ZERO', function (){
@@ -402,7 +402,7 @@ export class game extends Phaser.Scene{
       })
 
       // Cámara de seguimiento a Cargueros
-      this.camaraEventos = this.cameras.add(1245, 900, 400, 100).setZoom(0.5);
+      this.camaraEventos = this.cameras.add(1300, 900, 400, 100).setZoom(0.5);
       this.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
 
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
