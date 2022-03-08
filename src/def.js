@@ -49,6 +49,8 @@ export const DEF = {
         BOTONHOME: "botonhomeNegro.png",
         BOTONGUARDAR: "botonGUARDAD.png",
         CONTROLES: "controles.png",
+        CONTROLES1: "controles1.png",
+        CONTROLES2: "controles2.png"
     },
 
     VIDEO: {
