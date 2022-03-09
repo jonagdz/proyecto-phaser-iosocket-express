@@ -583,13 +583,13 @@ export class game extends Phaser.Scene{
         self.destructor.bullet = self.playerBullets;
         self.destructor.cargas = 1;
         // Particulas
-        const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
-        const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
+        self.destructor.parti = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
+        const emitter = self.destructor.parti.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
           speed: 10, // Velocidad con la que se mueven
           scale: {start: 0.08, end: 0}, // Tamaño
           blendMode: "ADD" // Efecto a aplicar
         })
-        particles.setPosition(self.destructor.imagen.x, self.destructor.imagen.y)
+        self.destructor.parti.setPosition(self.destructor.imagen.x, self.destructor.imagen.y)
         emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
       }
       else if (self.destructor.vida <= 0)
@@ -641,12 +641,12 @@ export class game extends Phaser.Scene{
       // Se crea una colision del destructor con la bomba
       self.physics.add.collider(self.destructor.imagen, self.bomb);
       // Se crea una colision del destructor con los cargueros
-      self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen, handleCollisionCargoDes, collisionCargoDes, self);
-      self.physics.add.collider(self.destructor.imagen, self.carguero2.imagen, handleCollisionCargoDes, collisionCargoDes, self);
-      self.physics.add.collider(self.destructor.imagen, self.carguero3.imagen, handleCollisionCargoDes, collisionCargoDes, self);
-      self.physics.add.collider(self.destructor.imagen, self.carguero4.imagen, handleCollisionCargoDes, collisionCargoDes, self);
-      self.physics.add.collider(self.destructor.imagen, self.carguero5.imagen, handleCollisionCargoDes, collisionCargoDes, self);
-      self.physics.add.collider(self.destructor.imagen, self.carguero6.imagen, handleCollisionCargoDes, collisionCargoDes, self);
+      self.collDesCarg1 = self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen, handleCollisionCargoDes, collisionCargoDes, self);
+      self.collDesCarg2 = self.physics.add.collider(self.destructor.imagen, self.carguero2.imagen, handleCollisionCargoDes, collisionCargoDes, self);
+      self.collDesCarg3 = self.physics.add.collider(self.destructor.imagen, self.carguero3.imagen, handleCollisionCargoDes, collisionCargoDes, self);
+      self.collDesCarg4 = self.physics.add.collider(self.destructor.imagen, self.carguero4.imagen, handleCollisionCargoDes, collisionCargoDes, self);
+      self.collDesCarg5 = self.physics.add.collider(self.destructor.imagen, self.carguero5.imagen, handleCollisionCargoDes, collisionCargoDes, self);
+      self.collDesCarg6 = self.physics.add.collider(self.destructor.imagen, self.carguero6.imagen, handleCollisionCargoDes, collisionCargoDes, self);
       // Se crea una colision del barco con las costas
       self.physics.add.collider(self.destructor.imagen, self.costa1);
       self.physics.add.collider(self.destructor.imagen, self.costa2);
@@ -673,13 +673,13 @@ export class game extends Phaser.Scene{
         self.destructor.imagen = self.physics.add.image(self.destructor.posX,self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
       
         // Particulas
-        const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
-        const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
+        self.destructor.parti = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
+        const emitter = self.destructor.parti.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
           speed: 10, // Velocidad con la que se mueven
           scale: {start: 0.08, end: 0}, // Tamaño
           blendMode: "ADD" // Efecto a aplicar
         })
-        particles.setPosition(self.destructor.posX,self.destructor.posY)
+        self.destructor.parti.setPosition(self.destructor.posX,self.destructor.posY)
         emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
       }
       else if (self.destructor.vida <= 0)
@@ -858,13 +858,13 @@ export class game extends Phaser.Scene{
           carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
           // Particulas
           //const particles = self.add.particles("Blue").setDepth(2)
-          const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(1) // Imagen Blue como particula
-          const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
+          carguero.particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(1) // Imagen Blue como particula
+          const emitter = carguero.particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
             speed: 10, // Velocidad con la que se mueven
             scale: {start: 0.08, end: 0}, // Tamaño
             blendMode: "ADD" // Efecto a aplicar
           })
-          particles.setPosition(0, -11)
+          carguero.particles.setPosition(0, -11)
           emitter.startFollow(carguero.imagen) // Le indicamos que sigan al destructor
   
           // Lo vuelvo inamovible
@@ -3135,6 +3135,40 @@ export class game extends Phaser.Scene{
       if(player.vida <= 0)
       {
         //console.log('vida menor que 0');
+        switch(player)
+        {
+          case self.carguero1:
+            console.log('este es el carguero 1');
+            self.carguero1.particles.setActive(false).setVisible(false);
+            self.physics.world.removeCollider(self.collDesCarg1);
+            self.particles()
+            break;
+          case self.carguero2:
+            console.log('este es el carguero 2');
+            self.physics.world.removeCollider(self.collDesCarg2);
+            self.carguero2.particles.setActive(false).setVisible(false);
+            break;
+          case self.carguero3:
+            console.log('este es el carguero 3');
+            self.physics.world.removeCollider(self.collDesCarg3);
+            self.carguero3.particles.setActive(false).setVisible(false);
+            break;
+          case self.carguero4:
+            console.log('este es el carguero 4');
+            self.physics.world.removeCollider(self.collDesCarg4);
+            self.carguero4.particles.setActive(false).setVisible(false);
+            break;
+          case self.carguero5:
+            console.log('este es el carguero 5');
+            self.physics.world.removeCollider(self.collDesCarg5);
+            self.carguero5.particles.setActive(false).setVisible(false);
+            break;
+          case self.carguero6:
+            console.log('este es el carguero 6');
+            self.physics.world.removeCollider(self.collDesCarg6);
+            self.carguero6.particles.setActive(false).setVisible(false);
+            break;
+        }
         destroyed(playerIMG);
         playerIMG.removeInteractive();
         playerIMG.setActive(false);

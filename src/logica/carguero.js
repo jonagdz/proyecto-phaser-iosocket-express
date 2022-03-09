@@ -14,6 +14,7 @@ export class Carguero { // extends Bote
         this.rotacion = rotacion;
         this.cod = cod;
         this.imagen = imagen;
+        this.particle ;
     };
 
     // Metodos
