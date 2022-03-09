@@ -179,6 +179,7 @@ export class game extends Phaser.Scene{
   create(){
     // DEFINICIÓN DE VARIABLES, CONSTANTES Y OBJETOS VISULES EN EL MAPA A UTILIZAR -----------------------------------------------------------------------------------------------------------------------------------
     var self = this
+    let musicaCombate = false;
     let bullet;
     let danio;
     let camaraActual = 0;
@@ -3084,8 +3085,11 @@ export class game extends Phaser.Scene{
     //funcion que procesa el dano y el porcentaje de acierto
     function RecibeHit(player, damage, escar, enemy, expl)
     {
-      self.soundBackground.stop();
-      self.soundAction.play({volume: 0.2, loop: true});
+      if(musicaCombate === false){
+        self.soundBackground.stop();
+        self.soundAction.play({volume: 0.2, loop: true});
+        musicaCombate = true;
+      }
       let contadorAviso = 0;
       playerIMG = player.imagen;
 
