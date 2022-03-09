@@ -8,10 +8,10 @@ export class controles extends Phaser.Scene{
   create(){
     const self = this;
     self.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
-    self.imagenControles = self.physics.add.image(60, 350, DEF.IMAGENES.CONTROLES1).setOrigin(0).setScrollFactor(0).setDepth(10)
-    self.imagenControles.setDisplaySize(900, 560);
-    self.imagenControles2 = self.physics.add.image(960, 350, DEF.IMAGENES.CONTROLES2).setOrigin(0).setScrollFactor(0).setDepth(10)
-    self.imagenControles2.setDisplaySize(900, 560);
+    self.imagenControles = self.physics.add.image(20, 370, DEF.IMAGENES.CONTROLES1).setOrigin(0).setScrollFactor(0).setDepth(10)
+    self.imagenControles.setDisplaySize(940, 460);
+    self.imagenControles2 = self.physics.add.image(960, 370, DEF.IMAGENES.CONTROLES2).setOrigin(0).setScrollFactor(0).setDepth(10)
+    self.imagenControles2.setDisplaySize(940, 460);
 
     self.sonidoControles = self.sound.add(DEF.AUDIO.ENDGAME,{volume: 0.4, loop: true});
     self.sonidoControles.play();
