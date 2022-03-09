@@ -1,4 +1,4 @@
-//Importaciones
+//Clases
 import { BootGame } from './escenas/BootGame.js';
 import { PreGameMenu } from './escenas/PreGameMenu.js';
 import { Game } from './escenas/Game.js';
@@ -6,7 +6,7 @@ import { GameMenu} from './escenas/GameMenu.js';
 import { SalaEspera } from './escenas/SalaEspera.js';
 import { GameOver } from './escenas/GameOver.js';
 import { Creditos } from './escenas/Creditos.js';
-import { controles } from './escenas/Controles.js';
+import { Controles } from './escenas/Controles.js';
 
 //Configuracion de Phaser
 var config = {
@@ -28,7 +28,7 @@ var config = {
     }
   },
   //Escena incluidas
-  scene: [BootGame, PreGameMenu, SalaEspera, Game, GameMenu, GameOver, Creditos, controles]
+  scene: [BootGame, PreGameMenu, SalaEspera, Game, GameMenu, GameOver, Creditos, Controles]
 }
 
 window.onload = () =>{

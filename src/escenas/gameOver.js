@@ -25,9 +25,6 @@ export class GameOver extends Phaser.Scene{
     //Carga de imagen de fondo
     self.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
     
-    //self.sonidoGameOver = self.sound.add(DEF.AUDIO.ENDGAME,{volume: 0.4, loop: true});
-    //self.sonidoGameOver.play();
-    
     self.home = self.add.sprite(screenCenterX, 650, 'homes').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () => volverMenu());
     self.home.setDisplaySize(150, 150);
     self.home.setInteractive().on('pointerover', () => elegirHome(1));

@@ -1,10 +1,9 @@
 import { Bullets } from '../logica/bullet.js';
 
+//Clase Submarino
 export class Submarino{
-
     constructor(nom,velocidad,profundidad,vida,posX,posY,rotacion,cod,sonar,imagen,bullet,armas,reticula,largavista, ammoTor, ammoCan){
-
-        // Atributos propios
+        //Atributos propios
         this.nom = nom;
         this.velocidad = velocidad;
         this.profundidad = profundidad;
@@ -23,10 +22,9 @@ export class Submarino{
         this.ammoCanion = ammoCan;
     };
 
-    // Metodos
-    // Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
-
-    // Getters
+    //Métodos
+    //Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
+    //Getters
     getNom() {
         return this.nom;
     };
@@ -67,7 +65,7 @@ export class Submarino{
         return this.largavista;
     };
 
-    // Setters
+    //Setters
     setNom(nuevoNom) {
         this.nom = nuevoNom;
     };
@@ -107,31 +105,4 @@ export class Submarino{
     setLargaVistas(nuevoLargaVistas) {
         this.largavista = nuevoLargaVistas;
     };
-
-   /* manejoMira(X, Y, miraX, miraY){
-        console.log("la distancia entre mira y x", (miraX - X));
-        console.log("la distancia entre mira e Y", (miraY - Y));
-        console.log("entro al manejo de la mira");
-        //if(this.armas === 0){
-        if ((miraX - X) > 100){
-            miraX = X + 100;
-        }else if ((miraX - X) < -100){
-            miraX = X - 100;
-        }
-        if ((miraY - Y) > 100){
-            miraY = Y + 100;
-        }else if ((miraY - Y) < -100){
-            miraY = Y - 100;
-        }    
-        /*}else if(this.armas === 1){
-          if (miraX - X > 50)
-            miraX = X + 50;
-          else if (miraX - X < -50)
-            miraX = X - 50;
-          if (miraY - Y > 50)
-            miraY = Y + 50;
-          else if (miraY - Y < -50)
-            miraY = Y - 50;
-        }*/
-   // }
 }

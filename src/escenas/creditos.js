@@ -11,10 +11,10 @@ export class Creditos extends Phaser.Scene{
   create(){
     const self = this;
     
-    //Fondo
+    //Carga de imagen de fondo
     this.mar = this.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1);
     
-    //Sonido
+    //Carga de audio
     self.sonidoCreditos = self.sound.add(DEF.AUDIO.CREDITOS,{volume: 0.4, loop: true});
     self.sonidoCreditos.play();
 

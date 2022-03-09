@@ -1,5 +1,6 @@
+//Definiciones de elementos multimedia
 import { DEF } from "../def.js";
-import { Bote } from '../logica/bote.js';
+//Clases
 import { Bullets } from '../logica/bullet.js';
 import { Carguero } from '../logica/carguero.js';
 import { Submarino } from '../logica/submarino.js';
@@ -22,6 +23,7 @@ export class Game extends Phaser.Scene{
     this.velocidadBaja = 50;
     if (!this.cargaPartida)
     {
+      //Creo los objetos
       this.destructor = new Destructor('Destructor',this.velocidadMedia,18,0,0,0,1,0,0,0,0,0,12, 30);
       this.submarino = new Submarino('Submarino',this.velocidadBaja,0,14,0,0,180,2,3,0,0,0,0, false, 16, 30);
       this.carguero1 = new Carguero('Carguero1',this.velocidadBaja,8,0,0,0,3); // Creo el objeto carguero1 
@@ -275,7 +277,6 @@ export class Game extends Phaser.Scene{
     this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
     this.soundAlarm = this.sound.add(DEF.AUDIO.ALERTA);
     this.soundBackground = this.sound.add(DEF.AUDIO.JUEGO,{loop: true});
-    let audioActivado = true;
     this.soundAlarmBarco = this.sound.add(DEF.AUDIO.ALERTABARCO);
     this.soundCanionDes = this.sound.add(DEF.AUDIO.DISPARODES);
     this.soundCanionSub = this.sound.add(DEF.AUDIO.DISPAROSUB);
@@ -284,6 +285,7 @@ export class Game extends Phaser.Scene{
     this.soundImpacto = this.sound.add(DEF.AUDIO.IMPACTO);
     this.soundBackground.play({volume: 0.2, loop: true});
     this.soundAction = this.sound.add(DEF.AUDIO.ACTION);
+    let audioActivado = true;
 
     //Islas
     this.isla1 = self.physics.add.image(2100,900,DEF.IMAGENES.ISLA).setDepth(5);
@@ -325,14 +327,14 @@ export class Game extends Phaser.Scene{
       }
     });
     
-    //Genero todos elementos del equipo correspondiente segun el equipo del jugador actual
+    //Genero todos elementos del equipo correspondiente según el equipo del jugador actual
     if(self.equipo === 1){
       generarEquipo1();
       //Botones visuales y alertas del equipo 1
-      this.botonCAMBIARARMA = self.physics.add.image(800, 960, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCAMBIARARMADESTRU()).setDisplaySize(120,120);
-      this.botonCAMARA = self.physics.add.image(940, 960, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCAMARA()).setDisplaySize(120,120);
-      this.botonHOME = self.physics.add.image(800, 30, DEF.IMAGENES.BOTONHOME).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickHOME()).setDisplaySize(120,120);
-      this.botonSAVE = self.physics.add.image(950, 30, DEF.IMAGENES.BOTONGUARDAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSAVE()).setDisplaySize(120,120);
+      this.botonCAMBIARARMA = self.physics.add.image(800, 960, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => clickCAMBIARARMADESTRU()).setDisplaySize(120,120);
+      this.botonCAMARA = self.physics.add.image(940, 960, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => clickCAMARA()).setDisplaySize(120,120);
+      this.botonHOME = self.physics.add.image(800, 30, DEF.IMAGENES.BOTONHOME).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => clickHOME()).setDisplaySize(120,120);
+      this.botonSAVE = self.physics.add.image(950, 30, DEF.IMAGENES.BOTONGUARDAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => clickSAVE()).setDisplaySize(120,120);
       this.carg = self.add.sprite(1650, 350, 'CARGUEROSALERT').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(120,120);
       this.disp = self.add.sprite(1650, 500, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(120,120);
 
@@ -384,71 +386,71 @@ export class Game extends Phaser.Scene{
       //Agrego MiniCamara
       this.camaraEventos = this.cameras.add(1300, 900, 400, 100).setZoom(0.5);
       this.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
-    }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
+    }else{ 
+      //Genero el equipo 2 submarino y genero la imagen del destructor y los cargueros actualizarla con el movimiento del otro jugador      
       generarEquipo2();
       // Botones visuales del equipo 2
-      this.botonDOWNDI = self.physics.add.image(710, 800, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickBAJA()).setDisplaySize(80,80);
-      this.botonSUBE = self.physics.add.image(810, 800, DEF.IMAGENES.BOTONSUBIR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSUBE()).setDisplaySize(80,80);
-      this.botonSONAR = self.physics.add.image(910, 800, DEF.IMAGENES.BOTONSONAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSONAR()).setDisplaySize(80,80);
-      this.botonCAMBIARARMA = self.physics.add.image(1010, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCAMBIARARMASUB()).setDisplaySize(80,80);
-      this.botonLARGAVISTA = self.physics.add.image(1110, 800, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickLARGAVISTA()).setDisplaySize(80,80);
-      this.botonHOME = self.physics.add.image(880, 200, DEF.IMAGENES.BOTONHOME).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickHOME()).setDisplaySize(80,80);
-      //this.botonSAVE = self.physics.add.image(980, 200, DEF.IMAGENES.BOTONGUARDAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickSAVE()).setDisplaySize(80,80);
+      this.botonDOWNDI = self.physics.add.image(710, 800, DEF.IMAGENES.BOTONDOWNDI).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => clickBAJA()).setDisplaySize(80,80);
+      this.botonSUBE = self.physics.add.image(810, 800, DEF.IMAGENES.BOTONSUBIR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => clickSUBE()).setDisplaySize(80,80);
+      this.botonSONAR = self.physics.add.image(910, 800, DEF.IMAGENES.BOTONSONAR).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => clickSONAR()).setDisplaySize(80,80);
+      this.botonCAMBIARARMA = self.physics.add.image(1010, 800, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => clickCAMBIARARMASUB()).setDisplaySize(80,80);
+      this.botonLARGAVISTA = self.physics.add.image(1110, 800, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => clickLARGAVISTA()).setDisplaySize(80,80);
+      this.botonHOME = self.physics.add.image(880, 200, DEF.IMAGENES.BOTONHOME).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => clickHOME()).setDisplaySize(80,80);
       this.disp = self.add.sprite(1500, 500, 'ALERTADISPARO').setOrigin(0).setScrollFactor(0).setDepth(10).setDisplaySize(80,80);
       
-      // Parte superior del HUD
+      //Parte superior del HUD
       self.UISubVida =  self.add.text(1100, 230, 'Vida: ' + self.submarino.vida, { font: '30px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
       self.UISubMunicionTor =  self.add.text(1100, 260, 'Munición torpedos: ' + self.submarino.ammoTorpedos, { font: '30px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
       self.UISubMunicionCan =  self.add.text(1100, 290, 'Munición cañon: ' + self.submarino.ammoCanion, { font: '30px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
       self.UISubArmAct =  self.add.text(1100, 320, 'Arma actual: cañon', { font: '30px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);      
     } 
     
-    function ClickBAJA(){
+    function clickBAJA(){
       baja();
     }
     
-    function ClickSUBE(){
+    function clickSUBE(){
       sube()
     }
 
-    function ClickSONAR(){
+    function clickSONAR(){
       sonar();
     }
 
-    function ClickCAMBIARARMASUB(){
+    function clickCAMBIARARMASUB(){
       cambiarArmaSub();
     }
 
-    function ClickCAMBIARARMADESTRU(){
+    function clickCAMBIARARMADESTRU(){
       cambiarArmaDestr();
     }
 
-    function ClickLARGAVISTA(){
+    function clickLARGAVISTA(){
       largaVista();
     }
 
-    function ClickCAMARA(){
+    function clickCAMARA(){
       camaraDestrCarg();
     }
     
-    function ClickHOME(){
+    function clickHOME(){
       self.soundBackground.stop();
       self.soundAction.stop();
       self.socket.disconnect();
       self.scene.start(DEF.SCENES.MENUPRINCIPAL);
     }
     
-    function ClickSAVE(){
+    function clickSAVE(){
       if(guardoP !== true){
         guardarPartida();
         guardoP = true;
         self.socket.emit('guardarPartida', self.partida);
         self.msjPartidaGuardada =  self.add.text(500, 600, '', { font: '60px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10); 
         
-        // Activo cuenta regresiva
+        //Activo cuenta regresiva
         self.cuentaGPartida = self.time.addEvent({ delay: 1000, callback: muestroPG, callbackScope: self, loop: true});
             
-        // Vuelvo a vista normal y elimino aviso
+        //Vuelvo a vista normal y elimino aviso
         self.resetPG = self.time.addEvent({ delay: 5000, callback: eliminoMsjPG, callbackScope: self, repeat: 0 });
         
         function eliminoMsjPG(){
@@ -469,15 +471,15 @@ export class Game extends Phaser.Scene{
       }
     }
 
-    function alertaCargueros() {
+    function alertaCargueros(){
       self.anims.create({  
         key: 'animalertcargueros',
         frames: [
-            { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROS.png" },
-            { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROSROJO.png" },
-            { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROS.png" },
-            { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROSROJO.png" },
-            { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROS.png" },
+          { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROS.png" },
+          { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROSROJO.png" },
+          { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROS.png" },
+          { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROSROJO.png" },
+          { key: 'CARGUEROSALERT',frame:"botonALERTACARGUEROS.png" },
         ],
         frameRate: 5,
         repeat:3,
@@ -486,7 +488,7 @@ export class Game extends Phaser.Scene{
       self.carg.play('animalertcargueros'); 
     }
     
-    function ALERTADISPARO() {
+    function alertaDisparo(){
       self.anims.create({  
         key: 'anidisp',
         frames: [
@@ -505,31 +507,31 @@ export class Game extends Phaser.Scene{
     }
 
     function generarEquipo1(){     
-      // Genero los objetos cargueros, con sus imagenes, colisiones, etc
+      //Genero los objetos cargueros, con sus imagenes, colisiones, etc.
       generarCargueros();
 
-      // Genero la imagen del destructor, colisiones, particulas, etc
+      //Genero la imagen del destructor, colisiones, particulas, etc.
       generarDestructor();
 
-      // Genero la imagen del submarino enemigo
+      //Genero la imagen del submarino enemigo
       generarSubmarinoEnemigo();
     }
 
     function generarEquipo2(){
-      // Genero la imagen del submarino, colisiones, particulas, etc
+      //Genero la imagen del submarino, colisiones, particulas, etc
       generarSubmarino();
 
-      // Genero la imagen del destructor enemigo
+      //Genero la imagen del destructor enemigo
       generarDestructorEnemigo();
 
-      // Genero las imagenes de los cargueros enemigos
+      //Genero las imagenes de los cargueros enemigos
       generarCarguerosEnemigos();
     }
 
-    // Generar destructor
+    //Generar destructor
     function generarDestructor()
     {
-      // Genero las posiciones X e Y para el destructor, iniciara el juego aleatoriamente arriba, abajo o adelante del grupo de cargueros.
+      //Genero las posiciones X e Y para el destructor, iniciara el juego aleatoriamente arriba, abajo o adelante del grupo de cargueros.
       if(!self.cargaPartida)
       {
         let random = Math.random();
@@ -544,118 +546,116 @@ export class Game extends Phaser.Scene{
           self.destructor.posY = self.carguero1.posY + 600;
         }
 
-        // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+        //Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
         self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
-        self.destructor.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
-        self.destructor.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+        self.destructor.imagen.setCollideWorldBounds(true) //Colisiones con el fin del mapa
+        self.destructor.imagen.setDrag(1000) //Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
 
-        //guardo la reticula y el set de balas en variables propias de la clase destructor
+        //Guardo la reticula y el set de balas en variables propias de la clase destructor
         self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, DEF.SPRITES.RETICULA).setCollideWorldBounds(true);
         self.destructor.bullet = self.playerBullets;
         self.destructor.cargas = 1;
-        // Particulas
-        self.destructor.parti = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
-        const emitter = self.destructor.parti.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
-          speed: 10, // Velocidad con la que se mueven
-          scale: {start: 0.08, end: 0}, // Tamaño
-          blendMode: "ADD" // Efecto a aplicar
+        
+        //Particulas
+        self.destructor.parti = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) //Imagen Blue como particula
+        const emitter = self.destructor.parti.createEmitter({ //Funcion emitter de phaser para emitir varias particulas
+          speed: 10, //Velocidad con la que se mueven
+          scale: {start: 0.08, end: 0}, //Tamaño
+          blendMode: "ADD" //Efecto a aplicar
         })
         self.destructor.parti.setPosition(self.destructor.imagen.x, self.destructor.imagen.y)
-        emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
+        emitter.startFollow(self.destructor.imagen) //Le indicamos que sigan al destructor
       }
       else if (self.destructor.vida <= 0)
       {
-         // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
-         self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
-         self.destructor.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
-         self.destructor.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+        //Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+        self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
+        self.destructor.imagen.setCollideWorldBounds(true) //Colisiones con el fin del mapa
+        self.destructor.imagen.setDrag(1000) //Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
 
-         destroyed(self.destructor.imagen); //Funcion que anima fuego
-         self.destructor.imagen.setActive(false);
-         self.destructor.imagen.setVisible(false);
-         self.destructor.imagen.removeInteractive();
-
+        destroyed(self.destructor.imagen); //Funcion que anima fuego
+        self.destructor.imagen.setActive(false);
+        self.destructor.imagen.setVisible(false);
+        self.destructor.imagen.removeInteractive();
       }
       else
       {
-         // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
-         self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
-         self.destructor.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
-         self.destructor.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
+        //Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+        self.destructor.imagen = self.physics.add.image(self.destructor.posX, self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
+        self.destructor.imagen.setCollideWorldBounds(true) //Colisiones con el fin del mapa
+        self.destructor.imagen.setDrag(1000) //Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
  
-         //guardo la reticula y el set de balas en variables propias de la clase destructor
-         self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, DEF.SPRITES.RETICULA).setCollideWorldBounds(true);
-         self.destructor.bullet = self.playerBullets;
-         self.destructor.cargas = 1;
-         // Particulas
-         const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
-         const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
-           speed: 10, // Velocidad con la que se mueven
-           scale: {start: 0.08, end: 0}, // Tamaño
-           blendMode: "ADD" // Efecto a aplicar
+        //Guardo la reticula y el set de balas en variables propias de la clase destructor
+        self.destructor.reticula = self.physics.add.sprite(self.destructor.posX, self.destructor.posY, DEF.SPRITES.RETICULA).setCollideWorldBounds(true);
+        self.destructor.bullet = self.playerBullets;
+        self.destructor.cargas = 1;
+        
+        //Particulas
+        const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
+        const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
+        speed: 10, //Velocidad con la que se mueven
+           scale: {start: 0.08, end: 0}, //Tamaño
+           blendMode: "ADD" //Efecto a aplicar
          })
          particles.setPosition(self.destructor.imagen.x, self.destructor.imagen.y)
-         emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
+         emitter.startFollow(self.destructor.imagen) //Le indicamos que sigan al destructor
       }
 
-      // Se indica que la camara siga al destructor
+      //Se indica que la camara siga al destructor
       self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
       self.siguiendoDes = true;
-
-      // Zoom de la cámara
+      //Zoom de la cámara
       self.cameras.main.setZoom(0.9);
-      // Se crea una colision del destructor con las islas
+      //Se crea una colision del destructor con las islas
       self.physics.add.collider(self.destructor.imagen, self.isla1); 
       self.physics.add.collider(self.destructor.imagen, self.isla2); 
       self.physics.add.collider(self.destructor.imagen, self.isla3); 
       self.physics.add.collider(self.destructor.imagen, self.isla4); 
-      // Se crea una colision del destructor con la bomba
-      self.physics.add.collider(self.destructor.imagen, self.bomb);
-      // Se crea una colision del destructor con los cargueros
+      //Se crea una colision del destructor con los cargueros
       self.collDesCarg1 = self.physics.add.collider(self.destructor.imagen, self.carguero1.imagen, handleCollisionCargoDes, collisionCargoDes, self);
       self.collDesCarg2 = self.physics.add.collider(self.destructor.imagen, self.carguero2.imagen, handleCollisionCargoDes, collisionCargoDes, self);
       self.collDesCarg3 = self.physics.add.collider(self.destructor.imagen, self.carguero3.imagen, handleCollisionCargoDes, collisionCargoDes, self);
       self.collDesCarg4 = self.physics.add.collider(self.destructor.imagen, self.carguero4.imagen, handleCollisionCargoDes, collisionCargoDes, self);
       self.collDesCarg5 = self.physics.add.collider(self.destructor.imagen, self.carguero5.imagen, handleCollisionCargoDes, collisionCargoDes, self);
       self.collDesCarg6 = self.physics.add.collider(self.destructor.imagen, self.carguero6.imagen, handleCollisionCargoDes, collisionCargoDes, self);
-      // Se crea una colision del barco con las costas
+      //Se crea una colision del barco con las costas
       self.physics.add.collider(self.destructor.imagen, self.costa1);
       self.physics.add.collider(self.destructor.imagen, self.costa2);
-      // Se crea colision con el submarino
+      //Se crea colision con el submarino
       self.colliderSub = self.physics.add.collider(self.destructor.imagen, self.submarino.imagen);
 
-      // Se crea el evento de cambio de armas para el destructor, 0 es para canion, 1 para cargas de profundidad
+      //Se crea el evento de cambio de armas para el destructor, 0 es para cañon, 1 para cargas de profundidad
       self.input.keyboard.on('keydown-' + 'Z', function (event){
         cambiarArmaDestr();
       });
 
-      // Funcion que al precionar la tecla V, cambia la profundidad de las cargas de profundidad del destructor
+      //Se crea el evento que al precionar la tecla V, cambia la profundidad de las cargas de profundidad del destructor
       self.input.keyboard.on('keydown-' + 'V', function (event){
         cambiarCargaDestr();
       });
     }
 
-    // Generar destructor
+    //Generar destructor enemigo
     function generarDestructorEnemigo()
     {
       if(!self.cargaPartida)
       {
-        // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+        //Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
         self.destructor.imagen = self.physics.add.image(self.destructor.posX,self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
       
-        // Particulas
-        self.destructor.parti = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
-        const emitter = self.destructor.parti.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
-          speed: 10, // Velocidad con la que se mueven
-          scale: {start: 0.08, end: 0}, // Tamaño
-          blendMode: "ADD" // Efecto a aplicar
+        //Particulas
+        self.destructor.parti = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) //Imagen Blue como particula
+        const emitter = self.destructor.parti.createEmitter({ //Funcion emitter de phaser para emitir varias particulas
+          speed: 10, //Velocidad con la que se mueven
+          scale: {start: 0.08, end: 0}, //Tamaño
+          blendMode: "ADD" //Efecto a aplicar
         })
         self.destructor.parti.setPosition(self.destructor.posX,self.destructor.posY)
-        emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
+        emitter.startFollow(self.destructor.imagen) //Le indicamos que sigan al destructor
       }
       else if (self.destructor.vida <= 0)
       {
-        // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+        //Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
         self.destructor.imagen = self.physics.add.image(self.destructor.posX,self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
         destroyed(self.destructor.imagen); //Funcion que anima fuego
         self.destructor.imagen.setActive(false);
@@ -664,20 +664,19 @@ export class Game extends Phaser.Scene{
       }
       else
       {
-        // Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
+        //Generamos la imagen del destructor al objeto destructor y sus propiedades (Tamaño, rotacion, profundidad y que sea empujable)
         self.destructor.imagen = self.physics.add.image(self.destructor.posX,self.destructor.posY, DEF.IMAGENES.DESTRUCTOR).setDisplaySize(200, 100).setRotation(0).setDepth(5).setPushable(false);
       
-        // Particulas
-        const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
-        const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
-          speed: 10, // Velocidad con la que se mueven
-          scale: {start: 0.08, end: 0}, // Tamaño
-          blendMode: "ADD" // Efecto a aplicar
+        //Particulas
+        const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) //Imagen Blue como particula
+        const emitter = particles.createEmitter({ //Funcion emitter de phaser para emitir varias particulas
+          speed: 10, //Velocidad con la que se mueven
+          scale: {start: 0.08, end: 0}, //Tamaño
+          blendMode: "ADD" //Efecto a aplicar
         })
         particles.setPosition(self.destructor.posX,self.destructor.posY)
-        emitter.startFollow(self.destructor.imagen) // Le indicamos que sigan al destructor
+        emitter.startFollow(self.destructor.imagen) //Le indicamos que sigan al destructor
       }
-      
       self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
       self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
       self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
@@ -687,60 +686,54 @@ export class Game extends Phaser.Scene{
       self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
     }
 
-    // Genero todo lo relacionado a la imagen del submarino del jugador actual y sus propiedades (Posicion X e Y, tamaño, profundidad y que sea empujable)
+    //Genero todo lo relacionado a la imagen del submarino del jugador actual y sus propiedades (Posicion X e Y, tamaño, profundidad y que sea empujable)
     function generarSubmarino(){
-      // Genero las posiciones X e Y para el submarino
+      //Genero las posiciones X e Y para el submarino
       if(!self.cargaPartida)
       {
-        posX = Math.floor((Math.random()*((frameW-800)-(frameW*0.75)))+(frameW*0.75)), // El margen x para generarse el submarino sera desde el 70% del mapa hasta el final - 800 del lado derecho
-        posY = Math.floor((Math.random()*((frameH-300)- margenCostaY))+margenCostaY), // El margen y para generarse el submarino es el mismo que los demas barcos (total - 300)
+        posX = Math.floor((Math.random()*((frameW-800)-(frameW*0.75)))+(frameW*0.75)), //El margen x para generarse el submarino sera desde el 70% del mapa hasta el final - 800 del lado derecho
+        posY = Math.floor((Math.random()*((frameH-300)- margenCostaY))+margenCostaY), //El margen y para generarse el submarino es el mismo que los demas barcos (total - 300)
         
-        // Actualizo la posicion del objeto submarino creado previamente
+        //Actualizo la posicion del objeto submarino creado previamente
         self.submarino.posX = posX;
         self.submarino.posY = posY;
       }
 
       self.submarino.imagen = self.physics.add.image(self.submarino.posX, self.submarino.posY, DEF.IMAGENES.UBOATP0).setDisplaySize(100,50).setDepth(5).setPushable(false);
+      self.submarino.imagen.setCollideWorldBounds(true) //Colisiones con el fin del mapa
+      self.submarino.imagen.setDrag(1000) //Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
 
-      self.submarino.imagen.setCollideWorldBounds(true) // Colisiones con el fin del mapa
-      self.submarino.imagen.setDrag(1000) // Es la velocidad de desaceleracion con el tiempo cuando se deja de mover un jugador
-
-      //guardo la reticula y el set de balas en variables propias de la clase submarino
+      //Guardo la reticula y el set de balas en variables propias de la clase submarino
       self.submarino.bullet = self.playerBullets;
-      //self.submarino.reticula = self.physics.add.sprite(self.submarino.posX, self.submarino.posY, 'crosshair').setCollideWorldBounds(true);
       self.submarino.reticula = self.physics.add.sprite(self.submarino.posX, self.submarino.posY, DEF.SPRITES.RETICULA).setCollideWorldBounds(true);
       self.submarino.reticula.setDrag(1000)
       self.submarino.reticula.x += 300;
-      //self.submarino.reticula.y += pointer.movementY;
-      // Particulas
-     // const particles = self.add.particles("Blue").setDepth(2)
-      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
-      const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
-        speed: 10, // Velocidad con la que se mueven
-        scale: {start: 0.08, end: 0}, // Tamaño
-        blendMode: "ADD" // Efecto a aplicar
+
+      //Particulas
+      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) //Imagen Blue como particula
+      const emitter = particles.createEmitter({ //Función emitter de phaser para emitir varias particulas
+        speed: 10, //Velocidad con la que se mueven
+        scale: {start: 0.08, end: 0}, //Tamaño
+        blendMode: "ADD" //Efecto a aplicar
       })
       particles.setPosition(self.submarino.imagen.x, self.submarino.imagen.y)
-      emitter.startFollow(self.submarino.imagen) // Le indicamos que sigan al objeto barco.
+      emitter.startFollow(self.submarino.imagen) //Le indicamos que sigan al objeto barco.
 
-      // Se indica que la camara siga al componente barco
+      //Se indica que la camara siga al componente barco
       self.cameras.main.startFollow(self.submarino.imagen,true, 0.09, 0.09); 
-      // Zoom de la cámara
+      //Zoom de la cámara
       self.cameras.main.setZoom(1.4);
-      
-      // Se crea una colision del barco con las islas
+      //Se crea una colision del barco con las islas
       self.colliderSubIsla1 = self.physics.add.collider(self.submarino.imagen, self.isla1);
       self.colliderSubIsla2 = self.physics.add.collider(self.submarino.imagen, self.isla2);
       self.colliderSubIsla3 = self.physics.add.collider(self.submarino.imagen, self.isla3);
       self.colliderSubIsla4 = self.physics.add.collider(self.submarino.imagen, self.isla4);
-      // Se crea una colision del barco con la bomba
-      self.physics.add.collider(self.submarino.imagen, self.bomb);
-      // Se crea una colision del barco con las costas
+      //Se crea una colision del barco con las costas
       self.physics.add.collider(self.submarino.imagen, self.costa1);
       self.physics.add.collider(self.submarino.imagen, self.costa2);
-      // Si el submarino se encuentra en la superficie, que colisione con el destructor
+      //Si el submarino se encuentra en la superficie, que colisione con el destructor
       self.colliderSub = self.physics.add.collider(self.submarino.imagen, self.destructor.imagen);
-      // Se crea colision del submarino con los cargueros
+      //Se crea colision del submarino con los cargueros
       self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen, handleCollisionCargoSub, collisionCargoSub, self);
       self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen, handleCollisionCargoSub, collisionCargoSub, self);
       self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen, handleCollisionCargoSub, collisionCargoSub, self);
@@ -748,56 +741,55 @@ export class Game extends Phaser.Scene{
       self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen, handleCollisionCargoSub, collisionCargoSub, self);
       self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen, handleCollisionCargoSub, collisionCargoSub, self);
  
-      // Se crea el evento de cambio de armas
+      //Se crea el evento de cambio de armas
       self.input.keyboard.on('keydown-' + 'Z', function (event){
         cambiarArmaSub();
       });
-      // Se crea el evento de cambio de largavistas
+      //Se crea el evento de cambio de largavistas
       self.input.keyboard.on('keydown-' + 'L', function (event){
         largaVista();
       });
-      // Se crea el evento de activar sonar
+      //Se crea el evento de activar sonar
       self.input.keyboard.on('keydown-' + 'F', function (event){
         sonar();
       });
-      // funcion que al presionar la tecla Q, el submarino baja, si bajas a nivel 1 podes disparar solo torpedos, en nivel 2 nada
+      //Función que al presionar la tecla Q el submarino baja, si baja a nivel 1 puede disparar solo torpedos, en nivel 2 no dispara nada
       self.input.keyboard.on('keydown-' + 'Q', function (event){
         baja();
       });
-      //funcion que al precionar la tecla E, el submarino sube
+      //Función que al presionar la tecla E el submarino sube
       self.input.keyboard.on('keydown-' + 'E', function (event){
         sube();
       });
     }
     
-    // Genero todo lo relacionado a la imagen del submarino del equipo enemigo y sus propiedades (Tamaño, profundidad y que sea empujable)
+    //Genero todo lo relacionado a la imagen del submarino del equipo enemigo y sus propiedades (Tamaño, profundidad y que sea empujable)
     function generarSubmarinoEnemigo(){
       self.submarino.imagen = self.physics.add.image(0,0, DEF.IMAGENES.UBOATP0).setDisplaySize(100,50).setDepth(5).setPushable(false)
-      posX = Math.floor((Math.random()*((frameW-800)-(frameW*0.75)))+(frameW*0.75)), // El margen x para generarse el submarino sera desde el 70% del mapa hasta el final - 800 del lado derecho
-      posY = Math.floor((Math.random()*((frameH-300)- margenCostaY))+margenCostaY), // El margen y para generarse el submarino es el mismo que los demas barcos (total - 300)
+      posX = Math.floor((Math.random()*((frameW-800)-(frameW*0.75)))+(frameW*0.75)), //El margen x para generarse el submarino sera desde el 70% del mapa hasta el final - 800 del lado derecho
+      posY = Math.floor((Math.random()*((frameH-300)- margenCostaY))+margenCostaY), //El margen y para generarse el submarino es el mismo que los demas barcos (total - 300)
       self.submarino.posX = posX;
       self.submarino.posY = posY;
-      // Particulas
-      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
-      const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
-        speed: 10, // Velocidad con la que se mueven
-        scale: {start: 0.08, end: 0}, // Tamaño
-        blendMode: "ADD" // Efecto a aplicar
+      //Particulas
+      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) //Imagen Blue como particula
+      const emitter = particles.createEmitter({ //Funcion emitter de phaser para emitir varias particulas
+        speed: 10, //Velocidad con la que se mueven
+        scale: {start: 0.08, end: 0}, //Tamaño
+        blendMode: "ADD" //Efecto a aplicar
       })
       particles.setPosition(0, -11);
-
       self.colliderSub = self.physics.add.collider(self.destructor.imagen, self.submarino.imagen);
     }
 
-    // Funcion para generarle las imagenes y las particulas a cada barco
+    //Función para generarle las imágenes y las particulas a cada barco
     function generarCargueros(){
-      // Genero las posiciones X e Y para el primer carguero principal
+      //Genero las posiciones X e Y para el primer carguero principal
       if(!self.cargaPartida)
       {
-        posX = Math.floor((Math.random()*((frameW*0.2)- margenCostaX))+margenCostaX); // El margen x para generarse los cargueros sera desde la costa (689) hasta el 20% del total del mapa
-        posY = Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY); // El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa    
+        posX = Math.floor((Math.random()*((frameW*0.2)- margenCostaX))+margenCostaX); //El margen x para generarse los cargueros sera desde la costa (689) hasta el 20% del total del mapa
+        posY = Math.floor((Math.random()*((frameH-400)- margenCostaY))+margenCostaY); //El margen y para generarse los cargueros sera el (total - 400) de la parte de arriba y de abajo del mapa    
   
-        // Actualizo la posicion x e de todos los cargueros en base a la posicion inicial del carguero principal
+        //Actualizo la posición X e Y de todos los cargueros en base a la posicion inicial del carguero principal
         self.carguero1.posX = posX;
         self.carguero1.posY = posY;
         self.carguero2.posX = posX+200;
@@ -812,7 +804,7 @@ export class Game extends Phaser.Scene{
         self.carguero6.posY = posY-250;
       }      
 
-      // Inserto los objetos cargueros en un array de cargueros para poder crear sus imagenes en un for
+      //Inserto los objetos cargueros en un array de cargueros para poder crear sus imagenes en una iteración
       arrayCargueros[0] = self.carguero1;
       arrayCargueros[1] = self.carguero2;
       arrayCargueros[2] = self.carguero3;
@@ -820,42 +812,37 @@ export class Game extends Phaser.Scene{
       arrayCargueros[4] = self.carguero5;
       arrayCargueros[5] = self.carguero6;
 
-      // Genero las imagenes de los cargueros, colisiones, particulas, etc
+      //Genero las imágenes de los cargueros, colisiones, particulas, etc.
       arrayCargueros.forEach(function(carguero){
         if(carguero.vida > 0)
         {
           carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
-          // Particulas
-          //const particles = self.add.particles("Blue").setDepth(2)
-          carguero.particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(1) // Imagen Blue como particula
-          const emitter = carguero.particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
-            speed: 10, // Velocidad con la que se mueven
-            scale: {start: 0.08, end: 0}, // Tamaño
-            blendMode: "ADD" // Efecto a aplicar
+          //Particulas
+          carguero.particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(1) //Imagen Blue como particula
+          const emitter = carguero.particles.createEmitter({ //Función emitter de phaser para emitir varias particulas
+            speed: 10, //Velocidad con la que se mueven
+            scale: {start: 0.08, end: 0}, //Tamaño
+            blendMode: "ADD" //Efecto a aplicar
           })
           carguero.particles.setPosition(0, -11)
-          emitter.startFollow(carguero.imagen) // Le indicamos que sigan al destructor
-  
-          // Lo vuelvo inamovible
-          //carguero.imagen.setImmovable(true);
-          carguero.imagen.setCollideWorldBounds(true); // Colisiones con el fin del mapa
-          // Se crea una colision de los cargueros con la lisa isla
+          emitter.startFollow(carguero.imagen) //Le indicamos que sigan al destructor
+
+          //Colisiones con el fin del mapa
+          carguero.imagen.setCollideWorldBounds(true); 
+          //Se crea una colision de los cargueros con la lisa
           self.physics.add.collider(carguero.imagen, self.isla1, handleCollisionCargo, collisionCargoIsland, self); 
           self.physics.add.collider(carguero.imagen, self.isla2, handleCollisionCargo, collisionCargoIsland, self); 
           self.physics.add.collider(carguero.imagen, self.isla3, handleCollisionCargo, collisionCargoIsland, self); 
           self.physics.add.collider(carguero.imagen, self.isla4, handleCollisionCargo, collisionCargoIsland, self); 
-          // Se crea una colision del carguero con la bomba
-          self.physics.add.collider(carguero.imagen, self.bomb);
-          // Se crea una colision del carguero con la costa1
+          //Se crea una colision del carguero con la costa1
           self.physics.add.collider(carguero.imagen, self.costa1);
-          // Se crea una colision del carguero con la costa2
-          
+          //Se crea una colision del carguero con la costa2
           self.physics.add.collider(carguero.imagen, self.costa2, handleCollisionCosta, colisionCargoCosta2, self);
         }
         else
         {
           carguero.imagen = self.physics.add.image(carguero.posX, carguero.posY, DEF.IMAGENES.CARGUERO).setDisplaySize(200, 75).setDepth(5).setPushable(false);
-          destroyed(carguero.imagen); //Funcion que anima fuego
+          destroyed(carguero.imagen); //Función que anima fuego
           carguero.imagen.setActive(false);
           carguero.imagen.setVisible(false);
           carguero.imagen.removeInteractive();
@@ -863,14 +850,14 @@ export class Game extends Phaser.Scene{
       })
     };
 
-    // Funcion para generarle las imagenes y las particulas a cada carguero estando en el equipo del submarino
+    //Función para generarle las imagenes y las particulas a cada carguero estando en el equipo del submarino
     function generarCarguerosEnemigos(){
-      // Particulas
-      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(5) // Imagen Blue como particula
-      const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
-        speed: 10, // Velocidad con la que se mueven
-        scale: {start: 0.08, end: 0}, // Tamaño
-        blendMode: "ADD" // Efecto a aplicar
+      //Particulas
+      const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(5) //Imagen Blue como particula
+      const emitter = particles.createEmitter({ //Función emitter de phaser para emitir varias particulas
+        speed: 10, //Velocidad con la que se mueven
+        scale: {start: 0.08, end: 0}, //Tamaño
+        blendMode: "ADD" //Efecto a aplicar
       })
       particles.setPosition(0, -11)
       emitter.startFollow( self.carguero1.imagen);
@@ -957,26 +944,22 @@ export class Game extends Phaser.Scene{
         self.carguero6.imagen.setVisible(false);
         self.carguero6.imagen.removeInteractive();
       }
-        
       
-      // Colisiones cargueros con el submarino
+      //Colisiones de cargueros con el submarino
       self.colliderCarg1 = self.physics.add.collider(self.submarino.imagen, self.carguero1.imagen);
       self.colliderCarg2 = self.physics.add.collider(self.submarino.imagen, self.carguero2.imagen);
       self.colliderCarg3 = self.physics.add.collider(self.submarino.imagen, self.carguero3.imagen);
       self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
       self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
       self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
-      
     };
 
-    function collisionCargoIsland(carguero, isla)
-    {
+    function collisionCargoIsland(carguero, isla){
       return true;
     }
 
     //Funcion que maneja la colision entre el carguero y la isla
-    function handleCollisionCargo(carguero, isla)
-    {
+    function handleCollisionCargo(carguero, isla){
       if (carguero.body.touching.right) //Cuando la el carguero colisiona de "frente" gira 90 grados hacia abajo o hacia abajo, espera 2 segundos y continua con su marcha.
       {
         if(Math.floor(Math.random() * 2) === 0)
@@ -999,17 +982,15 @@ export class Game extends Phaser.Scene{
             contMarcha(carguero);
           }, 2000)
         }
-        
       }
     }
 
-    function collisionCargoDes()
-    {
+    function collisionCargoDes(){
       return true;
     }
-    //Funcion que maneja la colision entre el carguero y el destructor
-    function handleCollisionCargoDes(destructor, carguero)
-    {
+
+    //Función que maneja la colision entre el carguero y el destructor
+    function handleCollisionCargoDes(destructor, carguero){
       if (carguero.body.touching.right) //Cuando la el carguero colisiona de "frente" gira 90 grados hacia abajo o hacia abajo, espera 2 segundos y continua con su marcha.
       {
         if(Math.floor(Math.random() * 2) === 0)
@@ -1032,15 +1013,14 @@ export class Game extends Phaser.Scene{
             contMarcha(carguero);
           }, 2000)
         }
-        
       }
     }
 
-    function collisionCargoSub(submarino, carguero)
-    {
+    function collisionCargoSub(submarino, carguero){
       return true;
     }
-    //Funcion que maneja la colision entre el carguero y el submarino
+
+    //Función que maneja la colision entre el carguero y el submarino
     function handleCollisionCargoSub(submarino, carguero)
     {
       if (carguero.body.touching.right) //Cuando la el carguero colisiona de "frente" gira 90 grados hacia abajo o hacia abajo, espera 2 segundos y continua con su marcha.
@@ -1068,6 +1048,7 @@ export class Game extends Phaser.Scene{
       }
     }
 
+    //Manejo de la colisión entre los cargueros y la costa
     function handleCollisionCosta(carguero, costa2){
       if(carguero === self.carguero1.imagen)
         cargueroSalvado(self.carguero1);
@@ -1098,36 +1079,36 @@ export class Game extends Phaser.Scene{
       }
     }
 
+    //Función que cuenta la cantidad de cargueros que llegan a salvo a la costa
     function cargueroSalvado(carguero){
-      if (carguero.vida > 0)
+      if (carguero.vida > 0){
         carguerosAsalvo++;
         carguero.vida = 0;
+      }
     }
     
-    function colisionCargoCosta2(carguero, costa2)
-    {
+    function colisionCargoCosta2(carguero, costa2){
       return true;
     }
 
-    function contMarcha(carguero)
-    {
+    function contMarcha(carguero){
       const velCX = Math.cos((carguero.angle - 360) * 0.01745)
       const velCY = Math.sin((carguero.angle - 360) * 0.01745)
       carguero.setVelocityX(self.velocidadBaja * velCX)
       carguero.setVelocityY(self.velocidadBaja * velCY)
     } 
    
-    // SETEOS DE PROFUNDIDAD: 
+    //Ajustes de profundidad
+    //Cuando el submarino baja 
     function baja(){
       if(self.equipo === 2){
-        // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
-        // vea mi cambio de profundidad
+        //Paso de nivel 0 a 1, ajusto armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador vea mi cambio de profundidad
         if (self.submarino.profundidad === 0 && self.submarino.largavista === false){
           self.submarino.profundidad = 1;
           self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
           self.submarino.armas = 4;
           self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
-          // Cambio de cámara
+          //Cambio de cámara
           if (self.lvactivado === true){
             self.cameras.main.setMask(self.mask);
             self.cameras.main.setZoom(1.4);
@@ -1135,11 +1116,9 @@ export class Game extends Phaser.Scene{
           cambiarArmaSub();
         }else if (self.submarino.profundidad === 1 && self.submarino.largavista === false){
           if (self.usoSonar !== true){
-            // Pase de nivel 0 a 1, seteo armas en -1 (sin armas) y emito al socket para que el otro jugador
-            // vea mi cambio de profundidad
+            //Paso de nivel 0 a 1, ajusto armas en -1 (sin armas) y emito al socket para que el otro jugador vea mi cambio de profundidad
             self.submarino.profundidad = 2;
             self.submarino.armas = -1;
-            //self.submarino.imagen.setTexture('UbootProfundidad2');
             self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2);
             self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
             cambiarArmaSub();
@@ -1153,36 +1132,35 @@ export class Game extends Phaser.Scene{
         self.physics.world.removeCollider(self.colliderCarg5);
         self.physics.world.removeCollider(self.colliderCarg6); 
       
-        // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
+        //Ajusto la velocidad del submarino dependiendo a la profundidad en que se encuentre
         if (self.submarino.profundidad === 0){
-          // Si me encuentro en la superficie la velocidad va a ser lenta
+          //Si me encuentro en la superficie la velocidad va a ser lenta
           self.submarino.velocidad = self.velocidadBaja; 
         }else if(self.submarino.profundidad === 1){
-          // Si me encuentro a baja profundidad la velocidad va a ser media
+          //Si me encuentro a baja profundidad la velocidad va a ser media
           self.submarino.velocidad = self.velocidadMedia; 
         }else if(self.submarino.profundidad === 2){
-          // Si me encuentro a mucha profundidad la velocidad va a ser lenta
+          //Si me encuentro a mucha profundidad la velocidad va a ser media
           self.submarino.velocidad = self.velocidadMedia; 
         }
       }
     }
 
+    //Cuando el submarino sube
     function sube(){
-      // Idem anteriores pero subiendo de 1 a 0
+      //Paso de nivel 1 a 0, ajusto armas en 0 y emito al socket para que el otro jugador vea mi cambio de profundidad
       if (self.submarino.profundidad == 1 && self.submarino.largavista === false){
         if (self.usoSonar !== true){
           self.submarino.profundidad = 0;
           self.submarino.armas = 0;
-          //self.submarino.imagen.setTexture('uboot');
           self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0);
           self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
           cambiarArmaSub();
         }
       } else if (self.submarino.profundidad == 2 && self.submarino.largavista === false){
-        // Idem anteriores pero subiendo de 0 a 1
+        //Paso de nivel 2 a 1, ajusto armas en 4 y emito al socket para que el otro jugador vea mi cambio de profundidad
         self.submarino.profundidad = 1;
         self.submarino.armas = 4;
-        //self.submarino.imagen.setTexture('UbootProfundidad1');
         self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
         self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
         cambiarArmaSub();
@@ -1197,45 +1175,41 @@ export class Game extends Phaser.Scene{
         self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen,  handleCollisionCargoSub, collisionCargoSub, self);
       }
 
-      // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
+      //Ajusto la velocidad del submarino dependiendo a la profundidad en que se encuentre
       if (self.submarino.profundidad == 0){
-        // Si me encuentro en la superficie la velocidad va a ser lenta
+        //Si me encuentro en la superficie la velocidad va a ser lenta
         self.submarino.velocidad = self.velocidadBaja; 
       }else if(self.submarino.profundidad == 1){
-        // Si me encuentro a baja profundidad la velocidad va a ser media
+        //Si me encuentro a baja profundidad la velocidad va a ser media
         self.submarino.velocidad = self.velocidadMedia; 
       }else if(self.submarino.profundidad == 2){
-      // Si me encuentro a mucha profundidad la velocidad va a ser lenta
+        //Si me encuentro a mucha profundidad la velocidad va a ser lenta
         self.submarino.velocidad = self.velocidadBaja; 
       }
     }
 
+    //Sonar del submarino
     function sonar(){
-      // Activo sonar si hay sonares disponibles
+      //Activo sonar si hay sonares disponibles
       if(self.submarino.sonar>0){
         if (self.usoSonar !== true && self.nhSonar !== true && self.submarino.profundidad === 1 && self.noLargavistas !== true){
-          // Texto de aviso
+          //Texto de aviso
           self.statusSonar = self.add.text(550, 700, '', { font: '45px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
-          
           self.usoSonar = true;
-
-          // Activo sonido de sonar
+          //Activo sonido de sonar
           self.soundSonar.play();
-
-          // Cambio de zoom de la cámara
+          //Cambio de zoom de la cámara
           self.cameras.main.setZoom(0.9);
-          
-          // Activo cuenta regresiva
+          //Activo cuenta regresiva
           self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: actualizarContSonar, callbackScope: self, loop: true});
-          
-          // Vuelvo a vista normal y elimino aviso
+          //Vuelvo a vista normal y elimino aviso
           self.resetSonar = self.time.addEvent({ delay: 10000, callback: camaraSonar, callbackScope: self, repeat: 0 });
           
           function camaraSonar(){
-            // Restablezco zoom de la cámara   
+            //Restablezco zoom de la cámara   
             self.cameras.main.setZoom(1.4);
             self.usoSonar = false;
-            // Elimino texto de tiempo restante
+            //Elimino texto de tiempo restante
             removeText();
             self.soundSonar.stop();
             contadorS=0;
@@ -1254,13 +1228,16 @@ export class Game extends Phaser.Scene{
         }else if(self.submarino.profundidad === 0 || self.submarino.profundidad === 2 && self.noLargavistas !== true && self.submarino.largavista !== true){
           if(self.nhSonar !== true){
             self.nhSonar=true;
-            // Texto de aviso
+            //Texto de aviso
             self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+            //Activo cuenta regresiva
             self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoSonarProf, callbackScope: self, loop: true});
+            //Elimino aviso
             self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoSP, callbackScope: self, repeat: 0 });
+            
             function eliminoAvisoSP(){
               self.nhSonar = false;
-              // Elimino texto de aviso no hay sonar
+              //Elimino texto de aviso no hay sonar
               removeText();
               contadorS=0;
             }
@@ -1278,39 +1255,43 @@ export class Game extends Phaser.Scene{
         }
       }else{
         if (self.usoSonar !== true && self.nhSonar !== true && self.submarino.profundidad === 1 && self.noLargavistas !== true && self.submarino.largavista !== true){
-            self.nhSonar = true;
-            // Texto de aviso
-            self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
-
-            self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
-            self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
-            
-            function eliminoAvisoNHS(){
-              self.nhSonar = false;
-              // Elimino texto de aviso no hay sonar
-              removeText();
-              contadorS=0;
+          self.nhSonar = true;
+          //Texto de aviso
+          self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+          //Activo cuenta regresiva
+          self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoNoHaySonar, callbackScope: self, loop: true});
+          //Elimino aviso
+          self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoNHS, callbackScope: self, repeat: 0 });
+          
+          function eliminoAvisoNHS(){
+            self.nhSonar = false;
+            //Elimino texto de aviso no hay sonar
+            removeText();
+            contadorS=0;
+          }
+          function avisoNoHaySonar(){
+            contadorS++;
+            self.statusSonar.setText('                  ¡SONAR AGOTADO!');
+            if (contadorS === 5){
+              self.cuentaSonar.remove(true);
             }
-            function avisoNoHaySonar(){
-              contadorS++;
-              self.statusSonar.setText('                  ¡SONAR AGOTADO!');
-              if (contadorS === 5){
-                self.cuentaSonar.remove(true);
-              }
-            }
-            function removeText() {
-              self.statusSonar.destroy();
-            }
+          }
+          function removeText() {
+            self.statusSonar.destroy();
+          }
         }else if(self.submarino.profundidad === 0 || self.submarino.profundidad === 2 && self.noLargavistas !== true && self.submarino.largavista !== true){
           if(self.nhSonar !== true){
             self.nhSonar=true;
-            // Texto de aviso
+            //Texto de aviso
             self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
+            //Activo cuenta regresiva
             self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoSonarProf, callbackScope: self, loop: true});
+            //Elimino aviso
             self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoSP, callbackScope: self, repeat: 0 });
+            
             function eliminoAvisoSP(){
               self.nhSonar = false;
-              // Elimino texto de aviso no hay sonar
+              //Elimino texto de aviso no hay sonar
               removeText();
               contadorS=0;
             }
@@ -1329,8 +1310,9 @@ export class Game extends Phaser.Scene{
       }
     }
 
+    //Cambiar arma del submarino
     function cambiarArmaSub(){
-      //si esta en superficie, que cambie de armas tranquilamente
+      //Si esta en superficie que pueda cambiar armas
       if(self.submarino.profundidad === 0){
         if (self.submarino.armas === 0){
           self.submarino.armas = 1;
@@ -1340,11 +1322,11 @@ export class Game extends Phaser.Scene{
           self.UISubArmAct.setText('Arma actual: cañon');
         }
       }else if(self.submarino.profundidad === 1){
-        //si esta a profundidad 1 que solo pueda usar el arma 1, torpedos
-          self.submarino.armas = 4;
-          self.UISubArmAct.setText('Arma actual: torpedos'); 
+        //Si esta a profundidad 1 que solo pueda usar el arma 1 torpedos
+        self.submarino.armas = 4;
+        self.UISubArmAct.setText('Arma actual: torpedos'); 
       }else if(self.submarino.profundidad === 2){
-        //si esta en profundidad 2 que no pueda disparar
+        //Si esta en profundidad 2 que no pueda disparar
         self.submarino.armas = -1;
         self.UISubArmAct.setText('Arma actual: -');
       }
@@ -1357,6 +1339,7 @@ export class Game extends Phaser.Scene{
       self.submarino.reticula.y = self.submarino.imagen.y + (Math.sin((self.submarino.imagen.angle - 360) * 0.01745) * self.distMax);
     }
 
+    //Largavistas del submarino
     function largaVista(){
       if(self.submarino.largavista === false && self.submarino.profundidad === 0 && self.usoSonar !== true && self.nhSonar !== true){
         self.submarino.largavista = true;
@@ -1368,13 +1351,13 @@ export class Game extends Phaser.Scene{
         restablezcoMask();
       }else if((self.submarino.profundidad === 1 || self.submarino.profundidad === 2) && self.noLargavistas !== true && self.usoSonar !== true && self.nhSonar !== true){
         self.noLargavistas=true;
-        // Texto de aviso
+        //Texto de aviso
         self.statusSonar = self.add.text(550, 750, '', { font: '45px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
         self.cuentaSonar = self.time.addEvent({ delay: 1000, callback: avisoLargavistaSup, callbackScope: self, loop: true});
         self.resetSonar = self.time.addEvent({ delay: 5000, callback: eliminoAvisoLS, callbackScope: self, repeat: 0 });
         function eliminoAvisoLS(){
           self.noLargavistas = false;
-          // Elimino texto de aviso de largavistas solo en superficie
+          //Elimino texto de aviso de largavistas solo en superficie
           removeText();
           contadorS=0;
         }
@@ -1395,6 +1378,7 @@ export class Game extends Phaser.Scene{
       }
     }
 
+    //Cambiar arma del destructor
     function cambiarArmaDestr(){
       if (self.destructor.armas === 0){
         self.destructor.armas = 1;
@@ -1411,6 +1395,7 @@ export class Game extends Phaser.Scene{
       }
     }
 
+    //Cambiar cargas de profundidad del destructor
     function cambiarCargaDestr(){
       if(self.destructor.cargas === 1){
         self.destructor.cargas = 2;
@@ -1421,6 +1406,7 @@ export class Game extends Phaser.Scene{
       }
     }
 
+    //Cambio de cámaras entre los cargueros
     function camaraDestrCarg(){
       if(camaraActual == 0){
         self.cameras.main.startFollow(self.carguero1.imagen,true, 0.09, 0.09); 
@@ -1452,6 +1438,7 @@ export class Game extends Phaser.Scene{
       }
     }
 
+    //Cambio de cámaras con la minicamara entre los cargueros
     function camaraCargMini(){
       if(camaraActCarg == 0){
         self.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
@@ -1480,99 +1467,96 @@ export class Game extends Phaser.Scene{
       }
     }
 
+    //Detener el movimiento de los cargueros
     function detenerMovimientoCargueros(){
       // Detengo el movimiento de todos los cargueros
       self.carguero1.imagen.setAcceleration(0);
       self.carguero1.imagen.setVelocityX(0);
       self.carguero1.imagen.setVelocityY(0);
-
       self.carguero2.imagen.setAcceleration(0);
       self.carguero2.imagen.setVelocityX(0);
       self.carguero2.imagen.setVelocityY(0);
-
       self.carguero3.imagen.setAcceleration(0);
       self.carguero3.imagen.setVelocityX(0);
       self.carguero3.imagen.setVelocityY(0);
-
       self.carguero4.imagen.setAcceleration(0);
       self.carguero4.imagen.setVelocityX(0);
       self.carguero4.imagen.setVelocityY(0);
-
       self.carguero5.imagen.setAcceleration(0);
       self.carguero5.imagen.setVelocityX(0);
       self.carguero5.imagen.setVelocityY(0);
-
       self.carguero6.imagen.setAcceleration(0);
       self.carguero6.imagen.setVelocityX(0);
       self.carguero6.imagen.setVelocityY(0);
     }
 
+    //Timer de disparo
     function timerDisparo(){
       self.puedoDisparar = 1;
     }
 
+    //Evento destacado explosión de carguero
     function explosionCarguero(){
-      // Explosion 
+      //Explosión 
       self.videoExC = self.add.video(centroW,centroH,DEF.VIDEO.EXPLOSIONLIBERTY).setScrollFactor(0).setScale(0.7).setDepth(10);
       self.videoExC.play();
-      // Elimino video
+      //Elimino video
       self.resetExplosion = self.time.addEvent({ delay: 5000, callback: reseteoExplC, callbackScope: self});
       function reseteoExplC(){
         self.videoExC.destroy();
       }
     }
 
+    //Evento destacado explosión de destructor
     function explosionDestructor(){
-      // Explosion 
+      //Explosión 
       self.videoExD = self.add.video(centroW,centroH,DEF.VIDEO.EXPOSIONFLETCHER).setScrollFactor(0).setScale(0.7).setDepth(10);
       self.videoExD.play();
-      // Elimino video
+      //Elimino video
       self.resetExplosion = self.time.addEvent({ delay: 5000, callback: reseteoExplD, callbackScope: self});
       function reseteoExplD(){
         self.videoExD.destroy();
       }
     }
 
+    //Evento destacado explosión de submarino
     function explosionSubmarino(){
-      // Explosion 
+      //Explosion 
       self.videoExU = self.add.video(centroW,centroH,DEF.VIDEO.EXPLOSIONUBOAT).setScrollFactor(0).setScale(0.7).setDepth(10);
       self.videoExU.play();
-      // Elimino video
+      //Elimino video
       self.resetExplosion = self.time.addEvent({ delay: 5000, callback: reseteoExplS, callbackScope: self});
       function reseteoExplS(){
         self.videoExU.destroy();
       }
     }
 
-    //funcion que recibe un click y ejecuta el evento disparo, el cual activa una bala del set de balas de la clase
-    this.input.on('pointerdown', function (pointer, time) {
-      if (self.puedoDisparar == 0){
-        
-      }else{
-        // Agrego un timer de 3 segundos entre cada disparo, para que no spamee los tiros y sea mas jugable
+    //Función que recibe un click y ejecuta el evento disparo el cual activa una bala del set de balas de la clase
+    this.input.on('pointerdown', function (pointer, time){
+      if (self.puedoDisparar != 0){
+        //Agrego un timer de 3 segundos entre cada disparo
         self.puedoDisparar = 0;
         self.time.addEvent({delay: 3000, callback: timerDisparo, callbackScope: self});
 
         if(self.equipo === 1){
-          //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
+          //Si el jugador es del equipo 1 es el destructor, entonces genera el bullet desde destructor
           bullet = self.destructor.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
           
-          //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
-          //dano al enemigo si el ya te gano
+          //En el caso en que se destruya el jugador se borran las balas y no permite hacer daño al enemigo
           if(self.destructor.vida <= 0){
             bullet.destroy();
           }
 
-          //manejo de la municion del destructor
+          //Manejo de la munición del destructor
           if(self.destructor.armas === 0 && self.destructor.vida > 0 && self.destructor.ammoCanion > 0)
           {
             self.soundCanionDes.play({volume: 0.1, loop: false});
             self.destructor.ammoCanion--;
             
-            //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
-            Disparo(self.destructor, bullet, self.submarino);
+            //Método de disparo, paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
+            disparo(self.destructor, bullet, self.submarino);
   
-            // Actualizo en la barra grafica la cantidad de municion de cañon restante
+            //Actualizo en la gráfica la cantidad de munición de cañon restante
             self.UIDesMunicionCan.setText('Munición cañon: ' + self.destructor.ammoCanion);
           }
           if (self.destructor.armas === 1 && self.destructor.vida > 0 && self.destructor.ammoCargas > 0)
@@ -1580,30 +1564,28 @@ export class Game extends Phaser.Scene{
             self.soundCargas.play({volume: 0.15, loop: false});
             self.destructor.ammoCargas--;
         
-            //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemig
-            Disparo(self.destructor, bullet, self.submarino);
+            //Método de disparo, paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
+            disparo(self.destructor, bullet, self.submarino);
   
-            // Actualizo en la barra grafica la cantidad de municion de cañon restante
+            //Actualizo en la grafica la cantidad de munición de cañon restante
             self.UIDesMunicionCar.setText('Munición cargas: ' + self.destructor.ammoCargas);
           }
-          
         }
-        else
-        {
-          //si sos del equipo 1 sos el destructor, entonces genera el bullet desde destructor
+        else {
+          //Si el jugador es del equipo 2 es el submarino, entonces genera el bullet desde submarino
           bullet = self.submarino.bullet.get().setActive(true).setVisible(true).setDisplaySize(10,10);
           
-          //esto se hace para el caso en que se destruya el jugador pero siga tirando balas, borra las balas y no le deja hacer
-          //dano al enemigo si el ya te gano
+          //En el caso en que se destruya el jugador se borran las balas y no permite hacer daño al enemigo
           if(self.submarino.vida <= 0){
             bullet.destroy();
           }
-          //si el submarino no tiene armas porque esta sumergido
+
+          //Si el submarino no tiene armas es porque esta sumergido
           if(self.submarino.armas === -1){
             bullet.destroy();
           }
 
-          //manejo de municion del submarino
+          //Manejo de munición del submarino
           if(self.submarino.armas === 0 && self.submarino.vida > 0 && self.submarino.ammoCanion > 0)
           {
             self.soundCanionSub.play({volume: 0.1, loop: false});
@@ -1612,16 +1594,16 @@ export class Game extends Phaser.Scene{
             self.SubAmmo[0]=self.submarino.ammoCanion;
             self.socket.emit('submarinoAmmo', self.SubAmmo);
   
-            //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
-            Disparo(self.submarino, bullet, self.destructor);
-            Disparo(self.submarino, bullet, self.carguero1);
-            Disparo(self.submarino, bullet, self.carguero2);
-            Disparo(self.submarino, bullet, self.carguero3);
-            Disparo(self.submarino, bullet, self.carguero4);
-            Disparo(self.submarino, bullet, self.carguero5);
-            Disparo(self.submarino, bullet, self.carguero6);    
+            //Método de disparo, paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
+            disparo(self.submarino, bullet, self.destructor);
+            disparo(self.submarino, bullet, self.carguero1);
+            disparo(self.submarino, bullet, self.carguero2);
+            disparo(self.submarino, bullet, self.carguero3);
+            disparo(self.submarino, bullet, self.carguero4);
+            disparo(self.submarino, bullet, self.carguero5);
+            disparo(self.submarino, bullet, self.carguero6);    
   
-            // Actualizo en la barra grafica la cantidad de municion restante
+            //Actualizo en la gráfica la cantidad de munición restante
             self.UISubMunicionCan.setText('Munición cañon: ' + self.submarino.ammoCanion);
           }
           if ((self.submarino.armas === 1 || self.submarino.armas === 4) && self.submarino.vida > 0 && self.submarino.ammoTorpedos > 0)
@@ -1631,47 +1613,41 @@ export class Game extends Phaser.Scene{
             
             self.SubAmmo[1]=self.submarino.ammoTorpedos;
             self.socket.emit('submarinoAmmo', self.SubAmmo);
-            //llamo al metodo de disparo y le paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
-            Disparo(self.submarino, bullet, self.destructor);
-            Disparo(self.submarino, bullet, self.carguero1);
-            Disparo(self.submarino, bullet, self.carguero2);
-            Disparo(self.submarino, bullet, self.carguero3);
-            Disparo(self.submarino, bullet, self.carguero4);
-            Disparo(self.submarino, bullet, self.carguero5);
-            Disparo(self.submarino, bullet, self.carguero6);    
+            //Método de disparo, paso las balas, el jugador que hace el disparo, la mira del jugador y el enemigo
+            disparo(self.submarino, bullet, self.destructor);
+            disparo(self.submarino, bullet, self.carguero1);
+            disparo(self.submarino, bullet, self.carguero2);
+            disparo(self.submarino, bullet, self.carguero3);
+            disparo(self.submarino, bullet, self.carguero4);
+            disparo(self.submarino, bullet, self.carguero5);
+            disparo(self.submarino, bullet, self.carguero6);    
   
-            // Actualizo en la barra grafica la cantidad de municion restante
+            //Actualizo en la gráfica la cantidad de munición restante
             self.UISubMunicionTor.setText('Munición torpedos: ' + self.submarino.ammoTorpedos);
           }
-
-          
         }
-        
-        
-        
       }
     }, this);
 
-    // FUNCION DE DISPARO DEL JUGADOR
-    function Disparo(nave, bullet, enemy)
-    {
+    //Disparo del jugador
+    function disparo(nave, bullet, enemy){
       let player = nave.imagen;
       let reticula = nave.reticula;
       let enemyImag = enemy.imagen;
 
-      if (bullet){ //Eeta funcion maneja la colsion de la bala con los bordes del mundo
-          bullet.fire(player, reticula); //LLAMA AL METODO DISPARAR DE BULLET
+      if (bullet){ //Función que maneja la colsión de la bala con los bordes del mundo
+          bullet.fire(player, reticula); //Método disparar de bullet
           bullet.setCollideWorldBounds(true);
           bullet.body.onWorldBounds = true;
           bullet.body.world.on('worldbounds', function(body) {
-            //COLISION CON LOS BORDES DEL MUNDO
+            //Colisión con los bordes del mundo 
             if (body.gameObject === this ) {
               this.setActive(false);
               this.setVisible(false);
             }
           }, bullet);
           
-          //Colision con las islas
+          //Colisión con las islas
           self.physics.add.collider(bullet, self.isla1, function(bullet){
             bullet.destroy();
           });
@@ -1684,16 +1660,17 @@ export class Game extends Phaser.Scene{
           self.physics.add.collider(bullet, self.isla4, function(bullet){
             bullet.destroy();
           });
-          //Colision con la mira
+
+          //Colisión con la mira
           self.physics.add.collider(bullet, reticula, function(bullet){
             bullet.destroy();
           });
-          //MANEJO DE COLISION ENTRE LA BALA Y OTROS JUGADORES
+
+          //Manejo de la colisión de la bala y otros jugadores
           if(enemy.vida>0){
             self.physics.add.collider(bullet, enemyImag, function(bullet){
               distCorta = 100;
               distMedia = 250;
-
               corta = false;
               media = false;
               larga = false;  
@@ -1717,554 +1694,93 @@ export class Game extends Phaser.Scene{
           }  
       }
     }
-    //funcion que maneja el dano hecho por cada vez que se lanza el evento disparo del click, segun el tipo de arma es el dano hecho
-    //el dano luego es enviado por socket al otro jugador. Tambien realiza la gestion de vida del oponente - danio para poder
-    //mostrar que estamos haciendole danio al otro jugador y que muere.
 
-    function handleHit(nave, dist, enemy)
-    {
+    /*Función que maneja el daño hecho por cada vez que se lanza el evento disparo del click, según el tipo de arma es el daño hecho.
+    el daño luego es enviado por socket al otro jugador. También realiza la gestión de vida del oponente - daño para poder
+    mostrar que estamos haciendole daño al otro jugador y que este se queda sin vida.*/
+    function handleHit(nave, dist, enemy){
       probabilidad = Math.floor(Math.random() * (11)); //Probabilidad Base
       let Escarguero;
       if(self.equipo === 1){
-//--------------------------------------------------------------------------------------------------------------------------------
-//                                                  CANON DEL DESTRUCTOR
-//--------------------------------------------------------------------------------------------------------------------------------
-          if(nave.armas === 0)
-          {
-            if(enemy.profundidad === 0){
-              if(dist === "corta")
+        //--------------------------------------------------------------------------------------------------------------------------------
+        //                                                  CAÑON DEL DESTRUCTOR
+        //--------------------------------------------------------------------------------------------------------------------------------
+        if(nave.armas === 0)
+        {
+          if(enemy.profundidad === 0){
+            if(dist === "corta")
+            {
+              probExtra = Math.floor(Math.random() * (2)); //Bonificación de probabilidad
+              if((probabilidad + probExtra) > 3)
               {
-                probExtra = Math.floor(Math.random() * (2)); // Bonificacion de probabilidad
-                if((probabilidad + probExtra) > 3)
-                {
-                  hitted(enemy.imagen.x, enemy.imagen.y); 
-                  danio = 6;             
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '30px monospace', fill: '#024A86', align: 'center'});
-
-                  function aviso(){
-                    self.Hit2.setText('Daño: ' + danio);
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
-                    }
-                  }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                  pack ={
-                    danio: danio,
-                    carguero: 0
-                  } 
-
-                  self.socket.emit('playerHit', pack);
-
-                  if(danio >= enemy.vida)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen); //Funcion que anima fuego
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    enemy.imagen.removeInteractive();
-                    
-                    let envio={
-                      socket: self.socket,
-                      resultado: 1,
-                      equipo: 1
-                    }
-
-                    let envioSocket= {
-                      resultado: 1,
-                      equipo: 1
-                    }
-                    
-                    explosionSubmarino();
-                  
-                    self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
-                    function voyFindScene(){
-                      self.soundBackground.stop();
-                      self.soundAction.stop();
-                      self.socket.emit('Finalizo', envioSocket);
-                      self.scene.start(DEF.SCENES.FinScene, envio);
-                    }
-                  }
-                  else
-                  {
-                    enemy.vida = enemy.vida - danio;  
-                  }
-                }else{
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  if(enemy.vida > 0){
-                    let contadorAviso = 0;
-                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '30px monospace', fill: '#fff', align: 'center'});
-
-                    function aviso(){
-                      self.Hit2.setText('Miss');
-                      contadorAviso++;
-                      if (contadorAviso==3){
-                        self.statusEnvio.remove(true);
-                      }
-                    }
-                    
-                    function prueba(){
-                      self.Hit2.destroy();
-                    }
-                    
-                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-              
-                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  }
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-                }  
-              
-              }
-              else if(dist === "media")
-              {
-                probExtra = Math.floor(Math.random() * (3));
-                if((probabilidad + probExtra) > 3){
-                  hitted(enemy.imagen.x, enemy.imagen.y); 
-                  danio = 6;
-                  
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '30px monospace', fill: '#024A86', align: 'center'});
-
-                  function aviso(){
-                    self.Hit2.setText('Daño: ' + danio);
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
-                    }
-                  }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                  pack ={
-                    danio: danio,
-                    carguero: 0
-                  } 
-
-                  self.socket.emit('playerHit', pack);
-
-                  if(danio >= enemy.vida)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen); //Funcion que anima fuego
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    enemy.imagen.removeInteractive();
-                    
-                    let envio={
-                      socket: self.socket,
-                      resultado: 1,
-                      equipo: 1
-                    }
-
-                    let envioSocket= {
-                      resultado: 1,
-                      equipo: 1
-                    }
-                    
-                    explosionSubmarino();
-                    
-                    self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
-                    function voyFindScene(){
-                      self.soundBackground.stop();
-                      self.soundAction.stop();
-                      self.socket.emit('Finalizo', envioSocket);
-                      self.scene.start(DEF.SCENES.FinScene, envio);
-                    }
-                  }
-                  else
-                  {
-                    enemy.vida = enemy.vida - danio;  
-                  }
-                }else{
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  if(enemy.vida > 0){
-                    let contadorAviso = 0;
-                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '30px monospace', fill: '#fff', align: 'center'});
-
-                    function aviso(){
-                      self.Hit2.setText('Miss');
-                      contadorAviso++;
-                      if (contadorAviso==3){
-                        self.statusEnvio.remove(true);
-                      }
-                    }
-                    
-                    function prueba(){
-                      self.Hit2.destroy();
-                    }
-                    
-                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-              
-                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  }
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-                }  
-              }
-              else if(dist === "larga")
-              {
-                probExtra = Math.floor(Math.random() * (3));
-                if((probabilidad + probExtra) > 6){
-                  hitted(enemy.imagen.x, enemy.imagen.y); 
-                  danio = 6;
-                  
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '30px monospace', fill: '#024A86', align: 'center'});
-
-                  function aviso(){
-                    self.Hit2.setText('Daño: ' + danio);
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
-                    }
-                  }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                  pack ={
-                    danio: danio,
-                    carguero: 0
-                  } 
-
-                  self.socket.emit('playerHit', pack);
-
-                  if(danio >= enemy.vida)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen); //Funcion que anima fuego
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    enemy.imagen.removeInteractive();
-                    
-                    let envio={
-                      socket: self.socket,
-                      resultado: 1,
-                      equipo: 1
-                    }
-
-                    let envioSocket= {
-                      resultado: 1,
-                      equipo: 1
-                    }
-                    
-                    explosionSubmarino();
-                  
-                    self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
-                    function voyFindScene(){
-                      self.soundBackground.stop();
-                      self.soundAction.stop();
-                      self.socket.emit('Finalizo', envioSocket);
-                      self.scene.start(DEF.SCENES.FinScene, envio);
-                    }
-                  }
-                  else
-                  {
-                    enemy.vida = enemy.vida - danio;  
-                  }
-                }else{
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  if(enemy.vida > 0){
-                    let contadorAviso = 0;
-                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '30px monospace', fill: '#fff', align: 'center'});
-
-                    function aviso(){
-                      self.Hit2.setText('Miss');
-                      contadorAviso++;
-                      if (contadorAviso==3){
-                        self.statusEnvio.remove(true);
-                      }
-                    }
-                    
-                    function prueba(){
-                      self.Hit2.destroy();
-                    }
-                    
-                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-              
-                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  }
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-                } 
-              }
-            }else{
-              //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
+                hitted(enemy.imagen.x, enemy.imagen.y); 
+                danio = 6;             
                 let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
                 self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                  '', {font: '30px monospace', fill: '#fff', align: 'center'});
+                  '', {font: '30px monospace', fill: '#024A86', align: 'center'});
 
                 function aviso(){
-                  self.Hit2.setText('Miss');
+                  self.Hit2.setText('Daño: ' + danio);
                   contadorAviso++;
                   if (contadorAviso==3){
                     self.statusEnvio.remove(true);
                   }
                 }
-                
-                function prueba(){
+                function elimAvisoDam(){
                   self.Hit2.destroy();
                 }
-                
+                //Timer de aviso
                 self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-          
-                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-            }
-               
-//--------------------------------------------------------------------------------------------------------------------------------
-//                                                  CARGAS DE PROFUNDIDAD DEL DESTRUCTOR
-//--------------------------------------------------------------------------------------------------------------------------------
-          }else if (nave.armas === 1){
-            if(dist === "corta")
-            {
-              probExtra = Math.floor(Math.random() * (2));
-              if((probabilidad + probExtra) > 1)
-              {
-                if(nave.cargas === enemy.profundidad)
+                //Elimino aviso
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+                
+                //----------------------- Envío el daño y el carguero dañado al socket -----------------------
+                pack = {
+                  danio: danio,
+                  carguero: 0
+                } 
+                self.socket.emit('playerHit', pack);
+
+                if(danio >= enemy.vida)
                 {
-                  danio = 8;
-                  hitted(enemy.imagen.x, enemy.imagen.y); 
+                  enemy.vida = 0;
+                  destroyed(enemy.imagen); //Función que anima fuego
+                  enemy.imagen.setActive(false);
+                  enemy.imagen.setVisible(false);
+                  enemy.imagen.removeInteractive();
                   
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '30px monospace', fill: '#024A86', align: 'center'});
+                  let envio = {
+                    socket: self.socket,
+                    resultado: 1,
+                    equipo: 1
+                  }
 
-                  function aviso(){
-                    self.Hit2.setText('Daño: ' + danio);
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
-                    }
+                  let envioSocket = {
+                    resultado: 1,
+                    equipo: 1
                   }
                   
-                  function prueba(){
-                    self.Hit2.destroy();
+                  //Evento de explosión del submarino
+                  explosionSubmarino();
+                  self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                  function voyFindScene(){
+                    self.soundBackground.stop();
+                    self.soundAction.stop();
+                    self.socket.emit('Finalizo', envioSocket);
+                    self.scene.start(DEF.SCENES.FinScene, envio);
                   }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                  pack ={
-                    danio: danio,
-                    carguero: 0
-                  } 
-  
-                  self.socket.emit('playerHit', pack);
-  
-                  if(danio >= enemy.vida)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen); //Funcion que anima fuego
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    enemy.imagen.removeInteractive();
-                    
-                    let envio={
-                      socket: self.socket,
-                      resultado: 1,
-                      equipo: 1
-                    }
-  
-                    let envioSocket= {
-                      resultado: 1,
-                      equipo: 1
-                    }
-                    
-                    explosionSubmarino();
-                    
-                    self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
-                    function voyFindScene(){
-                      self.soundBackground.stop();
-                      self.soundAction.stop();
-                      self.socket.emit('Finalizo', envioSocket);
-                      self.scene.start(DEF.SCENES.FinScene, envio);
-                    }
-                  }
-                  else
-                  {
-                    enemy.vida = enemy.vida - danio;  
-                  }
-                }else{
-                  if(enemy.vida > 0){
-                    let contadorAviso = 0;
-                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '30px monospace', fill: '#fff', align: 'center'});
-  
-                    function aviso(){
-                      self.Hit2.setText('Miss');
-                      contadorAviso++;
-                      if (contadorAviso==3){
-                        self.statusEnvio.remove(true);
-                      }
-                    }
-                    
-                    function prueba(){
-                      self.Hit2.destroy();
-                    }
-                    
-                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-              
-                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  }
-                }  
-              }else{
-                //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                if(enemy.vida > 0){
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#fff', align: 'center'});
-
-                  function aviso(){
-                    self.Hit2.setText('Miss');
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
-                    }
-                  }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
                 }
-                //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-              }  
-            }
-            else if(dist === "media")
-            {
-              probExtra = Math.floor(Math.random() * (3));
-              if((probabilidad + probExtra) > 7)
-              {
-                if(nave.cargas === enemy.profundidad)
+                else
                 {
-                  danio = 8;
-                  hitted(enemy.imagen.x, enemy.imagen.y); 
-                  
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '30px monospace', fill: '#024A86', align: 'center'});
-
-                  function aviso(){
-                    self.Hit2.setText('Daño: ' + danio);
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
-                    }
-                  }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                  pack ={
-                    danio: danio,
-                    carguero: 0
-                  } 
-  
-                  self.socket.emit('playerHit', pack);
-  
-                  if(danio >= enemy.vida)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen); //Funcion que anima fuego
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    enemy.imagen.removeInteractive();
-                    
-                    let envio={
-                      socket: self.socket,
-                      resultado: 1,
-                      equipo: 1
-                    }
-  
-                    let envioSocket= {
-                      resultado: 1,
-                      equipo: 1
-                    }
-                    
-                    explosionSubmarino();
-                   
-                    self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
-                    function voyFindScene(){
-                      self.soundBackground.stop();
-                      self.soundAction.stop();
-                      self.socket.emit('Finalizo', envioSocket);
-                      self.scene.start(DEF.SCENES.FinScene, envio);
-                    }
-                  }
-                  else
-                  {
-                    enemy.vida = enemy.vida - danio;  
-                  }
-                }else{
-                  if(enemy.vida > 0){
-                    let contadorAviso = 0;
-                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '30px monospace', fill: '#fff', align: 'center'});
-  
-                    function aviso(){
-                      self.Hit2.setText('Miss');
-                      contadorAviso++;
-                      if (contadorAviso==3){
-                        self.statusEnvio.remove(true);
-                      }
-                    }
-                    
-                    function prueba(){
-                      self.Hit2.destroy();
-                    }
-                    
-                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-              
-                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  }
-                }  
+                  enemy.vida = enemy.vida - danio;  
+                }
               }else{
-                //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
                 if(enemy.vida > 0){
                   let contadorAviso = 0;
+
+                  //----------------------- Texto que muestra el daño hecho en el juego -----------------------
                   self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
                     '', {font: '30px monospace', fill: '#fff', align: 'center'});
 
@@ -2275,663 +1791,1086 @@ export class Game extends Phaser.Scene{
                       self.statusEnvio.remove(true);
                     }
                   }
-                  
-                  function prueba(){
+                  function elimAvisoDam(){
                     self.Hit2.destroy();
                   }
-                  
+                  //Timer de aviso
                   self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
+                  //Elimino aviso
+                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
                 }
               }  
             }
-          }   
-//--------------------------------------------------------------------------------------------------------------------------------
-//                                                  CANON DEL SUBMARINO
-//--------------------------------------------------------------------------------------------------------------------------------            
+            else if(dist === "media")
+            {
+              probExtra = Math.floor(Math.random() * (3));
+              if((probabilidad + probExtra) > 3){
+                hitted(enemy.imagen.x, enemy.imagen.y); 
+                danio = 6;
+                let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '30px monospace', fill: '#024A86', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Daño: ' + danio);
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                function elimAvisoDam(){
+                  self.Hit2.destroy();
+                }
+                //Timer de aviso
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                //Elimino aviso
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+                
+                //----------------------- Envío el daño y el carguero dañado al socket -----------------------
+                pack ={
+                  danio: danio,
+                  carguero: 0
+                } 
+                self.socket.emit('playerHit', pack);
+
+                if(danio >= enemy.vida)
+                {
+                  enemy.vida = 0;
+                  destroyed(enemy.imagen); //Funcion que anima fuego
+                  enemy.imagen.setActive(false);
+                  enemy.imagen.setVisible(false);
+                  enemy.imagen.removeInteractive();
+                  
+                  let envio={
+                    socket: self.socket,
+                    resultado: 1,
+                    equipo: 1
+                  }
+
+                  let envioSocket= {
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  
+                  //Evento de explosión del submarino
+                  explosionSubmarino();
+                  self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                  function voyFindScene(){
+                    self.soundBackground.stop();
+                    self.soundAction.stop();
+                    self.socket.emit('Finalizo', envioSocket);
+                    self.scene.start(DEF.SCENES.FinScene, envio);
+                  }
+                }
+                else
+                {
+                  enemy.vida = enemy.vida - danio;  
+                }
+              }else{
+                if(enemy.vida > 0){
+                  let contadorAviso = 0;
+
+                  //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                    '', {font: '30px monospace', fill: '#fff', align: 'center'});
+
+                  function aviso(){
+                    self.Hit2.setText('Miss');
+                    contadorAviso++;
+                    if (contadorAviso==3){
+                      self.statusEnvio.remove(true);
+                    }
+                  }
+                  function elimAvisoDam(){
+                    self.Hit2.destroy();
+                  }
+                  //Timer de aviso
+                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                  //Elimino aviso
+                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+                }
+              }  
+            }
+            else if(dist === "larga")
+            {
+              probExtra = Math.floor(Math.random() * (3));
+              if((probabilidad + probExtra) > 6){
+                hitted(enemy.imagen.x, enemy.imagen.y); 
+                danio = 6;
+                let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '30px monospace', fill: '#024A86', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Daño: ' + danio);
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                function elimAvisoDam(){
+                  self.Hit2.destroy();
+                }
+                //Timer de aviso     
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                //Elimino aviso
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+                
+                //----------------------- Envío el daño y el carguero dañado al socket -----------------------
+                pack ={
+                  danio: danio,
+                  carguero: 0
+                } 
+                self.socket.emit('playerHit', pack);
+
+                if(danio >= enemy.vida)
+                {
+                  enemy.vida = 0;
+                  destroyed(enemy.imagen); //Función que anima fuego
+                  enemy.imagen.setActive(false);
+                  enemy.imagen.setVisible(false);
+                  enemy.imagen.removeInteractive();
+                  
+                  let envio={
+                    socket: self.socket,
+                    resultado: 1,
+                    equipo: 1
+                  }
+
+                  let envioSocket= {
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  
+                  //Evento de explosión del submarino
+                  explosionSubmarino();
+                  self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                  function voyFindScene(){
+                    self.soundBackground.stop();
+                    self.soundAction.stop();
+                    self.socket.emit('Finalizo', envioSocket);
+                    self.scene.start(DEF.SCENES.FinScene, envio);
+                  }
+                }
+                else
+                {
+                  enemy.vida = enemy.vida - danio;  
+                }
+              }else{
+                if(enemy.vida > 0){
+                  let contadorAviso = 0;
+
+                  //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                    '', {font: '30px monospace', fill: '#fff', align: 'center'});
+
+                  function aviso(){
+                    self.Hit2.setText('Miss');
+                    contadorAviso++;
+                    if (contadorAviso==3){
+                      self.statusEnvio.remove(true);
+                    }
+                  }
+                  function elimAvisoDam(){
+                    self.Hit2.destroy();
+                  }
+                  //Timer de aviso
+                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                  //Elimino aviso
+                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+                }
+              } 
+            }
+          }else{
+            let contadorAviso = 0;
+
+            //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+            self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+              '', {font: '30px monospace', fill: '#fff', align: 'center'});
+
+            function aviso(){
+              self.Hit2.setText('Miss');
+              contadorAviso++;
+              if (contadorAviso==3){
+                self.statusEnvio.remove(true);
+              }
+            }
+            function elimAvisoDam(){
+              self.Hit2.destroy();
+            }
+            //Timer de aviso
+            self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+            //Elimino aviso
+            self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+          }
+        //--------------------------------------------------------------------------------------------------------------------------------
+        //                                                  CARGAS DE PROFUNDIDAD DEL DESTRUCTOR
+        //--------------------------------------------------------------------------------------------------------------------------------
+        }else if (nave.armas === 1){
+          if(dist === "corta")
+          {
+            probExtra = Math.floor(Math.random() * (2));
+            if((probabilidad + probExtra) > 1)
+            {
+              if(nave.cargas === enemy.profundidad)
+              {
+                danio = 8;
+                hitted(enemy.imagen.x, enemy.imagen.y); 
+                let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '30px monospace', fill: '#024A86', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Daño: ' + danio);
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                function elimAvisoDam(){
+                  self.Hit2.destroy();
+                }
+                //Timer de aviso
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                //Elimino aviso
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+                
+                //----------------------- Envío el daño y el carguero dañado al socket -----------------------
+                pack ={
+                  danio: danio,
+                  carguero: 0
+                } 
+                self.socket.emit('playerHit', pack);
+
+                if(danio >= enemy.vida)
+                {
+                  enemy.vida = 0;
+                  destroyed(enemy.imagen); //Funcion que anima fuego
+                  enemy.imagen.setActive(false);
+                  enemy.imagen.setVisible(false);
+                  enemy.imagen.removeInteractive();
+                  
+                  let envio={
+                    socket: self.socket,
+                    resultado: 1,
+                    equipo: 1
+                  }
+
+                  let envioSocket= {
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  
+                  //Evento de explosión del submarino
+                  explosionSubmarino();
+                  self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                  function voyFindScene(){
+                    self.soundBackground.stop();
+                    self.soundAction.stop();
+                    self.socket.emit('Finalizo', envioSocket);
+                    self.scene.start(DEF.SCENES.FinScene, envio);
+                  }
+                }
+                else
+                {
+                  enemy.vida = enemy.vida - danio;  
+                }
+              }else{
+                if(enemy.vida > 0){
+                  let contadorAviso = 0;
+
+                  //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                    '', {font: '30px monospace', fill: '#fff', align: 'center'});
+
+                  function aviso(){
+                    self.Hit2.setText('Miss');
+                    contadorAviso++;
+                    if (contadorAviso==3){
+                      self.statusEnvio.remove(true);
+                    }
+                  }
+                  function elimAvisoDam(){
+                    self.Hit2.destroy();
+                  }
+                  //Timer de aviso
+                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                  //Elimino aviso
+                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+                }
+              }  
+            }else{
+              if(enemy.vida > 0){
+                let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Miss');
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                function elimAvisoDam(){
+                  self.Hit2.destroy();
+                }
+                //Timer de aviso
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                //Elimino aviso
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+              }
+            }  
+          }
+          else if(dist === "media")
+          {
+            probExtra = Math.floor(Math.random() * (3));
+            if((probabilidad + probExtra) > 7)
+            {
+              if(nave.cargas === enemy.profundidad)
+              {
+                danio = 8;
+                hitted(enemy.imagen.x, enemy.imagen.y); 
+                let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '30px monospace', fill: '#024A86', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Daño: ' + danio);
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                function elimAvisoDam(){
+                  self.Hit2.destroy();
+                }
+                //Timer de aviso
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                //Elimino aviso 
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+                
+                //----------------------- Envío el daño y el carguero dañado al socket -----------------------
+                pack ={
+                  danio: danio,
+                  carguero: 0
+                }
+                self.socket.emit('playerHit', pack);
+
+                if(danio >= enemy.vida)
+                {
+                  enemy.vida = 0;
+                  destroyed(enemy.imagen); //Funcion que anima fuego
+                  enemy.imagen.setActive(false);
+                  enemy.imagen.setVisible(false);
+                  enemy.imagen.removeInteractive();
+                  
+                  let envio={
+                    socket: self.socket,
+                    resultado: 1,
+                    equipo: 1
+                  }
+
+                  let envioSocket= {
+                    resultado: 1,
+                    equipo: 1
+                  }
+                  
+                  //Evento de explosión del submarino
+                  explosionSubmarino();
+                  self.voyGameOver = self.time.addEvent({ delay: 6000, callback: voyFindScene, callbackScope: self});
+                  function voyFindScene(){
+                    self.soundBackground.stop();
+                    self.soundAction.stop();
+                    self.socket.emit('Finalizo', envioSocket);
+                    self.scene.start(DEF.SCENES.FinScene, envio);
+                  }
+                }
+                else
+                {
+                  enemy.vida = enemy.vida - danio;  
+                }
+              }else{
+                if(enemy.vida > 0){
+                  let contadorAviso = 0;
+
+                  //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                    '', {font: '30px monospace', fill: '#fff', align: 'center'});
+
+                  function aviso(){
+                    self.Hit2.setText('Miss');
+                    contadorAviso++;
+                    if (contadorAviso==3){
+                      self.statusEnvio.remove(true);
+                    }
+                  }
+                  function elimAvisoDam(){
+                    self.Hit2.destroy();
+                  }
+                  //Timer de aviso
+                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                  //Elimino aviso
+                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+                }
+              }  
+            }else{
+              if(enemy.vida > 0){
+                let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '30px monospace', fill: '#fff', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Miss');
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                function elimAvisoDam(){
+                  self.Hit2.destroy();
+                }
+                //Timer de aviso
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                //Elimino aviso
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+              }
+            }  
+          }
+        }
       }
       else if (self.equipo === 2)
-      {      
-            if(nave.armas === 0)
+      {
+        //--------------------------------------------------------------------------------------------------------------------------------
+        //                                                  CAÑON DEL SUBMARINO
+        //--------------------------------------------------------------------------------------------------------------------------------                  
+        if(nave.armas === 0){
+          if(dist === "corta")
+          {
+            probExtra = Math.floor(Math.random() * (2));
+            if((probabilidad + probExtra) > 2)
             {
-              if(dist === "corta")
-              {
-                probExtra = Math.floor(Math.random() * (2));
-                if((probabilidad + probExtra) > 2)
-                {
-                  hitted(enemy.imagen.x, enemy.imagen.y); 
-                  
-                  danio = 4;
-                  
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#024A86', align: 'center'});
-
-                  function aviso(){
-                    self.Hit2.setText('Daño: ' + danio);
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
-                    }
-                  }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                  switch(enemy)
-                  {
-                    case self.carguero1:
-                      Escarguero = 1;
-                      break;
-                    case self.carguero2:
-                      Escarguero = 2;
-                      break;
-                    case self.carguero3:
-                      Escarguero = 3;
-                      break;
-                    case self.carguero4:
-                      Escarguero = 4;
-                      break;
-                    case self.carguero5:
-                      Escarguero = 5;
-                      break;
-                    case self.carguero6:
-                      Escarguero = 6;
-                      break;
-                    default:
-                      Escarguero = 0;
-                      break;
-                  }
-                  
-                  pack ={
-                    danio: danio,
-                    carguero: Escarguero
-                  }              
-                  self.socket.emit('playerHit', pack);
-                  if(enemy.vida <= danio)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen);
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    enemy.imagen.removeInteractive();
-                    
-                    if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
-                      explosionCarguero();
-                    }else if(Escarguero === 0){
-                      explosionDestructor();
-                    }
-                  }
-                  else
-                  {
-                    enemy.vida = enemy.vida - danio;
-                  }
-                }else{
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  if(enemy.vida > 0){
-                    let contadorAviso = 0;
-                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
-
-                    function aviso(){
-                      self.Hit2.setText('Miss');
-                      contadorAviso++;
-                      if (contadorAviso==3){
-                        self.statusEnvio.remove(true);
-                      }
-                    }
-                    
-                    function prueba(){
-                      self.Hit2.destroy();
-                    }
-                    
-                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              hitted(enemy.imagen.x, enemy.imagen.y); 
+              danio = 4;
               
-                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  }
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-                } 
+              //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+              let contadorAviso = 0;
+              self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+
+              function aviso(){
+                self.Hit2.setText('Daño: ' + danio);
+                contadorAviso++;
+                if (contadorAviso==3){
+                  self.statusEnvio.remove(true);
+                }
               }
-              else if(dist === "media")
-              {
-                  probExtra = Math.floor(Math.random() * (3));
-                  if((probabilidad + probExtra) > 3){
-                    hitted(enemy.imagen.x, enemy.imagen.y); 
-                  
-                    danio = 4;
-                  
-                    //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                    let contadorAviso = 0;
-                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '20px monospace', fill: '#024A86', align: 'center'});
-
-                    function aviso(){
-                      self.Hit2.setText('Daño: ' + danio);
-                      contadorAviso++;
-                      if (contadorAviso==3){
-                        self.statusEnvio.remove(true);
-                      }
-                    }
-                    
-                    function prueba(){
-                      self.Hit2.destroy();
-                    }
-                    
-                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-              
-                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                    //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                    switch(enemy)
-                    {
-                      case self.carguero1:
-                        Escarguero = 1;
-                        break;
-                      case self.carguero2:
-                        Escarguero = 2;
-                        break;
-                      case self.carguero3:
-                        Escarguero = 3;
-                        break;
-                      case self.carguero4:
-                        Escarguero = 4;
-                        break;
-                      case self.carguero5:
-                        Escarguero = 5;
-                        break;
-                      case self.carguero6:
-                        Escarguero = 6;
-                        break;
-                      default:
-                        Escarguero = 0;
-                        break;
-                    }
-                  
-                    pack ={
-                      danio: danio,
-                      carguero: Escarguero
-                    }              
-                    self.socket.emit('playerHit', pack);
-
-                    if(enemy.vida <= danio)
-                    {
-                      enemy.vida = 0;
-                      destroyed(enemy.imagen);
-                      enemy.imagen.setActive(false);
-                      enemy.imagen.setVisible(false);
-                      enemy.imagen.removeInteractive();
-                      
-                      if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
-                        explosionCarguero();
-                      }else if(Escarguero === 0){
-                        explosionDestructor();
-                      }
-                    }
-                    else
-                      enemy.vida = enemy.vida - danio;
-                }else{
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  if(enemy.vida > 0){
-                    let contadorAviso = 0;
-                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
-
-                    function aviso(){
-                      self.Hit2.setText('Miss');
-                      contadorAviso++;
-                      if (contadorAviso==3){
-                        self.statusEnvio.remove(true);
-                      }
-                    }
-                    
-                    function prueba(){
-                      self.Hit2.destroy();
-                    }
-                    
-                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-              
-                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  }
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-                }  
+              function elimAvisoDam(){
+                self.Hit2.destroy();
               }
-              else if(dist === "larga")
+              //Timer de aviso
+              self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              //Elimino aviso
+              self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+              
+              //----------------------- Envío el daño y el carguero dañado al socket -----------------------
+              switch(enemy)
               {
-                    probExtra = Math.floor(Math.random() * (3));
-                    if((probabilidad + probExtra) > 8)
-                    {
-                      hitted(enemy.imagen.x, enemy.imagen.y); 
-                  
-                      danio = 4;
-                      
-                      //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                      let contadorAviso = 0;
-                      self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                        '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+                case self.carguero1:
+                  Escarguero = 1;
+                  break;
+                case self.carguero2:
+                  Escarguero = 2;
+                  break;
+                case self.carguero3:
+                  Escarguero = 3;
+                  break;
+                case self.carguero4:
+                  Escarguero = 4;
+                  break;
+                case self.carguero5:
+                  Escarguero = 5;
+                  break;
+                case self.carguero6:
+                  Escarguero = 6;
+                  break;
+                default:
+                  Escarguero = 0;
+                  break;
+              }
+              pack = {
+                danio: danio,
+                carguero: Escarguero
+              }              
+              self.socket.emit('playerHit', pack);
 
-                      function aviso(){
-                        self.Hit2.setText('Daño: ' + danio);
-                        contadorAviso++;
-                        if (contadorAviso==3){
-                          self.statusEnvio.remove(true);
-                        }
-                      }
-                      
-                      function prueba(){
-                        self.Hit2.destroy();
-                      }
-                      
-                      self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              if(enemy.vida <= danio)
+              {
+                enemy.vida = 0;
+                destroyed(enemy.imagen);
+                enemy.imagen.setActive(false);
+                enemy.imagen.setVisible(false);
+                enemy.imagen.removeInteractive();
                 
-                      self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                      //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                      switch(enemy)
-                      {
-                        case self.carguero1:
-                          Escarguero = 1;
-                          break;
-                        case self.carguero2:
-                          Escarguero = 2;
-                          break;
-                        case self.carguero3:
-                          Escarguero = 3;
-                          break;
-                        case self.carguero4:
-                          Escarguero = 4;
-                          break;
-                        case self.carguero5:
-                          Escarguero = 5;
-                          break;
-                        case self.carguero6:
-                          Escarguero = 6;
-                          break;
-                        default:
-                          Escarguero = 0;
-                          break;
-                      }
-                      
-                      pack ={
-                        danio: danio,
-                        carguero: Escarguero
-                      }              
-                      self.socket.emit('playerHit', pack);
-
-                      if(enemy.vida <= danio)
-                      {
-                        enemy.vida = 0;
-                        destroyed(enemy.imagen);
-                        enemy.imagen.setActive(false);
-                        enemy.imagen.setVisible(false);
-                        enemy.imagen.removeInteractive();
-
-                        if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
-                          explosionCarguero();
-                        }else if(Escarguero === 0){
-                          explosionDestructor();
-                        }
-                      }
-                      else
-                        enemy.vida = enemy.vida - danio;
-                    }else{
-                      //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                      if(enemy.vida > 0){
-                        let contadorAviso = 0;
-                        self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                          '', {font: '20px monospace', fill: '#fff', align: 'center'});
-    
-                        function aviso(){
-                          self.Hit2.setText('Miss');
-                          contadorAviso++;
-                          if (contadorAviso==3){
-                            self.statusEnvio.remove(true);
-                          }
-                        }
-                        
-                        function prueba(){
-                          self.Hit2.destroy();
-                        }
-                        
-                        self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-                  
-                        self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                      }
-                      //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-                    }
+                //Evento de explosión si enemigo es carguero o destructor
+                if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
+                  explosionCarguero();
+                }else if(Escarguero === 0){
+                  explosionDestructor();
+                }
+              }else{
+                enemy.vida = enemy.vida - danio;
               }
-//--------------------------------------------------------------------------------------------------------------------------------
-//                                                  TORPEDOS DEL SUBMARINO
-//--------------------------------------------------------------------------------------------------------------------------------
+            }else{
+              if(enemy.vida > 0){
+                let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Miss');
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                function elimAvisoDam(){
+                  self.Hit2.destroy();
+                }
+                //Timer de aviso
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                //Elimino aviso
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+              }
+            } 
+          }
+          else if(dist === "media"){
+             probExtra = Math.floor(Math.random() * (3));
+             if((probabilidad + probExtra) > 3){
+              hitted(enemy.imagen.x, enemy.imagen.y); 
+              danio = 4;
+              let contadorAviso = 0;
+
+              //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+              self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+
+              function aviso(){
+                self.Hit2.setText('Daño: ' + danio);
+                contadorAviso++;
+                if (contadorAviso==3){
+                  self.statusEnvio.remove(true);
+                }
+              }
+              function elimAvisoDam(){
+                self.Hit2.destroy();
+              }
+              //Timer de aviso
+              self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              //Elimino aviso
+              self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+              
+              //----------------------- Envío el daño y el carguero dañado al socket -----------------------
+              switch(enemy)
+              {
+                case self.carguero1:
+                  Escarguero = 1;
+                  break;
+                case self.carguero2:
+                  Escarguero = 2;
+                  break;
+                case self.carguero3:
+                  Escarguero = 3;
+                  break;
+                case self.carguero4:
+                  Escarguero = 4;
+                  break;
+                case self.carguero5:
+                  Escarguero = 5;
+                  break;
+                case self.carguero6:
+                  Escarguero = 6;
+                  break;
+                default:
+                  Escarguero = 0;
+                  break;
+              }
+              pack ={
+                danio: danio,
+                carguero: Escarguero
+              }              
+              self.socket.emit('playerHit', pack);
+
+              if(enemy.vida <= danio)
+              {
+                enemy.vida = 0;
+                destroyed(enemy.imagen);
+                enemy.imagen.setActive(false);
+                enemy.imagen.setVisible(false);
+                enemy.imagen.removeInteractive();
+                
+                //Evento de explosión si enemigo es carguero o destructor
+                if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
+                  explosionCarguero();
+                }else if(Escarguero === 0){
+                  explosionDestructor();
+                }
+              }else{
+                enemy.vida = enemy.vida - danio;
+              }
+            }else{
+              if(enemy.vida > 0){
+                let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Miss');
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                function elimAvisoDam(){
+                  self.Hit2.destroy();
+                }
+                //Timer de aviso
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                //Elimino aviso
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+              }
+            }  
+          }
+          else if(dist === "larga"){
+            probExtra = Math.floor(Math.random() * (3));
+            if((probabilidad + probExtra) > 8){
+              hitted(enemy.imagen.x, enemy.imagen.y); 
+              danio = 4;
+              let contadorAviso = 0;
+
+              //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+              self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+
+              function aviso(){
+                self.Hit2.setText('Daño: ' + danio);
+                contadorAviso++;
+                if (contadorAviso==3){
+                  self.statusEnvio.remove(true);
+                }
+              }
+              function elimAvisoDam(){
+                self.Hit2.destroy();
+              }
+              //Timer de aviso
+              self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              //Elimino aviso
+              self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+              
+              //----------------------- Envío el daño y el carguero dañado al socket -----------------------
+              switch(enemy)
+              {
+                case self.carguero1:
+                  Escarguero = 1;
+                  break;
+                case self.carguero2:
+                  Escarguero = 2;
+                  break;
+                case self.carguero3:
+                  Escarguero = 3;
+                  break;
+                case self.carguero4:
+                  Escarguero = 4;
+                  break;
+                case self.carguero5:
+                  Escarguero = 5;
+                  break;
+                case self.carguero6:
+                  Escarguero = 6;
+                  break;
+                default:
+                  Escarguero = 0;
+                  break;
+              }
+              pack ={
+                danio: danio,
+                carguero: Escarguero
+              }              
+              self.socket.emit('playerHit', pack);
+
+              if(enemy.vida <= danio)
+              {
+                enemy.vida = 0;
+                destroyed(enemy.imagen);
+                enemy.imagen.setActive(false);
+                enemy.imagen.setVisible(false);
+                enemy.imagen.removeInteractive();
+                
+                //Evento de explosión si enemigo es carguero o destructor
+                if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
+                  explosionCarguero();
+                }else if(Escarguero === 0){
+                  explosionDestructor();
+                }
+              }else{
+                enemy.vida = enemy.vida - danio;
+              }
+            }else{
+              if(enemy.vida > 0){
+                let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Miss');
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                function elimAvisoDam(){
+                  self.Hit2.destroy();
+                }
+                //Timer de aviso
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                //Elimino aviso
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+              }
             }
-            else if (nave.armas === 1 || nave.armas === 4)
+          }
+        }
+        else if (nave.armas === 1 || nave.armas === 4){
+          //--------------------------------------------------------------------------------------------------------------------------------
+          //                                                  TORPEDOS DEL SUBMARINO
+          //--------------------------------------------------------------------------------------------------------------------------------
+          if(dist === "corta"){
+            probExtra = Math.floor(Math.random() * (2));
+            if((probabilidad + probExtra) > 2){
+              danio = 6;
+              hitted(enemy.imagen.x, enemy.imagen.y); 
+              let contadorAviso = 0;
+
+              //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+              self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+
+              function aviso(){
+                self.Hit2.setText('Daño: ' + danio);
+                contadorAviso++;
+                if (contadorAviso==3){
+                  self.statusEnvio.remove(true);
+                }
+              }
+              function elimAvisoDam(){
+                self.Hit2.destroy();
+              }
+              //Timer de aviso
+              self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              //Elimino aviso
+              self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+              
+              //----------------------- Envío el daño y el carguero dañado al socket -----------------------
+              switch(enemy)
+              {
+                case self.carguero1:
+                  Escarguero = 1;
+                  break;
+                case self.carguero2:
+                  Escarguero = 2;
+                  break;
+                case self.carguero3:
+                  Escarguero = 3;
+                  break;
+                case self.carguero4:
+                  Escarguero = 4;
+                  break;
+                case self.carguero5:
+                  Escarguero = 5;
+                  break;
+                case self.carguero6:
+                  Escarguero = 6;
+                  break;
+                default:
+                  Escarguero = 0;
+                  break;
+              }
+              pack = {
+                danio: danio,
+                carguero: Escarguero
+              }              
+              self.socket.emit('playerHit', pack);
+
+              if(enemy.vida <= danio)
+              {
+                enemy.vida = 0;
+                destroyed(enemy.imagen);
+                enemy.imagen.removeInteractive();
+                enemy.imagen.setActive(false);
+                enemy.imagen.setVisible(false);
+                self.textures.remove(enemy.imagen);
+                
+                //Evento de explosión si enemigo es carguero o destructor
+                if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
+                  explosionCarguero();
+                }else if(Escarguero === 0){
+                  explosionDestructor();
+                }
+              }else{
+                enemy.vida = enemy.vida - danio;
+              }
+            }else{
+              if(enemy.vida > 0){
+                let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Miss');
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                function elimAvisoDam(){
+                  self.Hit2.destroy();
+                }
+                //Timer de aviso
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                //Elimino aviso
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+              }
+            }
+          }
+          else if(dist === "media"){
+            probExtra = Math.floor(Math.random() * (3));
+            if((probabilidad + probExtra) > 3){
+              danio = 6;
+              hitted(enemy.imagen.x, enemy.imagen.y); 
+              let contadorAviso = 0;
+
+              //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+              self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+
+              function aviso(){
+                self.Hit2.setText('Daño: ' + danio);
+                contadorAviso++;
+                if (contadorAviso==3){
+                  self.statusEnvio.remove(true);
+                }
+              }
+              function elimAvisoDam(){
+                self.Hit2.destroy();
+              }
+              //Timer de aviso
+              self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              //Elimino aviso
+              self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+
+              //----------------------- Envío el daño y el carguero dañado al socket -----------------------
+              switch(enemy)
+              {
+                case self.carguero1:
+                  Escarguero = 1;
+                  break;
+                case self.carguero2:
+                  Escarguero = 2;
+                  break;
+                case self.carguero3:
+                  Escarguero = 3;
+                  break;
+                case self.carguero4:
+                  Escarguero = 4;
+                  break;
+                case self.carguero5:
+                  Escarguero = 5;
+                  break;
+                case self.carguero6:
+                  Escarguero = 6;
+                  break;
+                default:
+                  Escarguero = 0;
+                  break;
+              }
+              pack ={
+                danio: danio,
+                carguero: Escarguero
+              }              
+              self.socket.emit('playerHit', pack);
+
+              if(enemy.vida <= danio)
+              {
+                enemy.vida = 0;
+                destroyed(enemy.imagen);
+                enemy.imagen.removeInteractive();
+                enemy.imagen.setActive(false);
+                enemy.imagen.setVisible(false);
+                self.textures.remove(enemy.imagen);
+
+                //Evento de explosión si enemigo es carguero o destructor
+                if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
+                  explosionCarguero();
+                }else if(Escarguero === 0){
+                  explosionDestructor();
+                }
+              }else{
+                enemy.vida = enemy.vida - danio;
+              }
+            }else{
+               if(enemy.vida > 0){
+                let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Miss');
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                function elimAvisoDam(){
+                  self.Hit2.destroy();
+                }
+                //Timer de aviso
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                //Elimino aviso
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+              }
+            } 
+          }
+          else if(dist === "larga"){
+            probExtra = Math.floor(Math.random() * (3));
+            if((probabilidad + probExtra) > 5)
             {
-              if(dist === "corta")
-              {
-                probExtra = Math.floor(Math.random() * (2));
-                if((probabilidad + probExtra) > 2)
-                {
-                  danio = 6;
+              danio = 6;
+              hitted(enemy.imagen.x, enemy.imagen.y); 
+              let contadorAviso = 0;
 
-                  hitted(enemy.imagen.x, enemy.imagen.y); 
-                  
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#024A86', align: 'center'});
-
-                  function aviso(){
-                    self.Hit2.setText('Daño: ' + danio);
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
-                    }
-                  }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                  switch(enemy)
-                  {
-                    case self.carguero1:
-                      Escarguero = 1;
-                      break;
-                    case self.carguero2:
-                      Escarguero = 2;
-                      break;
-                    case self.carguero3:
-                      Escarguero = 3;
-                      break;
-                    case self.carguero4:
-                      Escarguero = 4;
-                      break;
-                    case self.carguero5:
-                      Escarguero = 5;
-                      break;
-                    case self.carguero6:
-                      Escarguero = 6;
-                      break;
-                    default:
-                      Escarguero = 0;
-                      break;
-                  }
-                  
-                  pack ={
-                    danio: danio,
-                    carguero: Escarguero
-                  }              
-                  self.socket.emit('playerHit', pack);
-
-                  if(enemy.vida <= danio)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen);
-                    enemy.imagen.removeInteractive();
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    self.textures.remove(enemy.imagen);
-                    
-                    if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
-                      explosionCarguero();
-                    }else if(Escarguero === 0){
-                      explosionDestructor();
-                    }
-                  }
-                  else
-                    enemy.vida = enemy.vida - danio;
-                }else{
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  if(enemy.vida > 0){
-                    let contadorAviso = 0;
-                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
-
-                    function aviso(){
-                      self.Hit2.setText('Miss');
-                      contadorAviso++;
-                      if (contadorAviso==3){
-                        self.statusEnvio.remove(true);
-                      }
-                    }
-                    
-                    function prueba(){
-                      self.Hit2.destroy();
-                    }
-                    
-                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-              
-                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  }
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
+              //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+              self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                '', {font: '20px monospace', fill: '#024A86', align: 'center'});
+              function aviso(){
+                self.Hit2.setText('Daño: ' + danio);
+                contadorAviso++;
+                if (contadorAviso==3){
+                  self.statusEnvio.remove(true);
                 }
               }
-              else if(dist === "media")
-              {
-                probExtra = Math.floor(Math.random() * (3));
-                if((probabilidad + probExtra) > 3)
-                {
-                  
-                  danio = 6;
-                  hitted(enemy.imagen.x, enemy.imagen.y); 
-                  
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#024A86', align: 'center'});
-
-                  function aviso(){
-                    self.Hit2.setText('Daño: ' + danio);
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
-                    }
-                  }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-
-                  switch(enemy)
-                  {
-                    case self.carguero1:
-                      Escarguero = 1;
-                      break;
-                    case self.carguero2:
-                      Escarguero = 2;
-                      break;
-                    case self.carguero3:
-                      Escarguero = 3;
-                      break;
-                    case self.carguero4:
-                      Escarguero = 4;
-                      break;
-                    case self.carguero5:
-                      Escarguero = 5;
-                      break;
-                    case self.carguero6:
-                      Escarguero = 6;
-                      break;
-                    default:
-                      Escarguero = 0;
-                      break;
-                  }
-                  
-                  pack ={
-                    danio: danio,
-                    carguero: Escarguero
-                  }              
-                  self.socket.emit('playerHit', pack);
-
-                  if(enemy.vida <= danio)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen);
-                    enemy.imagen.removeInteractive();
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    self.textures.remove(enemy.imagen);
-                    if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
-                      explosionCarguero();
-                    }else if(Escarguero === 0){
-                      explosionDestructor();
-                    }
-                  }
-                  else
-                    enemy.vida = enemy.vida - danio;
-                } else {
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  if(enemy.vida > 0){
-                    let contadorAviso = 0;
-                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
-
-                    function aviso(){
-                      self.Hit2.setText('Miss');
-                      contadorAviso++;
-                      if (contadorAviso==3){
-                        self.statusEnvio.remove(true);
-                      }
-                    }
-                    
-                    function prueba(){
-                      self.Hit2.destroy();
-                    }
-                    
-                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-              
-                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  }
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-                } 
+              function elimAvisoDam(){
+                self.Hit2.destroy();
               }
-              else if(dist === "larga")
-              {
-                probExtra = Math.floor(Math.random() * (3));
-                if((probabilidad + probExtra) > 5)
-                {
-                  danio = 6;
-                  hitted(enemy.imagen.x, enemy.imagen.y); 
-                  
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  let contadorAviso = 0;
-                  self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                    '', {font: '20px monospace', fill: '#024A86', align: 'center'});
-                  function aviso(){
-                    self.Hit2.setText('Daño: ' + danio);
-                    contadorAviso++;
-                    if (contadorAviso==3){
-                      self.statusEnvio.remove(true);
-                    }
-                  }
-                  
-                  function prueba(){
-                    self.Hit2.destroy();
-                  }
-                  
-                  self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
-            
-                  self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
-
-                  switch(enemy)
-                  {
-                    case self.carguero1:
-                      Escarguero = 1;
-                      break;
-                    case self.carguero2:
-                      Escarguero = 2;
-                      break;
-                    case self.carguero3:
-                      Escarguero = 3;
-                      break;
-                    case self.carguero4:
-                      Escarguero = 4;
-                      break;
-                    case self.carguero5:
-                      Escarguero = 5;
-                      break;
-                    case self.carguero6:
-                      Escarguero = 6;
-                      break;
-                    default:
-                      Escarguero = 0;
-                      break;
-                  }
-                  
-                  pack ={
-                    danio: danio,
-                    carguero: Escarguero
-                  }              
-                  self.socket.emit('playerHit', pack);
-
-                  if(enemy.vida <= danio)
-                  {
-                    enemy.vida = 0;
-                    destroyed(enemy.imagen);
-                    enemy.imagen.removeInteractive();
-                    enemy.imagen.setActive(false);
-                    enemy.imagen.setVisible(false);
-                    self.textures.remove(enemy.imagen);
-                    if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
-                      explosionCarguero();
-                    }else if(Escarguero === 0){
-                      explosionDestructor();
-                    }
-                  }
-                  else
-                    enemy.vida = enemy.vida - danio;
-                }else{
-                  //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
-                  if(enemy.vida > 0){
-                    let contadorAviso = 0;
-                    self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
-                      '', {font: '20px monospace', fill: '#fff', align: 'center'});
-
-                    function aviso(){
-                      self.Hit2.setText('Miss');
-                      contadorAviso++;
-                      if (contadorAviso==3){
-                        self.statusEnvio.remove(true);
-                      }
-                    }
-                    
-                    function prueba(){
-                      self.Hit2.destroy();
-                    }
-                    
-                    self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              //Timer de aviso
+              self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+              //Elimino aviso
+              self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
               
-                    self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-                  }
-                  //-----------------------ENVIO EL DANIO Y EL CARGUERO DANIADO AL SOCKET----------------------------
+              //----------------------- Envío el daño y el carguero dañado al socket -----------------------
+              switch(enemy)
+              {
+                case self.carguero1:
+                  Escarguero = 1;
+                  break;
+                case self.carguero2:
+                  Escarguero = 2;
+                  break;
+                case self.carguero3:
+                  Escarguero = 3;
+                  break;
+                case self.carguero4:
+                  Escarguero = 4;
+                  break;
+                case self.carguero5:
+                  Escarguero = 5;
+                  break;
+                case self.carguero6:
+                  Escarguero = 6;
+                  break;
+                default:
+                  Escarguero = 0;
+                  break;
+              }
+              pack ={
+                danio: danio,
+                carguero: Escarguero
+              }              
+              self.socket.emit('playerHit', pack);
+
+              if(enemy.vida <= danio)
+              {
+                enemy.vida = 0;
+                destroyed(enemy.imagen);
+                enemy.imagen.removeInteractive();
+                enemy.imagen.setActive(false);
+                enemy.imagen.setVisible(false);
+                self.textures.remove(enemy.imagen);
+
+                //Evento de explosión si enemigo es carguero o destructor
+                if(Escarguero === 1 || Escarguero === 2 || Escarguero === 3 || Escarguero === 4 || Escarguero === 5 || Escarguero === 6){
+                  explosionCarguero();
+                }else if(Escarguero === 0){
+                  explosionDestructor();
                 }
-              }     
+              }else{
+                enemy.vida = enemy.vida - danio;
+              } 
+            }else{
+              if(enemy.vida > 0){
+                let contadorAviso = 0;
+
+                //----------------------- Texto que muestra el daño hecho en el juego -----------------------
+                self.Hit2 = self.add.text( enemy.imagen.x + 25, enemy.imagen.y + 25, 
+                  '', {font: '20px monospace', fill: '#fff', align: 'center'});
+
+                function aviso(){
+                  self.Hit2.setText('Miss');
+                  contadorAviso++;
+                  if (contadorAviso==3){
+                    self.statusEnvio.remove(true);
+                  }
+                }
+                function elimAvisoDam(){
+                  self.Hit2.destroy();
+                }
+                //Timer de aviso
+                self.statusEnvio = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+                //Elimino aviso
+                self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
+              }
             }
-            
-          } 
+          }     
+        }      
+      } 
     }
    
-    //funcion que muestra la explosion en la posicion determinada
+    //Función que muestra la explosión en la posición determinada
     function hitted(x, y){
-      self.explotion2 = self.add.sprite(x,y,'explot').setDisplaySize(120, 120).setDepth(5);  //se crea el sprite de explosiones
-      self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
+      //Se crea el sprite de explosiones
+      self.explotion2 = self.add.sprite(x,y,'explot').setDisplaySize(120, 120).setDepth(5); 
+      //Se crea la animación para la explosión luego de recibir disparo 
+      self.anims.create({  
       key: 'explot2',
       frames: [
           { key: 'explot',frame:"PngItem_4145768_01_29.gif" },
@@ -2944,27 +2883,28 @@ export class Game extends Phaser.Scene{
       self.explotion2.play('explot2');
     }
 
-    //funcion que muestra y destruye un jugador
+    //Función que muestra y destruye un jugador
     function destroyed(playerIMG){
-      self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y, 'explot').setDisplaySize(200, 200).setDepth(5);  //se crea el sprite de explosiones
-      self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
-      key: 'explot3',
-      frames: [
-          { key: 'explot',frame:"PngItem_4145768_01_29.gif" },
-          { key: 'explot',frame:"PngItem_4145768_01_30.gif" },
-          { key: 'explot',frame:"PngItem_4145768_01_31.gif" },
-          { key: 'explot',frame:"PngItem_4145768_01_32.gif" },
-      ],
-      frameRate: 5,
-      repeat:-1,
-      hideOnComplete: false,
-      
+      //Se crea el sprite de explosiones
+      self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y, 'explot').setDisplaySize(200, 200).setDepth(5); 
+      //Se crea la animación para la explosión luego de recibir disparo 
+      self.anims.create({  
+        key: 'explot3',
+        frames: [
+            { key: 'explot',frame:"PngItem_4145768_01_29.gif" },
+            { key: 'explot',frame:"PngItem_4145768_01_30.gif" },
+            { key: 'explot',frame:"PngItem_4145768_01_31.gif" },
+            { key: 'explot',frame:"PngItem_4145768_01_32.gif" },
+        ],
+        frameRate: 5,
+        repeat:-1,
+        hideOnComplete: false,
       });
       self.explotion3.play('explot3');
     }
 
-    //funcion que muestra una cruz animada senalando de donde vino un disparo enemigo
-    function CRUZ (imagen) {
+    //Función que muestra una cruz animada señalando de donde vino el disparo enemigo
+    function cruz(imagen){
       self.cruz = self.add.sprite(imagen.x, imagen.y, 'CRUZ').setDepth(10).setDisplaySize(80,80);
       self.anims.create({  
         key: 'ani',
@@ -2975,14 +2915,12 @@ export class Game extends Phaser.Scene{
         frameRate: 5,
         repeat:3,
         hideOnComplete: true,
-        
-        });
-        self.cruz.play('ani');
+      });
+      self.cruz.play('ani');
     }
 
-    //funcion que procesa el dano y el porcentaje de acierto
-    function RecibeHit(player, damage, escar, enemy, expl)
-    {
+    //Funcion que procesa el daño y el porcentaje de acierto
+    function recibeHit(player, damage, escar, enemy, expl){
       if(musicaCombate === false){
         self.soundBackground.stop();
         self.soundAction.play({volume: 0.2, loop: true});
@@ -2991,11 +2929,14 @@ export class Game extends Phaser.Scene{
       let contadorAviso = 0;
       playerIMG = player.imagen;
 
-      CRUZ(enemy.imagen);
+      //Muestro la cruz en el mapa
+      cruz(enemy.imagen);
       hitted(playerIMG.x, playerIMG.y);
-      
+
+      //----------------------- Texto que muestra el daño hecho en el juego -----------------------
       self.Hit = self.add.text( playerIMG.x + 25, playerIMG.y + 25, 
         '', {font: '30px monospace', fill: '#FF0000', align: 'center'});
+      
       function aviso(){
         self.Hit.setText('¡Impacto Recibido! Daño: ' + damage);
         contadorAviso++;
@@ -3003,24 +2944,23 @@ export class Game extends Phaser.Scene{
           self.status.remove(true);
         }
       }
-      
-      function prueba(){
+      function elimAvisoDam(){
         self.Hit.destroy();
       }
-      
+      //Timer de aviso
       self.status = self.time.addEvent({ delay: 10, callback: aviso, callbackScope: self, loop: true});
+      //Elimino aviso
+      self.statusReset = self.time.addEvent({ delay: 700, callback: elimAvisoDam, callbackScope: self});
 
-      self.statusReset = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
-
-      if(player.vida > 0)
-      {
+      if(player.vida > 0){
         self.soundImpacto.play({volume: 0.08, loop: false});
         player.vida = player.vida - damage; 
         if(escar){
+          //Activo alerta de daño sobre cargueros
           alertaCargueros();
           self.soundAlarm.play({volume: 0.06, loop: false});
         }
-        // Muestro en la parte grafica la vida actualizada de cada barco luego del disparo
+        //Muestro en la parte gráfica la vida actualizada de cada barco luego del disparo
         if (self.equipo == 1){
           self.UIDesVida.setText('Vida: ' + self.destructor.vida);
           self.UIDesCarg1.setText('Vida carguero 1: ' + self.carguero1.vida);
@@ -3030,14 +2970,11 @@ export class Game extends Phaser.Scene{
           self.UIDesCarg5.setText('Vida carguero 5: ' + self.carguero5.vida);
           self.UIDesCarg6.setText('Vida carguero 6: ' + self.carguero6.vida);
         }else{
-
           self.UISubVida.setText('Vida: ' + player.vida);
         }
       }
-      if(player.vida <= 0)
-      {
-        switch(player)
-        {
+      if(player.vida <= 0){
+        switch(player){
           case self.carguero1:
             self.carguero1.particles.setActive(false).setVisible(false);
             self.physics.world.removeCollider(self.collDesCarg1);
@@ -3069,23 +3006,24 @@ export class Game extends Phaser.Scene{
         playerIMG.setActive(false);
         playerIMG.setVisible(false);
         self.textures.remove(playerIMG);
-        if(escar)
-        {
+        if(escar){
           alertaCargueros();
           self.soundAlarm.play({volume: 0.06, loop: false});
           if(expl === 0){
+            //Evento de explosión de carguero 
             explosionCarguero();
           }   
           carguerosMuertos++;
         }
         if(expl === 1){
+          //Evento de explosión de destructor 
           explosionDestructor();
         }else if(expl ===2){
+          //Evento de explosión de submarino 
           explosionSubmarino();
         }
       }
-      if(carguerosMuertos > 3)
-      {
+      if(carguerosMuertos > 3){
         let envio={
           socket: self.socket,
           resultado: 1,
@@ -3105,9 +3043,9 @@ export class Game extends Phaser.Scene{
       }
     }
     
-    //funcion que convierte el cursor en una mira
-    this.input.on('pointermove', function (pointer) {
-    //maneja la mira del destructor con el cursor  
+    //Función que convierte el cursor en una mira
+    this.input.on('pointermove', function (pointer){
+      //Maneja la mira del destructor con el cursor  
       if(self.equipo === 1){
         if (this.input.mouse.locked){
           self.destructor.reticula.x += pointer.movementX;
@@ -3135,11 +3073,11 @@ export class Game extends Phaser.Scene{
             else if (self.destructor.reticula.y - self.destructor.imagen.y < -distMaxima)
               self.destructor.reticula.y = self.destructor.imagen.y-distMaxima;
         }
-      }
-    //maneja la mira del submarino con el cursor 
+      } 
     }, this);
 
-    // Destruye a un jugador cuando se desconecta del socket y envia automaticamente a la escena de finalizacion indicando que gane la partida
+    //Procedimientos sockets
+    //Destruye a un jugador cuando se desconecta del socket y envía automáticamente a la escena de finalización indicando que se ganó la partida
     this.socket.on('playerDisconnected', function (playerId){
       if (playerId != self.socket.id){
         if(self.equipo===1){
@@ -3154,19 +3092,18 @@ export class Game extends Phaser.Scene{
           self.carguero6.imagen.destroy();
         }
 
-        // Me envio a pantalla de finalizacion
+        //Dirijo al jugador actual a la pantalla de finalización
         let envio= {
           socket: self.socket,
           resultado: 1,
           equipo: self.equipo
         }
-
         self.scene.start(DEF.SCENES.FinScene, envio);
       }
     });
     
-    // Escucho el movimiento del otro jugador y lo dibujo en mi cliente
-    this.socket.on('playerMoved', function (playerInfo) {
+    //Escucho el movimiento del otro jugador y lo dibujo en mi cliente
+    this.socket.on('playerMoved', function (playerInfo){
       if(playerInfo.id != self.socket.id){
         if(self.equipo===1){
           self.submarino.imagen.x = playerInfo.x;
@@ -3180,8 +3117,8 @@ export class Game extends Phaser.Scene{
       }
     });
 
-    // Escucho el evento de movimiento de los cargueros y lo dibujo en mi cliente dependiendo del carguero que se haya desplazado
-    this.socket.on('carguerosMoved', function (playerInfo) {
+    //Escucho el evento de movimiento de los cargueros y lo dibujo en mi cliente dependiendo del carguero que se haya desplazado
+    this.socket.on('carguerosMoved', function (playerInfo){
       if(playerInfo.id != self.socket.id){
         if(self.equipo===2){
           if(playerInfo.carguero === 1){
@@ -3218,49 +3155,45 @@ export class Game extends Phaser.Scene{
       }
     });
 
-    //escucho el tiro que me dieron desde el otro jugador y lo proceso
-    this.socket.on('playerHitted', function(playerInfo)
-    {      
-        let expl=2;  
-        if(self.equipo===1)
+    //Escucho el tiro que me dieron desde el otro jugador y lo proceso
+    this.socket.on('playerHitted', function(playerInfo){      
+      let expl=2;  
+      if(self.equipo===1){
+        expl=0;  
+        if (playerInfo.numerocarguero === 0)
         {
-          expl=0;  
-          if (playerInfo.numerocarguero === 0)
-          {
-            let expl=1;
-            RecibeHit(self.destructor, playerInfo.damage, false, self.submarino, expl);
-            ALERTADISPARO();
-          }
-          else if(playerInfo.numerocarguero === 1)
-          {
-            RecibeHit(self.carguero1, playerInfo.damage, true, self.submarino, expl);
-          }
-          else if(playerInfo.numerocarguero === 2)
-          {
-            RecibeHit(self.carguero2, playerInfo.damage, true, self.submarino, expl);
-          }
-          else if(playerInfo.numerocarguero === 3)
-          {
-            RecibeHit(self.carguero3, playerInfo.damage, true, self.submarino, expl);
-          }
-          else if(playerInfo.numerocarguero === 4)
-          {
-            RecibeHit(self.carguero4, playerInfo.damage, true, self.submarino, expl);
-          }
-          else if(playerInfo.numerocarguero === 5)
-          {
-            RecibeHit(self.carguero5, playerInfo.damage, true, self.submarino, expl);
-          }
-          else if(playerInfo.numerocarguero === 6)
-          {
-            RecibeHit(self.carguero6, playerInfo.damage, true, self.submarino, expl);
-          }
+          let expl=1;
+          recibeHit(self.destructor, playerInfo.damage, false, self.submarino, expl);
+          alertaDisparo();
         }
-        else
+        else if(playerInfo.numerocarguero === 1)
         {
-            RecibeHit(self.submarino, playerInfo.damage, false, self.destructor, expl);
-            ALERTADISPARO();
+          recibeHit(self.carguero1, playerInfo.damage, true, self.submarino, expl);
         }
+        else if(playerInfo.numerocarguero === 2)
+        {
+          recibeHit(self.carguero2, playerInfo.damage, true, self.submarino, expl);
+        }
+        else if(playerInfo.numerocarguero === 3)
+        {
+          recibeHit(self.carguero3, playerInfo.damage, true, self.submarino, expl);
+        }
+        else if(playerInfo.numerocarguero === 4)
+        {
+          recibeHit(self.carguero4, playerInfo.damage, true, self.submarino, expl);
+        }
+        else if(playerInfo.numerocarguero === 5)
+        {
+          recibeHit(self.carguero5, playerInfo.damage, true, self.submarino, expl);
+        }
+        else if(playerInfo.numerocarguero === 6)
+        {
+          recibeHit(self.carguero6, playerInfo.damage, true, self.submarino, expl);
+        }
+      }else{
+        recibeHit(self.submarino, playerInfo.damage, false, self.destructor, expl);
+        alertaDisparo();
+      }
     }); 
 
     this.socket.on('playerUnder', function(playerInfo){      
@@ -3295,32 +3228,31 @@ export class Game extends Phaser.Scene{
     }); 
 
     this.socket.on('FinalizoPartida', function(data){      
-        self.soundBackground.stop();
-        self.soundAction.stop();
-        if(data.resultado === 1){
-          var envio2={
-            socket: self.socket,
-            resultado: 2,
-            equipo: self.equipo,
-          }
-          self.scene.start(DEF.SCENES.FinScene, envio2);
-        }else if(data.resultado === 2){
-          var envio2={
-            socket: self.socket,
-            resultado: 1,
-            equipo: self.equipo,
-          }
-          self.scene.start(DEF.SCENES.FinScene, envio2);  
+      self.soundBackground.stop();
+      self.soundAction.stop();
+      if(data.resultado === 1){
+        var envio2={
+          socket: self.socket,
+          resultado: 2,
+          equipo: self.equipo,
+        }
+        self.scene.start(DEF.SCENES.FinScene, envio2);
+      }else if(data.resultado === 2){
+        var envio2={
+          socket: self.socket,
+          resultado: 1,
+          equipo: self.equipo,
+        }
+        self.scene.start(DEF.SCENES.FinScene, envio2);  
       }    
     }); 
 
     this.socket.on('recibeSubAmmo', function(data){
       self.submarino.ammoCanion = data[0];
       self.submarino.ammoTorpedos = data[1];
-    })
+    });
 
-    function iniciarPartida()
-    {
+    function iniciarPartida(){
       self.partida.codP = 1;
       self.partida.naves[0].posX = self.carguero1.posX;
       self.partida.naves[0].posY = self.carguero1.posY;
@@ -3340,39 +3272,31 @@ export class Game extends Phaser.Scene{
       self.partida.naves[7].posY = self.submarino.posY;
     }
 
-    function guardarPartida()
-    {
+    function guardarPartida(){
       self.partida.codP = 1;
       self.partida.naves[0].vida = self.carguero1.vida;
       self.partida.naves[0].posX = self.carguero1.imagen.x;
       self.partida.naves[0].posY = self.carguero1.imagen.y;
-
       self.partida.naves[1].vida = self.carguero2.vida;
       self.partida.naves[1].posX = self.carguero2.imagen.x;
       self.partida.naves[1].posY = self.carguero2.imagen.y;
-
       self.partida.naves[2].vida = self.carguero3.vida;
       self.partida.naves[2].posX = self.carguero3.imagen.x;
       self.partida.naves[2].posY = self.carguero3.imagen.y;
-
       self.partida.naves[3].vida = self.carguero4.vida;
       self.partida.naves[3].posX = self.carguero4.imagen.x;
       self.partida.naves[3].posY = self.carguero4.imagen.y;
-
       self.partida.naves[4].vida = self.carguero5.vida;
       self.partida.naves[4].posX = self.carguero5.imagen.x;
       self.partida.naves[4].posY = self.carguero5.imagen.y;
-
       self.partida.naves[5].vida = self.carguero6.vida;
       self.partida.naves[5].posX = self.carguero6.imagen.x;
       self.partida.naves[5].posY = self.carguero6.imagen.y;
-
       self.partida.naves[6].vida = self.destructor.vida;
       self.partida.naves[6].posX = self.destructor.imagen.x;
       self.partida.naves[6].posY = self.destructor.imagen.y;
       self.partida.naves[6].armas[0].municion = self.destructor.ammoCanion;
       self.partida.naves[6].armas[1].municion = self.destructor.ammoCargas;
-
       self.partida.naves[7].vida = self.submarino.vida;
       self.partida.naves[7].posX = self.submarino.imagen.x;
       self.partida.naves[7].posY = self.submarino.imagen.y;
@@ -3381,38 +3305,41 @@ export class Game extends Phaser.Scene{
     }
   }
 
-  // Función update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje graficamente
+  //Función update, se refresca constantemente para ir dibujando los distintos cambios que sucedan en la escena, aqui se agrega todo lo que se desea que se actualice y refleje gráficamente
   update(time, delta) {
     if(this.equipo === 1){
-      // Agregamos el movimiento de los barcos con las flechas de direccion y seteamos la velocidad de rotacion de giro del destructor
+      //Agregamos el movimiento de los barcos con las teclas W-A-S-D y ajustamos la velocidad de rotación de giro del destructor
       if (this.destructor){
-        if (this.left.isDown && (this.up.isDown || this.down.isDown) || this.UPDI==1 ) {
+        if(this.left.isDown && (this.up.isDown || this.down.isDown) || this.UPDI==1 ){
           this.destructor.imagen.setAngularVelocity(-100)
-        } else if (this.right.isDown && (this.up.isDown || this.down.isDown)) {
+        }
+        else if (this.right.isDown && (this.up.isDown || this.down.isDown)){
           this.destructor.imagen.setAngularVelocity(100)
-        } else {
-          this.destructor.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
+        }else{
+          //Si no se esta apretando la tecla de arriba o abajo la velocidad de rotación y de giro es 0
+          this.destructor.imagen.setAngularVelocity(0) 
         }
        
-        // Calculo y seteo la velocidad de los barcos y el angulo de rotacion como una constante
-        const velX = Math.cos((this.destructor.imagen.angle - 360) * 0.01745)
-        const velY = Math.sin((this.destructor.imagen.angle - 360) * 0.01745)
+        //Calculo y ajusto la velocidad de los barcos y el angulo de rotación como una constante
+        const VELX = Math.cos((this.destructor.imagen.angle - 360) * 0.01745)
+        const VELY = Math.sin((this.destructor.imagen.angle - 360) * 0.01745)
         // Seteo la velocidad de movimiento
-        if (this.up.isDown  || this.UP===1) {
-          this.destructor.imagen.setVelocityX(this.destructor.velocidad * velX)
-          this.destructor.imagen.setVelocityY(this.destructor.velocidad  * velY)
-        } else if (this.down.isDown) {
-          this.destructor.imagen.setVelocityX(-(this.destructor.velocidad/2) * velX)
-          this.destructor.imagen.setVelocityY(-(this.destructor.velocidad/2) * velY)
-        } else {
-          // Seteo todo en 0 porque no se esta moviendo
+        if (this.up.isDown  || this.UP===1){
+          this.destructor.imagen.setVelocityX(this.destructor.velocidad * VELX)
+          this.destructor.imagen.setVelocityY(this.destructor.velocidad  * VELY)
+        }
+        else if (this.down.isDown){
+          this.destructor.imagen.setVelocityX(-(this.destructor.velocidad/2) * VELX)
+          this.destructor.imagen.setVelocityY(-(this.destructor.velocidad/2) * VELY)
+        }else{
+          //Ajusto todo en 0 porque no se esta moviendo
           this.destructor.imagen.setAcceleration(0)
           this.destructor.imagen.setVelocityX(0)
           this.destructor.imagen.setVelocityY(0)
         }
         
         let oldPosition = {}
-        // Comparo la posicion y rotacion actual del barco, y en caso de que haya cambiado envio el evento "playerMovement" al socket para comunicar a todos los clientes
+        //Comparo la posición y rotación actual del barco y en caso de que haya cambiado envio el evento "playerMovement" al socket para comunicar a todos los clientes
         var x = this.destructor.imagen.x;
         var y = this.destructor.imagen.y;
         var r = this.destructor.imagen.rotation;
@@ -3425,8 +3352,7 @@ export class Game extends Phaser.Scene{
           }
           this.socket.emit('playerMovement', data);
         }
-        
-        // Guardo la posicion actual del destructor para comparar con la nueva y chequear si hubo movimiento
+        //Guardo la posición actual del destructor para comparar con la nueva y chequear si hubo movimiento
         oldPosition = {
           x: this.destructor.posX,
           y: this.destructor.posX,
@@ -3434,24 +3360,26 @@ export class Game extends Phaser.Scene{
         }
       }
 
-      // Agregamos el movimiento de los cargueros con las teclas WASD y seteamos la velocidad de rotacion de giro del barco
+      //Agregamos el movimiento de los cargueros con las teclas direccionales y ajustamos la velocidad de rotación de giro del barco
       if (this.carguero1 || this.carguero2 || this.carguero3 || this.carguero4 || this.carguero5 || this.carguero6 ){
-        if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
+        if (this.cursors.left.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)){
           this.carguero1.imagen.setAngularVelocity(-100)
           this.carguero2.imagen.setAngularVelocity(-100)
           this.carguero3.imagen.setAngularVelocity(-100)
           this.carguero4.imagen.setAngularVelocity(-100)
           this.carguero5.imagen.setAngularVelocity(-100)
           this.carguero6.imagen.setAngularVelocity(-100)
-        } else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)) {
+        }
+        else if (this.cursors.right.isDown && (this.cursors.up.isDown || this.cursors.down.isDown)){
           this.carguero1.imagen.setAngularVelocity(100)
           this.carguero2.imagen.setAngularVelocity(100)
           this.carguero3.imagen.setAngularVelocity(100)
           this.carguero4.imagen.setAngularVelocity(100)
           this.carguero5.imagen.setAngularVelocity(100)
           this.carguero6.imagen.setAngularVelocity(100)
-        } else {
-          this.carguero1.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
+        }else{
+          //Si no se esta apretando la tecla de arriba o abajo la velocidad de rotación y de giro es 0
+          this.carguero1.imagen.setAngularVelocity(0) 
           this.carguero2.imagen.setAngularVelocity(0)
           this.carguero3.imagen.setAngularVelocity(0)
           this.carguero4.imagen.setAngularVelocity(0)
@@ -3459,36 +3387,37 @@ export class Game extends Phaser.Scene{
           this.carguero6.imagen.setAngularVelocity(0)
         }
 
-        // Calculo y seteo la velocidad de los barcos y el angulo de rotacion como una constante
-        const velCX = Math.cos((this.carguero1.imagen.angle - 360) * 0.01745)
-        const velCY = Math.sin((this.carguero1.imagen.angle - 360) * 0.01745)
-        if (this.cursors.up.isDown) {
-          this.carguero1.imagen.setVelocityX(this.carguero1.velocidad * velCX)
-          this.carguero1.imagen.setVelocityY(this.carguero1.velocidad * velCY)
-          this.carguero2.imagen.setVelocityX(this.carguero2.velocidad * velCX)
-          this.carguero2.imagen.setVelocityY(this.carguero2.velocidad * velCY)
-          this.carguero3.imagen.setVelocityX(this.carguero3.velocidad * velCX)
-          this.carguero3.imagen.setVelocityY(this.carguero3.velocidad * velCY)
-          this.carguero4.imagen.setVelocityX(this.carguero4.velocidad * velCX)
-          this.carguero4.imagen.setVelocityY(this.carguero4.velocidad * velCY)
-          this.carguero5.imagen.setVelocityX(this.carguero5.velocidad * velCX)
-          this.carguero5.imagen.setVelocityY(this.carguero5.velocidad * velCY)
-          this.carguero6.imagen.setVelocityX(this.carguero6.velocidad * velCX)
-          this.carguero6.imagen.setVelocityY(this.carguero6.velocidad * velCY)
-        } else if (this.cursors.down.isDown) {
-          this.carguero1.imagen.setVelocityX(-(this.carguero1.velocidad/2) * velCX)
-          this.carguero1.imagen.setVelocityY(-(this.carguero1.velocidad/2) * velCY)
-          this.carguero2.imagen.setVelocityX(-(this.carguero2.velocidad/2) * velCX)
-          this.carguero2.imagen.setVelocityY(-(this.carguero2.velocidad/2) * velCY)
-          this.carguero3.imagen.setVelocityX(-(this.carguero3.velocidad/2) * velCX)
-          this.carguero3.imagen.setVelocityY(-(this.carguero3.velocidad/2) * velCY)
-          this.carguero4.imagen.setVelocityX(-(this.carguero4.velocidad/2) * velCX)
-          this.carguero4.imagen.setVelocityY(-(this.carguero4.velocidad/2) * velCY)
-          this.carguero5.imagen.setVelocityX(-(this.carguero5.velocidad/2) * velCX)
-          this.carguero5.imagen.setVelocityY(-(this.carguero5.velocidad/2) * velCY)
-          this.carguero6.imagen.setVelocityX(-(this.carguero6.velocidad/2) * velCX)
-          this.carguero6.imagen.setVelocityY(-(this.carguero6.velocidad/2) * velCY)
-        } else {
+        //Calculo y ajusto la velocidad de los barcos y el angulo de rotación como una constante
+        const VELCX = Math.cos((this.carguero1.imagen.angle - 360) * 0.01745)
+        const VELCY = Math.sin((this.carguero1.imagen.angle - 360) * 0.01745)
+        if (this.cursors.up.isDown){
+          this.carguero1.imagen.setVelocityX(this.carguero1.velocidad * VELCX)
+          this.carguero1.imagen.setVelocityY(this.carguero1.velocidad * VELCY)
+          this.carguero2.imagen.setVelocityX(this.carguero2.velocidad * VELCX)
+          this.carguero2.imagen.setVelocityY(this.carguero2.velocidad * VELCY)
+          this.carguero3.imagen.setVelocityX(this.carguero3.velocidad * VELCX)
+          this.carguero3.imagen.setVelocityY(this.carguero3.velocidad * VELCY)
+          this.carguero4.imagen.setVelocityX(this.carguero4.velocidad * VELCX)
+          this.carguero4.imagen.setVelocityY(this.carguero4.velocidad * VELCY)
+          this.carguero5.imagen.setVelocityX(this.carguero5.velocidad * VELCX)
+          this.carguero5.imagen.setVelocityY(this.carguero5.velocidad * VELCY)
+          this.carguero6.imagen.setVelocityX(this.carguero6.velocidad * VELCX)
+          this.carguero6.imagen.setVelocityY(this.carguero6.velocidad * VELCY)
+        } 
+        else if (this.cursors.down.isDown){
+          this.carguero1.imagen.setVelocityX(-(this.carguero1.velocidad/2) * VELCX)
+          this.carguero1.imagen.setVelocityY(-(this.carguero1.velocidad/2) * VELCY)
+          this.carguero2.imagen.setVelocityX(-(this.carguero2.velocidad/2) * VELCX)
+          this.carguero2.imagen.setVelocityY(-(this.carguero2.velocidad/2) * VELCY)
+          this.carguero3.imagen.setVelocityX(-(this.carguero3.velocidad/2) * VELCX)
+          this.carguero3.imagen.setVelocityY(-(this.carguero3.velocidad/2) * VELCY)
+          this.carguero4.imagen.setVelocityX(-(this.carguero4.velocidad/2) * VELCX)
+          this.carguero4.imagen.setVelocityY(-(this.carguero4.velocidad/2) * VELCY)
+          this.carguero5.imagen.setVelocityX(-(this.carguero5.velocidad/2) * VELCX)
+          this.carguero5.imagen.setVelocityY(-(this.carguero5.velocidad/2) * VELCY)
+          this.carguero6.imagen.setVelocityX(-(this.carguero6.velocidad/2) * VELCX)
+          this.carguero6.imagen.setVelocityY(-(this.carguero6.velocidad/2) * VELCY)
+        }else{
           this.carguero1.imagen.setAcceleration(0)
           this.carguero2.imagen.setAcceleration(0)
           this.carguero3.imagen.setAcceleration(0)
@@ -3497,9 +3426,9 @@ export class Game extends Phaser.Scene{
           this.carguero6.imagen.setAcceleration(0)
         }
   
-        // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 1
+        //Genero actualización de movimiento para carguero 1
         let oldPosition1 = {}
-        // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
+        //Comparo la posición y rotación actual de los cargueros y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
         var x = this.carguero1.imagen.x;
         var y = this.carguero1.imagen.y;
         var r = this.carguero1.imagen.rotation;
@@ -3512,16 +3441,16 @@ export class Game extends Phaser.Scene{
           }
           this.socket.emit('carguerosMovement', data);
         }
-        // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+        //Guardo la posición actual del barco para comparar con la nueva y chequear si hubo movimiento
         oldPosition1 = {
           x: this.carguero1.imagen.x,
           y: this.carguero1.imagen.y,
           rotation: this.carguero1.imagen.rotation
         }
 
-        // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 2
+        //Genero actualización de movimiento para carguero 2
         let oldPosition2 = {}
-        // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
+        //Comparo la posición y rotación actual de los cargueros y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
         var x = this.carguero2.imagen.x;
         var y = this.carguero2.imagen.y;
         var r = this.carguero2.imagen.rotation;
@@ -3534,16 +3463,16 @@ export class Game extends Phaser.Scene{
           }
           this.socket.emit('carguerosMovement', data);
         }
-        // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+        //Guardo la posición actual del barco para comparar con la nueva y chequear si hubo movimiento
         oldPosition2 = {
           x: this.carguero2.imagen.x,
           y: this.carguero2.imagen.y,
           rotation: this.carguero2.imagen.rotation
         }
 
-        // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 3
+        //Genero actualización de movimiento para carguero 3
         let oldPosition3 = {}
-        // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
+        //Comparo la posición y rotación actual de los cargueros y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
         var x = this.carguero3.imagen.x;
         var y = this.carguero3.imagen.y;
         var r = this.carguero3.imagen.rotation;
@@ -3556,16 +3485,16 @@ export class Game extends Phaser.Scene{
           }
           this.socket.emit('carguerosMovement', data);
         }
-        // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+        //Guardo la posición actual del barco para comparar con la nueva y chequear si hubo movimiento
         oldPosition3 = {
           x: this.carguero3.imagen.x,
           y: this.carguero3.imagen.y,
           rotation: this.carguero3.imagen.rotation
         }
 
-        // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 4
+        //Genero actualización de movimiento para carguero 4
         let oldPosition4 = {}
-        // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
+        //Comparo la posición y rotación actual de los cargueros y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
         var x = this.carguero4.imagen.x;
         var y = this.carguero4.imagen.y;
         var r = this.carguero4.imagen.rotation;
@@ -3578,16 +3507,16 @@ export class Game extends Phaser.Scene{
           }
           this.socket.emit('carguerosMovement', data);
         }
-        // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+        //Guardo la posición actual del barco para comparar con la nueva y chequear si hubo movimiento
         oldPosition4 = {
           x: this.carguero4.imagen.x,
           y: this.carguero4.imagen.y,
           rotation: this.carguero4.imagen.rotation
         }
 
-        // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 5
+        //Genero actualización de movimiento para carguero 5
         let oldPosition5 = {}
-        // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
+        //Comparo la posición y rotación actual de los cargueros y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
         var x = this.carguero5.imagen.x;
         var y = this.carguero5.imagen.y;
         var r = this.carguero5.imagen.rotation;
@@ -3600,16 +3529,16 @@ export class Game extends Phaser.Scene{
           }
           this.socket.emit('carguerosMovement', data);
         }
-        // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+        //Guardo la posición actual del barco para comparar con la nueva y chequear si hubo movimiento
         oldPosition5 = {
           x: this.carguero5.imagen.x,
           y: this.carguero5.imagen.y,
           rotation: this.carguero5.imagen.rotation
         }
 
-        // GENERO ACTUALIZACION DE MOVIMIENTO PARA EL CARGUERO 6
+        //Genero actualización de movimiento para carguero 6
         let oldPosition6 = {}
-        // Comparo la posicion y rotacion actual de los cargueros, y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
+        //Comparo la posición y rotación actual de los cargueros y en caso de que haya cambiado envio el evento "carguerosMovement" al socket para comunicar a todos los clientes
         var x = this.carguero6.imagen.x;
         var y = this.carguero6.imagen.y;
         var r = this.carguero6.imagen.rotation;
@@ -3622,16 +3551,16 @@ export class Game extends Phaser.Scene{
           }
           this.socket.emit('carguerosMovement', data);
         }
-        // Guardo la posicion actual del barco para comparar con la nueva y chequear si hubo movimiento
+        //Guardo la posición actual del barco para comparar con la nueva y chequear si hubo movimiento
         oldPosition6 = {
           x: this.carguero6.imagen.x,
           y: this.carguero6.imagen.y,
           rotation: this.carguero6.imagen.rotation
         }
       }
-      
     }else{
       if (this.submarino){
+        //Si no se esta usando largavista solo puede girar sobre su propio eje del largavista
         if(this.submarino.largavista === true){
           if(this.left.isDown){
             this.submarino.imagen.setAngularVelocity(0);
@@ -3643,37 +3572,39 @@ export class Game extends Phaser.Scene{
             this.largaVistas.angle=this.submarino.imagen.angle-90;
           }
         }else{
-          // Seteo velocidad de rotacion y giro
+          //Ajusto velocidad de rotación y giro
           if (this.left.isDown && (this.up.isDown || this.down.isDown)) {
             this.submarino.imagen.setAngularVelocity(-100)
           } else if (this.right.isDown && (this.up.isDown || this.down.isDown)) {
             this.submarino.imagen.setAngularVelocity(100)
           } else {
-            this.submarino.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
+            //Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
+            this.submarino.imagen.setAngularVelocity(0) 
           }
 
           let oldPosition = {}
-          // Calculo y seteo la velocidad de los barcos y el angulo de rotacion como una constante
-          const velX = Math.cos((this.submarino.imagen.angle - 360) * 0.01745)
-          const velY = Math.sin((this.submarino.imagen.angle - 360) * 0.01745)
-          // Seteo velocidad de movimiento
-          if (this.up.isDown || this.UP===1) {
-            this.submarino.imagen.setVelocityX(this.submarino.velocidad  * velX)
-            this.submarino.imagen.setVelocityY(this.submarino.velocidad * velY)
-          } else if (this.down.isDown) {
-            this.submarino.imagen.setVelocityX(-(this.submarino.velocidad/2) * velX)
-            this.submarino.imagen.setVelocityY(-(this.submarino.velocidad/2) * velY)
-          } else {
+          //Calculo y ajusto la velocidad de los barcos y el angulo de rotación como una constante
+          const VELX = Math.cos((this.submarino.imagen.angle - 360) * 0.01745)
+          const VELY = Math.sin((this.submarino.imagen.angle - 360) * 0.01745)
+          //Ajusto velocidad de movimiento
+          if (this.up.isDown || this.UP===1){
+            this.submarino.imagen.setVelocityX(this.submarino.velocidad  * VELX)
+            this.submarino.imagen.setVelocityY(this.submarino.velocidad * VELY)
+          } 
+          else if (this.down.isDown){
+            this.submarino.imagen.setVelocityX(-(this.submarino.velocidad/2) * VELX)
+            this.submarino.imagen.setVelocityY(-(this.submarino.velocidad/2) * VELY)
+          }else{
             this.submarino.imagen.setAcceleration(0)
           }
 
-          // Comparo la posicion y rotacion actual del barco, y en caso de que haya cambiado envio el evento "playerMovement" al socket para comunicar a todos los clientes
+          //Comparo la posición y rotación actual del barco y en caso de que haya cambiado envio el evento "playerMovement" al socket para comunicar a todos los clientes
           var x = this.submarino.imagen.x;
           var y = this.submarino.imagen.y;
           var r = this.submarino.imagen.rotation;
           this.submarino.reticula.x = this.submarino.imagen.x + (Math.cos((this.submarino.imagen.angle - 360) * 0.01745) * this.distMax);
           this.submarino.reticula.y = this.submarino.imagen.y + (Math.sin((this.submarino.imagen.angle - 360) * 0.01745) * this.distMax);
-          if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y || r !== oldPosition.rotation)) {
+          if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y || r !== oldPosition.rotation)){
             let data = {
               x: this.submarino.imagen.x,
               y: this.submarino.imagen.y,
@@ -3681,8 +3612,7 @@ export class Game extends Phaser.Scene{
             }
             this.socket.emit('playerMovement', data);
           }
-          
-          // Guardo la posicion actual del submarino para comparar con la nueva y chequear si hubo movimiento
+          //Guardo la posición actual del submarino para comparar con la nueva y chequear si hubo movimiento
           oldPosition = {
             x: this.submarino.imagen.x,
             y: this.submarino.imagen.y,

@@ -216,7 +216,8 @@ export class PreGameMenu extends Phaser.Scene{
         self.uboot.play('animinBoot2');
       }
     }
-
+    
+    //Procedimientos sockets
     //Envío al jugador 2 directamente a la clase Game con el equipo que no eligió el jugador 1
     self.socket.on('JugadoresListosPlayer2', function(datos){
       if(self.contJugadores === 2 && self.partidaIniciada)

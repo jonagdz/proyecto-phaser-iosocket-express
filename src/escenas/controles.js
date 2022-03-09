@@ -2,7 +2,7 @@
 import { DEF } from "../def.js";
 
 //Clase Controles
-export class controles extends Phaser.Scene{
+export class Controles extends Phaser.Scene{
   constructor(){
     super({key:'controles'});
   }
@@ -34,8 +34,8 @@ export class controles extends Phaser.Scene{
 
     //Vuelvo a Inicio - GameMenu
     function clickHome() {
-        self.sonidoControles.stop();
-        self.scene.start(DEF.SCENES.MENUPRINCIPAL);
+      self.sonidoControles.stop();
+      self.scene.start(DEF.SCENES.MENUPRINCIPAL);
     }    
 
     //Elección de Home

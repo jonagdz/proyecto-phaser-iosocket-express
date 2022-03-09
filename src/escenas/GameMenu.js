@@ -34,24 +34,24 @@ export class GameMenu extends Phaser.Scene{
         self.sounIntro.play({volume: 0.7, loop: true});
         
         //Carga de sprites
-        this.ini = self.add.sprite(790, 200, 'initpart').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () =>ClickINIT());
-        this.ini.setInteractive().on('pointerover', () => ElegirIni(1));
-        this.ini.setInteractive().on('pointerout', () => ElegirIni(2));
+        this.ini = self.add.sprite(790, 200, 'initpart').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () =>clickINIT());
+        this.ini.setInteractive().on('pointerover', () => elegirIni(1));
+        this.ini.setInteractive().on('pointerout', () => elegirIni(2));
 
-        this.carg = self.add.sprite(790, 400, 'cargarpart').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () =>ClickCARG());
-        this.carg.setInteractive().on('pointerover', () => ElegirCarg(1));
-        this.carg.setInteractive().on('pointerout', () => ElegirCarg(2));
+        this.carg = self.add.sprite(790, 400, 'cargarpart').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () =>clickCARG());
+        this.carg.setInteractive().on('pointerover', () => elegirCarg(1));
+        this.carg.setInteractive().on('pointerout', () => elegirCarg(2));
 
-        this.cont = self.add.sprite(790, 600, 'controls').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () =>ClickCONTROL());
-        this.cont.setInteractive().on('pointerover', () => ElegirCont(1));
-        this.cont.setInteractive().on('pointerout', () => ElegirCont(2));
+        this.cont = self.add.sprite(790, 600, 'controls').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () =>clickCONTROL());
+        this.cont.setInteractive().on('pointerover', () => elegirCont(1));
+        this.cont.setInteractive().on('pointerout', () => elegirCont(2));
 
-        this.cr = self.add.sprite(790, 800, 'credits').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () =>ClickCREDITS());
-        this.cr.setInteractive().on('pointerover', () => ElegirCred(1));
-        this.cr.setInteractive().on('pointerout', () => ElegirCred(2));
+        this.cr = self.add.sprite(790, 800, 'credits').setOrigin(0).setScrollFactor(1).setDepth(2).setInteractive().on('pointerdown', () =>clickCREDITS());
+        this.cr.setInteractive().on('pointerover', () => elegirCred(1));
+        this.cr.setInteractive().on('pointerout', () => elegirCred(2));
         
         //Elección de iniciar partida
-        function ClickINIT(){
+        function clickINIT(){
             self.sounIntro.stop();
             var data = {
                 socket: self.socket,
@@ -66,27 +66,27 @@ export class GameMenu extends Phaser.Scene{
         }
 
         //Elección de cargar partida
-        function ClickCARG()
+        function clickCARG()
         {            
             self.sounIntro.stop();
             self.socket.emit('cargarPartida', {data: 2});
             self.socket.emit('cargaPartIndication');
         }
 
-        //Elección de creditos
-        function ClickCREDITS(){
+        //Elección de créditos
+        function clickCREDITS(){
             self.sounIntro.stop();
             self.scene.start(DEF.SCENES.CREDITS); 
         }
 
         //Elección de control
-        function ClickCONTROL(){
+        function clickCONTROL(){
             self.sounIntro.stop();
             self.scene.start(DEF.SCENES.CONTROLS); 
         }
 
-        //Sprites
-        function ElegirIni(tru){
+        //Sprite iniciar partida
+        function elegirIni(tru){
             if(tru===1){
                 self.anims.create({  
                     key: 'animinini',
@@ -113,7 +113,8 @@ export class GameMenu extends Phaser.Scene{
             }
         }
 
-        function ElegirCarg(v){
+        //Sprite cargar partida
+        function elegirCarg(v){
             if(v===1){
                 self.anims.create({  
                     key: 'animinc',
@@ -140,7 +141,8 @@ export class GameMenu extends Phaser.Scene{
             }
         }
 
-        function ElegirCont(u){
+        //Sprite controles
+        function elegirCont(u){
             if(u===1){
                 self.anims.create({  
                     key: 'anim',
@@ -167,7 +169,8 @@ export class GameMenu extends Phaser.Scene{
             }
         }
 
-        function ElegirCred(va){
+        //Sprite créditos
+        function elegirCred(va){
             if(va===1){
                 self.anims.create({  
                     key: 'an',
@@ -194,6 +197,7 @@ export class GameMenu extends Phaser.Scene{
             }
         }
 
+        //Procedimientos sockets
         self.socket.on('cargaPartIndicated', function(data){
             if(data.id != self.socket.id)
             {

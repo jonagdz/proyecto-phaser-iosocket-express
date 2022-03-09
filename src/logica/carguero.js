@@ -1,11 +1,7 @@
-import { Bote } from './bote.js';
-
-export class Carguero { // extends Bote
-    
+//Clase Carguero
+export class Carguero {
     constructor(nom,velocidad,vida,posX,posY,rotacion,cod,imagen){
-        //super(nom,velocidad,vida,posx,posy,rotacion);
-
-        // Atributos propios
+        //Atributos propios
         this.nom = nom;
         this.velocidad = velocidad;
         this.vida = vida;
@@ -17,10 +13,9 @@ export class Carguero { // extends Bote
         this.particle ;
     };
 
-    // Metodos
-    // Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
-
-    // Getters
+    //Métodos
+    //Se definen los metodos de manera interna a la funcion para no generar conflictos con los nombres de otros metodos globalmente
+    //Getters
     getNom() {
         return this.nom;
     };
@@ -49,7 +44,7 @@ export class Carguero { // extends Bote
         return this.cod;
     };
 
-    // Setters
+    //Setters
     setNom(nuevoNom) {
         this.nom = nuevoNom;
     };
@@ -78,27 +73,11 @@ export class Carguero { // extends Bote
         this.cod = nuevoCod;
     };
 
-    // Metodos propios
-    // Colision
-
-    // Disparo
-
-    // Vision
-
-    // Detección
-
-    // Daño
-
-    // Restar vida
     disminuirVida(puntos){
         this.vida-=puntos;
     };
 
-    // Aumentar vida
     incrementarVida(puntos){
         this.vida+=puntos;
     };
-    
-    // Metodos axuiliares
-
 }
