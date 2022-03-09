@@ -1,38 +1,35 @@
+//Definiciones de elementos multimedia
 import { DEF } from "../def.js";
 
-//Clase que permite bootear el juego
-export class bootGame extends Phaser.Scene{
-    
+//Clase BootGame
+export class BootGame extends Phaser.Scene{
     constructor()
     {
-        super("bootGame");
+        super("BootGame");
     }
 
-    loadImages() {
+    loadImages(){
         this.load.setPath("./src/assets");
-
         for (let imagen in DEF.IMAGENES) {
             this.load.image(DEF.IMAGENES[imagen], DEF.IMAGENES[imagen]);
         }
     }
 
-    loadVideo() {
+    loadVideo(){
         this.load.setPath("./src/assets");
-        
         for (let video in DEF.VIDEO) {
             this.load.video(DEF.VIDEO[video],DEF.VIDEO[video]);
         }
     }
 
-    loadAudio() {
+    loadAudio(){
         this.load.setPath("./src/assets");
-
         for (let audio in DEF.AUDIO) {
             this.load.audio(DEF.AUDIO[audio], DEF.AUDIO[audio]);
         }
     }
 
-    loadSprites() {
+    loadSprites(){
         this.load.setPath("./src/assets");
         for (let sprite in DEF.SPRITES) {
             if(sprite.includes("EXP"))
@@ -94,15 +91,16 @@ export class bootGame extends Phaser.Scene{
         }
     }
     
-    // Funcion preload: Cargo todos los recursos que utilizare en el juego como imagenes y demas
+    //Carga de todos los recursos a utilizar en el juego
     preload() 
     {
         this.loadImages();
         this.loadVideo();
         this.loadAudio();
         this.loadSprites();
-      }
+    }
 
+    //Procedimiento de creación 
     create()
     {
         this.scene.start(DEF.SCENES.MENUPRINCIPAL);

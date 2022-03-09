@@ -5,24 +5,25 @@ import { Carguero } from '../logica/carguero.js';
 import { Submarino } from '../logica/submarino.js';
 import { Destructor } from '../logica/destructor.js';
 
-export class game extends Phaser.Scene{
+//Clase Game
+export class Game extends Phaser.Scene{
   constructor(){
     super("game");
   }
 
+  //Procedimiento inicializador
   init(data){
     this.socket = data.socket;
     this.equipo = data.equipo;
     this.cargaPartida = data.loadGame.cargaPartida;
     this.partidaCargada = data.loadGame.partidaCargada;
-    // Seteo las velocidades que se utilizaran en el juego
-    this.velocidadMedia = 120; // Para testing puse 600, pero creo que deberia ser 160 la velocidad media para la jugabilidad real
+    //Seteo las velocidades
+    this.velocidadMedia = 120;
     this.velocidadBaja = 50;
-    //console.log(this.cargaPartida, this.partidaCargada)
     if (!this.cargaPartida)
     {
-      this.destructor = new Destructor('Destructor',this.velocidadMedia,18,0,0,0,1,0,0,0,0,0,12, 30); // Creo el objeto destructor 
-      this.submarino = new Submarino('Submarino',this.velocidadBaja,0,14,0,0,180,2,3,0,0,0,0, false, 16, 30); // Creo el objeto submarino 
+      this.destructor = new Destructor('Destructor',this.velocidadMedia,18,0,0,0,1,0,0,0,0,0,12, 30);
+      this.submarino = new Submarino('Submarino',this.velocidadBaja,0,14,0,0,180,2,3,0,0,0,0, false, 16, 30);
       this.carguero1 = new Carguero('Carguero1',this.velocidadBaja,8,0,0,0,3); // Creo el objeto carguero1 
       this.carguero2 = new Carguero('Carguero2',this.velocidadBaja,8,0,0,0,4); // Creo el objeto carguero2
       this.carguero3 = new Carguero('Carguero3',this.velocidadBaja,8,0,0,0,5); // Creo el objeto carguero3
@@ -32,6 +33,7 @@ export class game extends Phaser.Scene{
     }
     else
     {
+      //Creo el objeto destructor 
       this.destructor = new Destructor(
         'Destructor',
         this.velocidadMedia,
@@ -41,8 +43,9 @@ export class game extends Phaser.Scene{
         0,1,0,0,0,0,0,
         this.partidaCargada.naves[6].armas[1].municion, 
         this.partidaCargada.naves[6].armas[0].municion
-      ); // Creo el objeto destructor 
+      );
 
+      //Creo el objeto submarino 
       this.submarino = new Submarino(
         'Submarino',
         this.velocidadBaja,
@@ -53,8 +56,9 @@ export class game extends Phaser.Scene{
         180,2,3,0,0,0,0, false, 
         this.partidaCargada.naves[7].armas[1].municion, 
         this.partidaCargada.naves[7].armas[0].municion
-      ); // Creo el objeto submarino 
-
+      );
+      
+      //Creo los objetos Cargueros
       this.carguero1 = new Carguero('Carguero1',this.velocidadBaja,this.partidaCargada.naves[0].vida,this.partidaCargada.naves[0].posX,this.partidaCargada.naves[0].posY,0,3); // Creo el objeto carguero1 
       this.carguero2 = new Carguero('Carguero2',this.velocidadBaja,this.partidaCargada.naves[1].vida,this.partidaCargada.naves[1].posX,this.partidaCargada.naves[1].posY,0,4); // Creo el objeto carguero2
       this.carguero3 = new Carguero('Carguero3',this.velocidadBaja,this.partidaCargada.naves[2].vida,this.partidaCargada.naves[2].posX,this.partidaCargada.naves[2].posY,0,5); // Creo el objeto carguero3
@@ -79,105 +83,104 @@ export class game extends Phaser.Scene{
       naves: 
       [
         {
-            codP: 5,
-            vida: 8,
-            posX: 0.0,
-            posY: 0.0,
-            codNave: 0,
-            clase: "Liberty"
+          codP: 5,
+          vida: 8,
+          posX: 0.0,
+          posY: 0.0,
+          codNave: 0,
+          clase: "Liberty"
         },
         {
-            codP: 5,
-            vida: 8,
-            posX: 0.0,
-            posY: 0.0,
-            codNave: 0,
-            clase: "Liberty"
+          codP: 5,
+          vida: 8,
+          posX: 0.0,
+          posY: 0.0,
+          codNave: 0,
+          clase: "Liberty"
         },
         {
-            codP: 5,
-            vida: 8,
-            posX: 0.0,
-            posY: 0.0,
-            codNave: 0,
-            clase: "Liberty"
+          codP: 5,
+          vida: 8,
+          posX: 0.0,
+          posY: 0.0,
+          codNave: 0,
+          clase: "Liberty"
         },
         {
-            codP: 5,
-            vida: 8,
-            posX: 0.0,
-            posY: 0.0,
-            codNave: 0,
-            clase: "Liberty"
+          codP: 5,
+          vida: 8,
+          posX: 0.0,
+          posY: 0.0,
+          codNave: 0,
+          clase: "Liberty"
         },
         {
-            codP: 5,
-            vida: 8,
-            posX: 0.0,
-            posY: 0.0,
-            codNave: 0,
-            clase: "Liberty"
+          codP: 5,
+          vida: 8,
+          posX: 0.0,
+          posY: 0.0,
+          codNave: 0,
+          clase: "Liberty"
         },
         {
-            codP: 5,
-            vida: 8,
-            posX: 0.0,
-            posY: 0.0,
-            codNave: 0,
-            clase: "Liberty"
+          codP: 5,
+          vida: 8,
+          posX: 0.0,
+          posY: 0.0,
+          codNave: 0,
+          clase: "Liberty"
         },
         {
-            codP: 5,
-            vida: 12,
-            posX: 0.0,
-            posY: 0.0,
-            codNave: 1,
-            clase: "Fletcher",
-            armas: [
-              {
-                codNave: 1,
-                tipo: 1,
-                codP: 5,
-                municion: 30
-              },
-              {
-                codNave: 1,
-                tipo: 2,
-                codP: 5,
-                municion: 10
-              }
-            ]
+          codP: 5,
+          vida: 12,
+          posX: 0.0,
+          posY: 0.0,
+          codNave: 1,
+          clase: "Fletcher",
+          armas: [
+            {
+              codNave: 1,
+              tipo: 1,
+              codP: 5,
+              municion: 30
+            },
+            {
+              codNave: 1,
+              tipo: 2,
+              codP: 5,
+              municion: 10
+            }
+          ]
         },
         {
-            codP: 5,
-            vida: 14,
-            posX: 0.0,
-            posY: 0.0,
-            codNave: 2,
-            clase: "UBoat",
-            armas: [
-              {
-                codNave: 2,
-                tipo: 0,
-                codP: 5,
-                municion: 20
-              },
-              {
-                codNave: 2,
-                tipo: 3,
-                codP: 5,
-                municion: 16
-              }
-            ]
+          codP: 5,
+          vida: 14,
+          posX: 0.0,
+          posY: 0.0,
+          codNave: 2,
+          clase: "UBoat",
+          armas: [
+            {
+              codNave: 2,
+              tipo: 0,
+              codP: 5,
+              municion: 20
+            },
+            {
+              codNave: 2,
+              tipo: 3,
+              codP: 5,
+              municion: 16
+            }
+          ]
         }
       ],
       codP: 5
     }
   }
 
-  // Creo todo el contenido del juego del juego, imagenes, los cursores, jugadores, barcos e implemento el WebSocket
+  //Procedimiento de creación 
   create(){
-    // DEFINICIÓN DE VARIABLES, CONSTANTES Y OBJETOS VISULES EN EL MAPA A UTILIZAR -----------------------------------------------------------------------------------------------------------------------------------
     var self = this
     let musicaCombate = false;
     let bullet;
@@ -199,26 +202,24 @@ export class game extends Phaser.Scene{
     let siguiendoDes = true;
     let guardoP = false;
     let pausaGame = false;
-    //self.socket.emit('listarPartidas', {id: 2});
     let carguerosMuertos = 0;
     
-    // Grupo para los cargueros y balas
+    //Arreglo para los cargueros y balas
     var arrayCargueros = [];
-    //this.grupoCargueros = this.physics.add.group({ classType: Carguero, runChildUpdate: true });
     this.playerBullets = this.physics.add.group({ classType: Bullets, runChildUpdate: true });
 
-    // Cargo la imagen de fondo del mapa
+    //Carga de imagen de fondo
     this.mar = this.add.image(0, 0, DEF.IMAGENES.FONDO).setOrigin(0).setScrollFactor(1).setDepth(0);
     const backgroundW = this.mar.width;
     const backgroundH = this.mar.height;
  
-    // Defino los limites de las dimensiones del mapa para el posicionamiento inicial de los barcos
+    //Defino los limites de las dimensiones del mapa
     var frameW = backgroundW;
     var frameH = backgroundH;
     var margenCostaX = 689;
     var margenCostaY = 300;
 
-    // Defino variables para las posiciones X e Y de los barcos
+    //Defino variables para las posiciones X e Y de los barcos
     var posX;
     var posY;
     let distMaxima = 50;
@@ -243,11 +244,11 @@ export class game extends Phaser.Scene{
     let playerIMG;
     let enemyImg;
 
-    // Obtengo el centro del canvas para la máscara
+    //Obtengo el centro del canvas para la máscara
     const centroW = this.sys.game.config.width / 2;
     const centroH = this.sys.game.config.height / 2;
     
-    // Construyo la máscara de visión
+    //Construyo la máscara de visión
     const maskImage = this.make.image({
       x: centroW,
       y: centroH,
@@ -256,7 +257,7 @@ export class game extends Phaser.Scene{
     });
     const mask = maskImage.createBitmapMask();
 
-    // Construyo el larga vista
+    //Construyo el larga vista
     this.largaVistas = self.make.sprite({
       x: centroW,
       y: centroH,
@@ -266,11 +267,11 @@ export class game extends Phaser.Scene{
     this.largaVistas.setOrigin(0.5,0);
     this.mar.masklv = new Phaser.Display.Masks.BitmapMask(this, this.largaVistas);
 
-    // Ajusto cámaras
+    //Ajusto cámaras
     this.cameras.main.setMask(mask);
     this.physics.world.setBounds(0, 0, backgroundW, backgroundH);
     
-    // Ajusto audio
+    //Ajusto audio
     this.soundSonar = this.sound.add(DEF.AUDIO.SONAR);
     this.soundAlarm = this.sound.add(DEF.AUDIO.ALERTA);
     this.soundBackground = this.sound.add(DEF.AUDIO.JUEGO,{loop: true});
@@ -283,17 +284,8 @@ export class game extends Phaser.Scene{
     this.soundImpacto = this.sound.add(DEF.AUDIO.IMPACTO);
     this.soundBackground.play({volume: 0.2, loop: true});
     this.soundAction = this.sound.add(DEF.AUDIO.ACTION);
-    
-    // Fuentes
-    var style = {
-      'background-color': 'lime',
-      'width': '220px',
-      'height': '100px',
-      'font': '48px Arial',
-      'font-weight': 'bold'
-    };
 
-    // Islas
+    //Islas
     this.isla1 = self.physics.add.image(2100,900,DEF.IMAGENES.ISLA).setDepth(5);
     this.isla1.setImmovable(true);
     this.isla1.setDisplaySize(300, 300);
@@ -307,20 +299,20 @@ export class game extends Phaser.Scene{
     this.isla4.setImmovable(true);
     this.isla4.setDisplaySize(300, 300);
 
-    // Costas
+    //Costas
     this.costa1 = self.physics.add.image(345,1078,DEF.IMAGENES.COSTA1).setDepth(5);
     this.costa1.setImmovable(true);
     this.costa2 = self.physics.add.image(6066,1078,DEF.IMAGENES.COSTA2).setDepth(5);
     this.costa2.setImmovable(true);
 
-    // Introduzco cursores y teclas utilizables
+    //Introduzco cursores y teclas utilizables
     this.cursors = this.input.keyboard.createCursorKeys();
     this.up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-    // Se crea el evento de cambio de mute de audio
+    //Mute de audio
     self.input.keyboard.on('keydown-' + 'M', function (event){
       if(audioActivado === true){
         self.soundBackground.mute = true;
@@ -332,28 +324,11 @@ export class game extends Phaser.Scene{
         audioActivado=true;
       }
     });
-
-    // Se crea el evento de pausa
-    self.input.keyboard.on('keydown-' + 'P', function (event){
-      //console.log("PAUSA:"+pausaGame);
-      if(pausaGame === true){
-        //console.log("ENTRE A RESUME:"+pausaGame);
-        pausaGame = false;
-        self.scene.resume('game');
-      }else{
-        //console.log("ENTRE A PAUSA:"+pausaGame);
-        pausaGame = true;
-        self.scene.pause('game');
-      }    
-    });
     
-   //////////////////////////////////////////////////////////////////////
-    // INICIO DE LA LÖGICA DEL COMPORTAMIENTO DEL JUEGO -----------------------------------------------------------------------------------------------------------------------------------
-
-    // Segun el equipo del jugador actual, genero todos elementos del equipo correspondiente
-    if(self.equipo === 1){ // Genero el equipo 1 que son el destructor y los cargueros, aunque tambien debo generar al submarino (Pero sin su camara ni colisiones) para ir actualizando su posicion en este cliente con el movimiento del otro jugador      
+    //Genero todos elementos del equipo correspondiente segun el equipo del jugador actual
+    if(self.equipo === 1){
       generarEquipo1();
-      // Botones visuales y alertas del equipo 1
+      //Botones visuales y alertas del equipo 1
       this.botonCAMBIARARMA = self.physics.add.image(800, 960, DEF.IMAGENES.BOTONARMA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCAMBIARARMADESTRU()).setDisplaySize(120,120);
       this.botonCAMARA = self.physics.add.image(940, 960, DEF.IMAGENES.BOTONLARGAVISTA).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickCAMARA()).setDisplaySize(120,120);
       this.botonHOME = self.physics.add.image(800, 30, DEF.IMAGENES.BOTONHOME).setOrigin(0).setScrollFactor(0).setDepth(10).setInteractive().on('pointerdown', () => ClickHOME()).setDisplaySize(120,120);
@@ -371,7 +346,7 @@ export class game extends Phaser.Scene{
         self.socket.emit('iniciarPartida', self.partida);
       }
 
-      // Parte superior del HUD
+      //Parte superior del HUD
       self.UIDesVida =  self.add.text(1200, 170, 'Vida: ' + self.destructor.vida, { font: '30px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
       self.UIDesMunicionCar =  self.add.text(1200, 210, 'Munición cargas: ' + self.destructor.ammoCargas, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
       self.UIDesMunicionCan =  self.add.text(1200, 250, 'Munición cañon: ' + self.destructor.ammoCanion, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
@@ -384,10 +359,10 @@ export class game extends Phaser.Scene{
       self.UIDesCarg5 = self.add.text(300, 330, 'Vida carguero 5: ' + self.carguero5.vida, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
       self.UIDesCarg6 = self.add.text(300, 370, 'Vida carguero 6: ' + self.carguero6.vida, { font: '30px Britannic bold', fill: '#000000',stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
       
-      // Parte inferior del HUD
+      //Parte inferior del HUD
       self.UIDesCargCamMini = self.add.text(1120, 960, 'MiniCam: \nCarguero 1', { font: '35px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8}).setScrollFactor(0).setDepth(10);
 
-      // Eventos para cambio de camara del equipo 1 entre el destructor y los cargueros
+      //Eventos para cambio de camara del equipo 1 entre el destructor y los cargueros
       self.input.keyboard.on('keydown-' + 'ZERO', function (){
         self.cameras.main.startFollow(self.destructor.imagen,true, 0.09, 0.09); 
         self.cameras.main.setZoom(0.9);
@@ -406,10 +381,9 @@ export class game extends Phaser.Scene{
         detenerMovimientoCargueros();
       })
 
-      // Cámara de seguimiento a Cargueros
+      //Agrego MiniCamara
       this.camaraEventos = this.cameras.add(1300, 900, 400, 100).setZoom(0.5);
       this.camaraEventos.startFollow(self.carguero1.imagen,true, 0.09, 0.09);
-
     }else{ // Genero el equipo 2 que es el submarino, aunque tambien debo generar la imagen del destructor y los cargueros para ir actualizandola con el movimiento del otro jugador      
       generarEquipo2();
       // Botones visuales del equipo 2
@@ -465,12 +439,9 @@ export class game extends Phaser.Scene{
     }
     
     function ClickSAVE(){
-      console.log('ANTES DE ENTRAR:'+guardoP);
       if(guardoP !== true){
-        console.log('ENTRE A GP:'+guardoP);
         guardarPartida();
         guardoP = true;
-        console.log('SETEANDO EN T:'+guardoP);
         self.socket.emit('guardarPartida', self.partida);
         self.msjPartidaGuardada =  self.add.text(500, 600, '', { font: '60px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10); 
         
@@ -482,7 +453,6 @@ export class game extends Phaser.Scene{
         
         function eliminoMsjPG(){
           guardoP = false;
-          console.log('SETEANDO EN F:'+guardoP);
           removeText();
           contadorPG=0;
         }
@@ -802,14 +772,12 @@ export class game extends Phaser.Scene{
     
     // Genero todo lo relacionado a la imagen del submarino del equipo enemigo y sus propiedades (Tamaño, profundidad y que sea empujable)
     function generarSubmarinoEnemigo(){
-      //self.submarino.imagen = self.physics.add.image(0,0, 'uboot')
       self.submarino.imagen = self.physics.add.image(0,0, DEF.IMAGENES.UBOATP0).setDisplaySize(100,50).setDepth(5).setPushable(false)
       posX = Math.floor((Math.random()*((frameW-800)-(frameW*0.75)))+(frameW*0.75)), // El margen x para generarse el submarino sera desde el 70% del mapa hasta el final - 800 del lado derecho
       posY = Math.floor((Math.random()*((frameH-300)- margenCostaY))+margenCostaY), // El margen y para generarse el submarino es el mismo que los demas barcos (total - 300)
       self.submarino.posX = posX;
       self.submarino.posY = posY;
       // Particulas
-      //const particles = self.add.particles("Blue").setDepth(2)
       const particles = self.add.particles(DEF.IMAGENES.PARTICULAS).setDepth(2) // Imagen Blue como particula
       const emitter = particles.createEmitter({ // Funcion emitter de phaser para emitir varias particulas
         speed: 10, // Velocidad con la que se mueven
@@ -883,10 +851,6 @@ export class game extends Phaser.Scene{
           // Se crea una colision del carguero con la costa2
           
           self.physics.add.collider(carguero.imagen, self.costa2, handleCollisionCosta, colisionCargoCosta2, self);
-          
-          // Se crea la colision con el submarino y el destructor
-          //self.physics.add.collider(self.carguero1.imagen, self.destructor.imagen, handleCollisionCargoDes, collisionCargoDes, self);
-          //self.physics.add.collider(carguero.imagen, self.submarino.imagen, handleCollisionCargoSub, collisionCargoSub, self);
         }
         else
         {
@@ -1046,7 +1010,6 @@ export class game extends Phaser.Scene{
     //Funcion que maneja la colision entre el carguero y el destructor
     function handleCollisionCargoDes(destructor, carguero)
     {
-      //console.log('colision carguero destructor');
       if (carguero.body.touching.right) //Cuando la el carguero colisiona de "frente" gira 90 grados hacia abajo o hacia abajo, espera 2 segundos y continua con su marcha.
       {
         if(Math.floor(Math.random() * 2) === 0)
@@ -1080,7 +1043,6 @@ export class game extends Phaser.Scene{
     //Funcion que maneja la colision entre el carguero y el submarino
     function handleCollisionCargoSub(submarino, carguero)
     {
-      //console.log('colision carguero submarino');
       if (carguero.body.touching.right) //Cuando la el carguero colisiona de "frente" gira 90 grados hacia abajo o hacia abajo, espera 2 segundos y continua con su marcha.
       {
         if(Math.floor(Math.random() * 2) === 0)
@@ -1119,7 +1081,6 @@ export class game extends Phaser.Scene{
         cargueroSalvado(self.carguero5);
       else if(carguero === self.carguero6.imagen)
         cargueroSalvado(self.carguero6);
-      //console.log("cargueros A SALVO", carguerosAsalvo);
       if (carguerosAsalvo >= 3){
         let envio={
           socket: self.socket,
@@ -1162,9 +1123,7 @@ export class game extends Phaser.Scene{
         // Pase de nivel 0 a 1, seteo armas en 4 (que es exclusivamente torpedos) y emito al socket para que el otro jugador
         // vea mi cambio de profundidad
         if (self.submarino.profundidad === 0 && self.submarino.largavista === false){
-          // VERVER - Setear velocidad del submarino cuando se sumerge y emerge
           self.submarino.profundidad = 1;
-          //self.submarino.imagen.setTexture('UbootProfundidad1');
           self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP1);
           self.submarino.armas = 4;
           self.socket.emit('playerProf', {Pr: self.submarino.profundidad});
@@ -1193,10 +1152,6 @@ export class game extends Phaser.Scene{
         self.physics.world.removeCollider(self.colliderCarg4);
         self.physics.world.removeCollider(self.colliderCarg5);
         self.physics.world.removeCollider(self.colliderCarg6); 
-        //self.physics.world.removeCollider(self.colliderSubIsla1); 
-        //self.physics.world.removeCollider(self.colliderSubIsla2); 
-        //self.physics.world.removeCollider(self.colliderSubIsla3); 
-        //self.physics.world.removeCollider(self.colliderSubIsla4); 
       
         // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
         if (self.submarino.profundidad === 0){
@@ -1240,10 +1195,6 @@ export class game extends Phaser.Scene{
         self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen,  handleCollisionCargoSub, collisionCargoSub, self);
         self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen,  handleCollisionCargoSub, collisionCargoSub, self);
         self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen,  handleCollisionCargoSub, collisionCargoSub, self);
-        //self.colliderSubIsla1 = self.physics.add.collider(self.submarino.imagen, self.isla1);
-        //self.colliderSubIsla2 = self.physics.add.collider(self.submarino.imagen, self.isla2);
-        //self.colliderSubIsla3 = self.physics.add.collider(self.submarino.imagen, self.isla3);
-        //self.colliderSubIsla4 = self.physics.add.collider(self.submarino.imagen, self.isla4);
       }
 
       // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
@@ -1262,7 +1213,6 @@ export class game extends Phaser.Scene{
     function sonar(){
       // Activo sonar si hay sonares disponibles
       if(self.submarino.sonar>0){
-        //console.log("AVISO SONAR:"+self.nhSonar);
         if (self.usoSonar !== true && self.nhSonar !== true && self.submarino.profundidad === 1 && self.noLargavistas !== true){
           // Texto de aviso
           self.statusSonar = self.add.text(550, 700, '', { font: '45px Britannic bold', fill: '#000000', stroke : '#FFFFFF', strokeThickness: 8 }).setScrollFactor(0).setDepth(10);
@@ -1285,7 +1235,6 @@ export class game extends Phaser.Scene{
             // Restablezco zoom de la cámara   
             self.cameras.main.setZoom(1.4);
             self.usoSonar = false;
-            //console.log("USO SONAR:"+self.usoSonar);
             // Elimino texto de tiempo restante
             removeText();
             self.soundSonar.stop();
@@ -1386,17 +1335,14 @@ export class game extends Phaser.Scene{
         if (self.submarino.armas === 0){
           self.submarino.armas = 1;
           self.UISubArmAct.setText('Arma actual: torpedos');
-          //console.log('Cambio a Torpedos');
         }else{
           self.submarino.armas = 0;
           self.UISubArmAct.setText('Arma actual: cañon');
-          //console.log('cambio a canon');
         }
       }else if(self.submarino.profundidad === 1){
         //si esta a profundidad 1 que solo pueda usar el arma 1, torpedos
           self.submarino.armas = 4;
-          self.UISubArmAct.setText('Arma actual: torpedos');
-          //console.log('Solo Torpedos a esta profundidad');  
+          self.UISubArmAct.setText('Arma actual: torpedos'); 
       }else if(self.submarino.profundidad === 2){
         //si esta en profundidad 2 que no pueda disparar
         self.submarino.armas = -1;
@@ -1412,7 +1358,6 @@ export class game extends Phaser.Scene{
     }
 
     function largaVista(){
-      //console.log("entro al larga vista");
       if(self.submarino.largavista === false && self.submarino.profundidad === 0 && self.usoSonar !== true && self.nhSonar !== true){
         self.submarino.largavista = true;
         self.largaVistas.angle=self.submarino.imagen.angle+270;
@@ -1458,11 +1403,9 @@ export class game extends Phaser.Scene{
         }else{
           self.UIDesArmCargProf.setText('Cargas de profundidad: mucha');
         }
-        //console.log('Cambio a Cargas de Profundidad');
         self.UIDesArmAct.setText('Arma actual: cargas de prof.');
       }else{
         self.destructor.armas = 0;
-        //console.log('cambio a canon');
         self.UIDesArmAct.setText('Arma actual: cañon');
         self.UIDesArmCargProf.setText('Cargas de profundidad: -');
       }
@@ -1471,11 +1414,9 @@ export class game extends Phaser.Scene{
     function cambiarCargaDestr(){
       if(self.destructor.cargas === 1){
         self.destructor.cargas = 2;
-        //console.log('detonador para mucha profundidad');
         self.UIDesArmCargProf.setText('Cargas de profundidad: mucha');
       }else{
         self.destructor.cargas = 1;
-        //console.log('detonador para poca profundidad');
         self.UIDesArmCargProf.setText('Cargas de profundidad: poca');
       }
     }
@@ -1606,7 +1547,7 @@ export class game extends Phaser.Scene{
     //funcion que recibe un click y ejecuta el evento disparo, el cual activa una bala del set de balas de la clase
     this.input.on('pointerdown', function (pointer, time) {
       if (self.puedoDisparar == 0){
-        //console.log("Muy pronto para disparar aún, se debe esperar 3 segundos entre cada disparo.");
+        
       }else{
         // Agrego un timer de 3 segundos entre cada disparo, para que no spamee los tiros y sea mas jugable
         self.puedoDisparar = 0;
@@ -1794,10 +1735,6 @@ export class game extends Phaser.Scene{
               if(dist === "corta")
               {
                 probExtra = Math.floor(Math.random() * (2)); // Bonificacion de probabilidad
-
-                //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra + '0');
-                //si la probabilidad de acierto es mayor que el 40%, entonces acierto
                 if((probabilidad + probExtra) > 3)
                 {
                   hitted(enemy.imagen.x, enemy.imagen.y); 
@@ -1894,9 +1831,6 @@ export class game extends Phaser.Scene{
               else if(dist === "media")
               {
                 probExtra = Math.floor(Math.random() * (3));
-                //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+'0');
-                //si la probabilidad de errar es mayor que el 40%, entonces fallo
                 if((probabilidad + probExtra) > 3){
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   danio = 6;
@@ -1992,9 +1926,6 @@ export class game extends Phaser.Scene{
               else if(dist === "larga")
               {
                 probExtra = Math.floor(Math.random() * (3));
-                //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra +'0');
-                //si la probabilidad de errar es mayor que el 60%, entonces fallo
                 if((probabilidad + probExtra) > 6){
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   danio = 6;
@@ -2117,9 +2048,6 @@ export class game extends Phaser.Scene{
             if(dist === "corta")
             {
               probExtra = Math.floor(Math.random() * (2));
-              //console.log('la probabilidad extra de la carga es %', probExtra, '0');
-              //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
-              //si la probabilidad de errar es mayor que el 10%, entonces fallo
               if((probabilidad + probExtra) > 1)
               {
                 if(nave.cargas === enemy.profundidad)
@@ -2241,9 +2169,6 @@ export class game extends Phaser.Scene{
             else if(dist === "media")
             {
               probExtra = Math.floor(Math.random() * (3));
-              //console.log('la probabilidad extra de la carga es %', probExtra, '0');
-              //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
-              //si la probabilidad de errar es mayor que el 70%, entonces fallo
               if((probabilidad + probExtra) > 7)
               {
                 if(nave.cargas === enemy.profundidad)
@@ -2373,12 +2298,8 @@ export class game extends Phaser.Scene{
               if(dist === "corta")
               {
                 probExtra = Math.floor(Math.random() * (2));
-                //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
-                //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 2)
                 {
-                  //console.log("entro al if del danio sub corto");
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   
                   danio = 4;
@@ -2482,11 +2403,7 @@ export class game extends Phaser.Scene{
               else if(dist === "media")
               {
                   probExtra = Math.floor(Math.random() * (3));
-                  //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                  //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
-                  //si la probabilidad de errar es mayor que el 10%, entonces fallo
                   if((probabilidad + probExtra) > 3){
-                    //console.log("entro al if del danio sub medio");
                     hitted(enemy.imagen.x, enemy.imagen.y); 
                   
                     danio = 4;
@@ -2589,12 +2506,8 @@ export class game extends Phaser.Scene{
               else if(dist === "larga")
               {
                     probExtra = Math.floor(Math.random() * (3));
-                    //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                    //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
-                    //si la probabilidad de errar es mayor que el 10%, entonces fallo
                     if((probabilidad + probExtra) > 8)
                     {
-                      //console.log("entro al if del danio sub largo");
                       hitted(enemy.imagen.x, enemy.imagen.y); 
                   
                       danio = 4;
@@ -2703,12 +2616,8 @@ export class game extends Phaser.Scene{
               if(dist === "corta")
               {
                 probExtra = Math.floor(Math.random() * (2));
-                //console.log('la probabilidad extra del canion es %', probExtra + '0');
-                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
-                //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 2)
                 {
-                  //console.log("entro al if del danio sub corto torpedo");
                   danio = 6;
 
                   hitted(enemy.imagen.x, enemy.imagen.y); 
@@ -2812,9 +2721,6 @@ export class game extends Phaser.Scene{
               else if(dist === "media")
               {
                 probExtra = Math.floor(Math.random() * (3));
-                //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
-                //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 3)
                 {
                   
@@ -2842,8 +2748,6 @@ export class game extends Phaser.Scene{
             
                   self.statusResetEnvio = self.time.addEvent({ delay: 700, callback: prueba, callbackScope: self});
 
-
-                  //console.log('danio al enemigo', danio);
                   switch(enemy)
                   {
                     case self.carguero1:
@@ -2920,9 +2824,6 @@ export class game extends Phaser.Scene{
               else if(dist === "larga")
               {
                 probExtra = Math.floor(Math.random() * (3));
-                //console.log('la probabilidad extra del canion es %', probExtra, '0');
-                //console.log('la probabilidad base es de  %', probabilidad + '0', '+ Extra %', probExtra+ '0');
-                //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 5)
                 {
                   danio = 6;
@@ -3029,7 +2930,6 @@ export class game extends Phaser.Scene{
    
     //funcion que muestra la explosion en la posicion determinada
     function hitted(x, y){
-      //self.explotion2 = self.add.sprite(x,y,'explot').setDisplaySize(100, 100).setDepth(5);
       self.explotion2 = self.add.sprite(x,y,'explot').setDisplaySize(120, 120).setDepth(5);  //se crea el sprite de explosiones
       self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
       key: 'explot2',
@@ -3046,7 +2946,6 @@ export class game extends Phaser.Scene{
 
     //funcion que muestra y destruye un jugador
     function destroyed(playerIMG){
-      //self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y ,'explot').setDisplaySize(100, 100).setDepth(5);
       self.explotion3 = self.add.sprite(playerIMG.x ,playerIMG.y, 'explot').setDisplaySize(200, 200).setDepth(5);  //se crea el sprite de explosiones
       self.anims.create({  // Se crea la animacion para la explosion luego de recibir disparo
       key: 'explot3',
@@ -3067,7 +2966,6 @@ export class game extends Phaser.Scene{
     //funcion que muestra una cruz animada senalando de donde vino un disparo enemigo
     function CRUZ (imagen) {
       self.cruz = self.add.sprite(imagen.x, imagen.y, 'CRUZ').setDepth(10).setDisplaySize(80,80);
-      //console.log("entro a la cruz");
       self.anims.create({  
         key: 'ani',
         frames: [
@@ -3138,37 +3036,30 @@ export class game extends Phaser.Scene{
       }
       if(player.vida <= 0)
       {
-        //console.log('vida menor que 0');
         switch(player)
         {
           case self.carguero1:
-            console.log('este es el carguero 1');
             self.carguero1.particles.setActive(false).setVisible(false);
             self.physics.world.removeCollider(self.collDesCarg1);
             self.particles()
             break;
           case self.carguero2:
-            console.log('este es el carguero 2');
             self.physics.world.removeCollider(self.collDesCarg2);
             self.carguero2.particles.setActive(false).setVisible(false);
             break;
           case self.carguero3:
-            console.log('este es el carguero 3');
             self.physics.world.removeCollider(self.collDesCarg3);
             self.carguero3.particles.setActive(false).setVisible(false);
             break;
           case self.carguero4:
-            console.log('este es el carguero 4');
             self.physics.world.removeCollider(self.collDesCarg4);
             self.carguero4.particles.setActive(false).setVisible(false);
             break;
           case self.carguero5:
-            console.log('este es el carguero 5');
             self.physics.world.removeCollider(self.collDesCarg5);
             self.carguero5.particles.setActive(false).setVisible(false);
             break;
           case self.carguero6:
-            console.log('este es el carguero 6');
             self.physics.world.removeCollider(self.collDesCarg6);
             self.carguero6.particles.setActive(false).setVisible(false);
             break;
@@ -3180,7 +3071,6 @@ export class game extends Phaser.Scene{
         self.textures.remove(playerIMG);
         if(escar)
         {
-          //console.log('entro a ESCAR')
           alertaCargueros();
           self.soundAlarm.play({volume: 0.06, loop: false});
           if(expl === 0){
@@ -3256,7 +3146,6 @@ export class game extends Phaser.Scene{
           self.submarino.imagen.destroy();
         }else{
           self.destructor.imagen.destroy();
-          // VERVER - Destruir cargueros con un foreach desde el arreglo de cargueros
           self.carguero1.imagen.destroy();
           self.carguero2.imagen.destroy();
           self.carguero3.imagen.destroy();
@@ -3376,18 +3265,12 @@ export class game extends Phaser.Scene{
 
     this.socket.on('playerUnder', function(playerInfo){      
       self.submarino.profundidad = playerInfo.deep;
-      //if(self.socket.id == playerInfo.id){
         if(self.equipo===1){
           if (self.submarino.profundidad === 1 ){
-            //self.submarino.imagen.setTexture('UbootProfundidad2').setVisible(true);
             self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP2).setVisible(true);
-            //console.log('bajo a poca profundidad');
           }else if (self.submarino.profundidad == 2){
             self.submarino.imagen.setVisible(false);
-             //console.log('bajo a mucha profundidad');
          }else{
-            //console.log('superficie');
-            //self.submarino.imagen.setTexture('uboot').setVisible(true);
             self.submarino.imagen.setTexture(DEF.IMAGENES.UBOATP0).setVisible(true);
          }
         }
@@ -3399,10 +3282,6 @@ export class game extends Phaser.Scene{
         self.colliderCarg4 = self.physics.add.collider(self.submarino.imagen, self.carguero4.imagen);
         self.colliderCarg5 = self.physics.add.collider(self.submarino.imagen, self.carguero5.imagen);
         self.colliderCarg6 = self.physics.add.collider(self.submarino.imagen, self.carguero6.imagen);
-        //self.colliderSubIsla1 = self.physics.add.collider(self.submarino.imagen, self.isla1);
-        //self.colliderSubIsla2 = self.physics.add.collider(self.submarino.imagen, self.isla2);
-        //self.colliderSubIsla3 = self.physics.add.collider(self.submarino.imagen, self.isla3);
-        //self.colliderSubIsla4 = self.physics.add.collider(self.submarino.imagen, self.isla4);
       }
       else{
         self.physics.world.removeCollider(self.colliderSub);
@@ -3412,10 +3291,6 @@ export class game extends Phaser.Scene{
         self.physics.world.removeCollider(self.colliderCarg4);
         self.physics.world.removeCollider(self.colliderCarg5);
         self.physics.world.removeCollider(self.colliderCarg6); 
-        //self.physics.world.removeCollider(self.colliderSubIsla1);
-        //self.physics.world.removeCollider(self.colliderSubIsla2);
-        //self.physics.world.removeCollider(self.colliderSubIsla3);
-        //self.physics.world.removeCollider(self.colliderSubIsla4);
       }
     }); 
 
@@ -3775,7 +3650,6 @@ export class game extends Phaser.Scene{
             this.submarino.imagen.setAngularVelocity(100)
           } else {
             this.submarino.imagen.setAngularVelocity(0) // Si no se esta apretando la tecla de arriba o abajo la velocidad de rotacion y de giro es 0
-            //this.submarino.reticula.setAngularVelocity(0)
           }
 
           let oldPosition = {}
@@ -3785,17 +3659,12 @@ export class game extends Phaser.Scene{
           // Seteo velocidad de movimiento
           if (this.up.isDown || this.UP===1) {
             this.submarino.imagen.setVelocityX(this.submarino.velocidad  * velX)
-            //this.submarino.reticula.setVelocityX(this.submarino.velocidad * (velX))
             this.submarino.imagen.setVelocityY(this.submarino.velocidad * velY)
-            //this.submarino.reticula.setVelocityY(this.submarino.velocidad * (velY))
           } else if (this.down.isDown) {
             this.submarino.imagen.setVelocityX(-(this.submarino.velocidad/2) * velX)
-            //this.submarino.reticula.setVelocityX(-(this.submarino.velocidad/2) * (velX))
             this.submarino.imagen.setVelocityY(-(this.submarino.velocidad/2) * velY)
-            //this.submarino.reticula.setVelocityY(-(this.submarino.velocidad/2) * (velY + 0.2))
           } else {
             this.submarino.imagen.setAcceleration(0)
-            //this.submarino.reticula.setAcceleration(0)
           }
 
           // Comparo la posicion y rotacion actual del barco, y en caso de que haya cambiado envio el evento "playerMovement" al socket para comunicar a todos los clientes
@@ -3804,8 +3673,6 @@ export class game extends Phaser.Scene{
           var r = this.submarino.imagen.rotation;
           this.submarino.reticula.x = this.submarino.imagen.x + (Math.cos((this.submarino.imagen.angle - 360) * 0.01745) * this.distMax);
           this.submarino.reticula.y = this.submarino.imagen.y + (Math.sin((this.submarino.imagen.angle - 360) * 0.01745) * this.distMax);
-          //this.submarino.reticula.angle = this.submarino.imagen.angle;
-          //this.submarino.reticula.rotacion = this.submarino.imagen.rotation;
           if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y || r !== oldPosition.rotation)) {
             let data = {
               x: this.submarino.imagen.x,

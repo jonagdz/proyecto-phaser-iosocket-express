@@ -94,19 +94,6 @@ io.on('connection', function (socket) {
     });
 
     if (JugadorUnoEsperando === 1){ // Entra a este if solo cuando se conecta el 2do jugador, e informo que ya estan listos ambos jugadores
-      // Genero el objeto player para el 2do jugador
-      /*players[socket.id] = {
-        rotation: 0,
-        x: 0,
-        y: 0,
-        playerId: socket.id,
-        damage: 0,
-        equipo: otraData.otroEquipo,
-        deep: 0,
-        carguero: 0,
-        numerocarguero: 0
-      }*/
-
       // Notifico al jugador 1 que el jugador 2 ya ingreso, para que vaya al juego, y mando directo al jugador 2 al juego
       socket.broadcast.emit('JugadoresListosPlayer1');
       socket.emit('JugadoresListosPlayer2', otraData);
@@ -133,15 +120,7 @@ io.on('connection', function (socket) {
         jugadoresDesconectados = 0;
   
         otraData.loadGame = datos.loadGame;
-
-        // Notifico al jugador 1 que el jugador 2 ya ingreso, para que vaya al juego, y mando directo al jugador 2 al juego
-        /*socket.broadcast.emit('JugadoresListosPlayer1');
-        socket.emit('JugadoresListosPlayer2', otraData);
-        JugadorUnoEsperando = 0;
-        jugadoresDesconectados = 0;*/
       });
-
-      
     }
   }
   // SACO PARA AFUERA DEL IF los eventos que son comunes a todos los jugadores que esten conectados (MOVIMIENTOS, DISPAROS, DESCONEXION, ETC)

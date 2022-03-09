@@ -1,13 +1,14 @@
-import { bootGame } from './escenas/bootGame.js';
-import { preGameMenu } from './escenas/preGameMenu.js';
-import { game } from './escenas/game.js';
+//Importaciones
+import { BootGame } from './escenas/BootGame.js';
+import { PreGameMenu } from './escenas/PreGameMenu.js';
+import { Game } from './escenas/Game.js';
 import { GameMenu} from './escenas/GameMenu.js';
-import { salaEspera } from './escenas/salaEspera.js';
-import { gameOver } from './escenas/gameOver.js';
-import { creditos } from './escenas/creditos.js';
-import { controles } from './escenas/controles.js';
+import { SalaEspera } from './escenas/SalaEspera.js';
+import { GameOver } from './escenas/GameOver.js';
+import { Creditos } from './escenas/Creditos.js';
+import { controles } from './escenas/Controles.js';
 
-// Configuracion de Phaser
+//Configuracion de Phaser
 var config = {
   type: Phaser.AUTO,
   scale: {
@@ -22,16 +23,15 @@ var config = {
   physics: {
     default: 'arcade',
     arcade: {
-      debug: false, // En true para ver las hitbox reales de los objetos y el vector a donde apunta la direccion junto con la fuerza (tamaño de la flecha de direccion)
+      debug: false,
       gravity: { y: 0 }
     }
   },
-  scene: [bootGame, preGameMenu, salaEspera, game, GameMenu, gameOver, creditos, controles]
+  //Escena incluidas
+  scene: [BootGame, PreGameMenu, SalaEspera, Game, GameMenu, GameOver, Creditos, controles]
 }
 
 window.onload = () =>{
-  // Defino mis variables
   var Game;
   Game = new Phaser.Game(config);
-
 }
