@@ -1200,13 +1200,13 @@ export class game extends Phaser.Scene{
         // Seteo la velocidad del submarino dependiendo a la profundidad en que se encuentre
         if (self.submarino.profundidad === 0){
           // Si me encuentro en la superficie la velocidad va a ser lenta
-          self.submarino.velocidad = self.velocidadMedia; 
+          self.submarino.velocidad = self.velocidadBaja; 
         }else if(self.submarino.profundidad === 1){
           // Si me encuentro a baja profundidad la velocidad va a ser media
           self.submarino.velocidad = self.velocidadMedia; 
         }else if(self.submarino.profundidad === 2){
           // Si me encuentro a mucha profundidad la velocidad va a ser lenta
-          self.submarino.velocidad = self.velocidadBaja; 
+          self.submarino.velocidad = self.velocidadMedia; 
         }
       }
     }
@@ -2708,7 +2708,7 @@ export class game extends Phaser.Scene{
                 if((probabilidad + probExtra) > 2)
                 {
                   //console.log("entro al if del danio sub corto torpedo");
-                  danio = 4;
+                  danio = 6;
 
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   
@@ -2817,7 +2817,7 @@ export class game extends Phaser.Scene{
                 if((probabilidad + probExtra) > 3)
                 {
                   
-                  danio = 4;
+                  danio = 6;
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
@@ -2924,7 +2924,7 @@ export class game extends Phaser.Scene{
                 //si la probabilidad de errar es mayor que el 10%, entonces fallo
                 if((probabilidad + probExtra) > 5)
                 {
-                  danio = 4;
+                  danio = 6;
                   hitted(enemy.imagen.x, enemy.imagen.y); 
                   
                   //-----------------------TEXTO QUE MUESTRA EL DANO HECHO EN EL JUEGO----------------------------
